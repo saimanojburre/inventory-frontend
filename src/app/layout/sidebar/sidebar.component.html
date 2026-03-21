@@ -1,12 +1,81 @@
 <div class="sidebar">
-  <h2 class="logo">Inventory Pro</h2>
+  <div class="logo">
+    <mat-icon>inventory</mat-icon>
+    <span>Inventory Pro</span>
+  </div>
 
-  <nav>
-    <a routerLink="/app/dashboard" routerLinkActive="active">Dashboard</a>
-    <a routerLink="/app/inventory" routerLinkActive="active">Inventory</a>
-    <a routerLink="/app/purchase" routerLinkActive="active">Purchase</a>
-    <a routerLink="/app/usage" routerLinkActive="active">Usage</a>
-    <a routerLink="/app/items" routerLinkActive="active">Items</a>
-    <a routerLink="/app/metrics" routerLinkActive="active">Metrics</a>
+  <nav class="menu">
+    <!-- DASHBOARD -->
+    <a routerLink="/app/dashboard" routerLinkActive="active">
+      <mat-icon>dashboard</mat-icon>
+      <span>Dashboard</span>
+    </a>
+
+    <!-- INVENTORY -->
+    <div class="menu-group">Inventory</div>
+
+    <a
+      *ngIf="this.authService.isManagerOrOwner()"
+      routerLink="/app/items"
+      routerLinkActive="active"
+    >
+      <mat-icon>inventory_2</mat-icon>
+      <span>Products</span>
+    </a>
+
+    <a routerLink="/app/inventory" routerLinkActive="active">
+      <mat-icon>warehouse</mat-icon>
+      <span>Current Stock</span>
+    </a>
+
+    <!-- TRANSACTIONS -->
+    <div class="menu-group">Transactions</div>
+
+    <a routerLink="/app/purchase" routerLinkActive="active">
+      <mat-icon>shopping_cart</mat-icon>
+      <span>Purchases</span>
+    </a>
+
+    <a routerLink="/app/usage" routerLinkActive="active">
+      <mat-icon>analytics</mat-icon>
+      <span>Usage</span>
+    </a>
+
+    <!-- ADMINISTRATION -->
+    <div *ngIf="this.authService.isManagerOrOwner()" class="menu-group">
+      Administration
+    </div>
+
+    <a
+      *ngIf="this.authService.isManagerOrOwner()"
+      routerLink="/app/user"
+      routerLinkActive="active"
+    >
+      <mat-icon>group</mat-icon>
+      <span>Users</span>
+    </a>
+
+    <!-- REPORTS -->
+    <div *ngIf="this.authService.isManagerOrOwner()" class="menu-group">
+      Reports
+    </div>
+
+    <a
+      *ngIf="this.authService.isManagerOrOwner()"
+      routerLink="/app/metrics"
+      routerLinkActive="active"
+    >
+      <mat-icon>bar_chart</mat-icon>
+      <span>Metrics</span>
+    </a>
+
+    <a
+      *ngIf="this.authService.isManagerOrOwner()"
+      routerLink="/app/logs"
+      routerLinkActive="active"
+    >
+      <mat-icon>history</mat-icon>
+      <span>Logs</span>
+    </a>
   </nav>
 </div>

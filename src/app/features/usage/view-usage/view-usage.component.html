@@ -1,12 +1,12 @@
+<app-page-header
+  title="Usage History"
+  subtitle="Track and review stock usage"
+></app-page-header>
+
 <div class="page-header">
   <button mat-button class="back-btn" (click)="goBack()">← Back</button>
 
-  <button
-    mat-raised-button
-    color="primary"
-    class="export-btn"
-    (click)="exportToExcel()"
-  >
+  <button mat-raised-button color="primary" (click)="exportToExcel()">
     <mat-icon>download</mat-icon>
     Export XLSX
   </button>
@@ -15,16 +15,19 @@
 <div class="usage-view">
   <h2>Usage History</h2>
 
-  <!-- FILTER -->
+  <!-- FILTERS -->
+
   <form [formGroup]="filterForm" class="filter-bar">
     <mat-form-field appearance="outline">
       <mat-label>From Date</mat-label>
+
       <input
         matInput
         [matDatepicker]="fromPicker"
         formControlName="fromDate"
         (dateChange)="applyFilter()"
       />
+
       <mat-datepicker-toggle
         matSuffix
         [for]="fromPicker"
@@ -34,39 +37,49 @@
 
     <mat-form-field appearance="outline">
       <mat-label>To Date</mat-label>
+
       <input
         matInput
         [matDatepicker]="toPicker"
         formControlName="toDate"
         (dateChange)="applyFilter()"
       />
+
       <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
       <mat-datepicker #toPicker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>Search</mat-label>
+
       <input matInput formControlName="search" (keyup)="applyFilter()" />
     </mat-form-field>
   </form>
 
   <!-- TABLE -->
+
   <table mat-table [dataSource]="dataSource" matSort>
     <!-- ITEM -->
     <ng-container matColumnDef="item">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
-      <td mat-cell *matCellDef="let r">{{ r.itemName }}</td>
+
+      <td mat-cell *matCellDef="let r">
+        {{ r.item?.name }}
+      </td>
     </ng-container>
 
-    <!-- QTY -->
+    <!-- QUANTITY -->
     <ng-container matColumnDef="quantity">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty</th>
+
       <td mat-cell *matCellDef="let r">
         <ng-container *ngIf="editingId === r.id; else qtyView">
           <input class="inline-input" type="number" [(ngModel)]="r.quantity" />
         </ng-container>
 
-        <ng-template #qtyView>{{ r.quantity }}</ng-template>
+        <ng-template #qtyView>
+          {{ r.quantity }}
+        </ng-template>
       </td>
     </ng-container>
 
@@ -76,71 +89,64 @@
 
       <td mat-cell *matCellDef="let r">
         <ng-container *ngIf="editingId === r.id; else deptView">
-          <mat-select class="inline-select" [(ngModel)]="r.department">
+          <mat-select [(ngModel)]="r.department" class="inline-select">
             <mat-option *ngFor="let d of departments" [value]="d">
               {{ d }}
             </mat-option>
           </mat-select>
         </ng-container>
 
-        <ng-template #deptView>{{ r.department }}</ng-template>
-      </td>
-    </ng-container>
-
-    <!-- USED FOR -->
-    <ng-container matColumnDef="usedFor">
-      <th mat-header-cell *matHeaderCellDef mat-sort-header>Used For</th>
-
-      <td mat-cell *matCellDef="let r">
-        <ng-container *ngIf="editingId === r.id; else usedView">
-          <mat-select class="inline-select" [(ngModel)]="r.usedFor">
-            <mat-option *ngFor="let u of usedForOptions" [value]="u">
-              {{ u }}
-            </mat-option>
-          </mat-select>
-        </ng-container>
-
-        <ng-template #usedView>{{ r.usedFor }}</ng-template>
+        <ng-template #deptView>
+          {{ r.department }}
+        </ng-template>
       </td>
     </ng-container>
 
     <!-- TAKEN BY -->
     <ng-container matColumnDef="takenBy">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Taken By</th>
+
       <td mat-cell *matCellDef="let r">
         <ng-container *ngIf="editingId === r.id; else takenView">
           <input class="inline-input" [(ngModel)]="r.takenBy" />
         </ng-container>
 
-        <ng-template #takenView>{{ r.takenBy }}</ng-template>
+        <ng-template #takenView>
+          {{ r.takenBy }}
+        </ng-template>
       </td>
     </ng-container>
 
     <!-- GIVEN BY -->
     <ng-container matColumnDef="givenBy">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Given By</th>
+
       <td mat-cell *matCellDef="let r">
         <ng-container *ngIf="editingId === r.id; else givenView">
           <input class="inline-input" [(ngModel)]="r.givenBy" />
         </ng-container>
 
-        <ng-template #givenView>{{ r.givenBy }}</ng-template>
+        <ng-template #givenView>
+          {{ r.givenBy }}
+        </ng-template>
       </td>
     </ng-container>
 
-    <!-- TIME -->
+    <!-- DATE -->
     <ng-container matColumnDef="time">
-      <th mat-header-cell *matHeaderCellDef>Date & Time</th>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+
       <td mat-cell *matCellDef="let r">
-        {{ r.usageTime | date: "medium" }}
+        {{ r.usedDateTime | date: "medium" }}
       </td>
     </ng-container>
 
     <!-- ACTIONS -->
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
+      <th mat-header-cell *matHeaderCellDef>Action</th>
 
       <td mat-cell *matCellDef="let r">
+        <!-- EDIT MODE -->
         <ng-container *ngIf="editingId === r.id; else normalActions">
           <button mat-icon-button color="primary" (click)="saveEdit(r)">
             <mat-icon>check</mat-icon>
@@ -151,6 +157,7 @@
           </button>
         </ng-container>
 
+        <!-- NORMAL MODE -->
         <ng-template #normalActions>
           <button mat-icon-button color="primary" (click)="edit(r)">
             <mat-icon>edit</mat-icon>
@@ -165,10 +172,13 @@
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-    <tr
-      mat-row
-      *matRowDef="let row; columns: displayedColumns"
-      [class.editing-row]="editingId === row.id"
-    ></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 </div>
+
+<mat-paginator
+  [pageSize]="10"
+  [pageSizeOptions]="[5, 10, 20, 50]"
+  showFirstLastButtons
+>
+</mat-paginator>

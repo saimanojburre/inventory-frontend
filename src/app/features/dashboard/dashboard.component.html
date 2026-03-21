@@ -1,102 +1,103 @@
 <div class="dashboard">
-  <!-- HEADER -->
+  <!-- HEADER (ALWAYS VISIBLE) -->
   <div class="dashboard-header">
     <h2>{{ greetingMessage }}</h2>
     <span>Inventory Analytics Overview</span>
   </div>
 
-  <!-- KPI CARDS -->
-  <div class="card-grid">
-    <mat-card class="stat-card">
-      <div class="stat-content">
-        <div class="icon-box blue">
-          <mat-icon>inventory_2</mat-icon>
-        </div>
-        <div>
-          <p>Total Inventory Value</p>
-          <h2>
-            {{
-              stats.inventoryValue
-                | currency: "INR" : "symbol" : "1.0-0" : "en-IN"
-            }}
-          </h2>
-        </div>
+  <!-- CONTENT AREA -->
+  <div class="dashboard-content">
+    <!-- LOADER -->
+    <div *ngIf="loading" class="loading">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div *ngIf="!loading" class="dashboard-body">
+      <!-- KPI CARDS -->
+      <div class="card-grid">
+        <mat-card class="stat-card">
+          <div class="stat-content">
+            <div class="icon-box blue">
+              <mat-icon>inventory_2</mat-icon>
+            </div>
+            <div>
+              <p>Total Inventory Value</p>
+              <h2>
+                {{
+                  stats.inventoryValue
+                    | currency: "INR" : "symbol" : "1.0-0" : "en-IN"
+                }}
+              </h2>
+            </div>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <div class="stat-content">
+            <div class="icon-box green">
+              <mat-icon>shopping_cart</mat-icon>
+            </div>
+            <div class="stat-info">
+              <p>Purchases</p>
+              <h2>{{ stats.purchases }}</h2>
+            </div>
+            <button
+              mat-icon-button
+              class="quick-add"
+              (click)="goToAddPurchase()"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <div class="stat-content">
+            <div class="icon-box purple">
+              <mat-icon>analytics</mat-icon>
+            </div>
+            <div class="stat-info">
+              <p>Usage</p>
+              <h2>{{ stats.usage }}</h2>
+            </div>
+            <button mat-icon-button class="quick-add" (click)="goToAddUsage()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <div class="stat-content">
+            <div class="icon-box orange">
+              <mat-icon>warning</mat-icon>
+            </div>
+            <div>
+              <p>Low Stock</p>
+              <h2>{{ stats.lowStock }} Items</h2>
+            </div>
+          </div>
+        </mat-card>
       </div>
-    </mat-card>
 
-    <mat-card class="stat-card">
-      <div class="stat-content">
-        <div class="icon-box green">
-          <mat-icon>shopping_cart</mat-icon>
-        </div>
+      <!-- ANALYTICS -->
+      <div class="analytics-grid">
+        <mat-card class="chart-card">
+          <h3>Department Usage</h3>
+          <canvas id="departmentChart"></canvas>
+        </mat-card>
 
-        <div class="stat-info">
-          <p>Purchases</p>
-          <h2>{{ stats.purchases }}</h2>
-        </div>
-
-        <!-- ADD BUTTON -->
-        <button
-          mat-icon-button
-          class="quick-add"
-          (click)="goToAddPurchase()"
-          matTooltip="Add Purchase"
-        >
-          <mat-icon>add</mat-icon>
-        </button>
+        <mat-card class="chart-card">
+          <h3>Category Usage</h3>
+          <canvas id="categoryChart"></canvas>
+        </mat-card>
       </div>
-    </mat-card>
 
-    <mat-card class="stat-card">
-      <div class="stat-content">
-        <div class="icon-box purple">
-          <mat-icon>analytics</mat-icon>
-        </div>
-        <div class="stat-info">
-          <p>Usage</p>
-          <h2>{{ stats.usage }}</h2>
-        </div>
-        <!-- ADD BUTTON -->
-        <button
-          mat-icon-button
-          class="quick-add"
-          (click)="goToAddUsage()"
-          matTooltip="Add Purchase"
-        >
-          <mat-icon>add</mat-icon>
-        </button>
-      </div>
-    </mat-card>
-
-    <mat-card class="stat-card">
-      <div class="stat-content">
-        <div class="icon-box orange">
-          <mat-icon>warning</mat-icon>
-        </div>
-        <div>
-          <p>Low Stock</p>
-          <h2>{{ stats.lowStock }} Items</h2>
-        </div>
-      </div>
-    </mat-card>
+      <!-- TREND -->
+      <mat-card class="chart-card trend">
+        <h3>Weekly Usage Trend</h3>
+        <canvas id="weeklyChart"></canvas>
+      </mat-card>
+    </div>
   </div>
-
-  <!-- ANALYTICS -->
-  <div class="analytics-grid">
-    <mat-card class="chart-card">
-      <h3>Department Usage</h3>
-      <canvas id="departmentChart"></canvas>
-    </mat-card>
-
-    <mat-card class="chart-card">
-      <h3>Category Usage</h3>
-      <canvas id="categoryChart"></canvas>
-    </mat-card>
-  </div>
-
-  <!-- TREND -->
-  <mat-card class="chart-card trend">
-    <h3>Weekly Usage Trend</h3>
-    <canvas id="weeklyChart"></canvas>
-  </mat-card>
 </div>

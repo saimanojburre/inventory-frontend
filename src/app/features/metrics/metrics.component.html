@@ -1,21 +1,91 @@
-<div class="purchase-home">
-  <h2>Usage Insights</h2>
+<app-page-header
+  title="Usage Report"
+  subtitle="Department-wise usage breakdown"
+></app-page-header>
+<div class="filter-row">
+  <mat-form-field appearance="outline">
+    <mat-label>From Date</mat-label>
+    <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate" />
+    <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+    <mat-datepicker #fromPicker></mat-datepicker>
+  </mat-form-field>
 
-  <div class="card-grid">
-    <mat-card class="action-card" routerLink="/app/metrics/total-usage">
-      <div class="icon">
-        <mat-icon>insights</mat-icon>
-      </div>
-      <h3>Total Usage Insights</h3>
-      <p>Track daily, weekly & monthly consumption</p>
-    </mat-card>
+  <mat-form-field appearance="outline">
+    <mat-label>To Date</mat-label>
+    <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate" />
+    <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+    <mat-datepicker #toPicker></mat-datepicker>
+  </mat-form-field>
 
-    <mat-card class="action-card" routerLink="/app/metrics/dept-usage">
-      <div class="icon">
-        <mat-icon>groups</mat-icon>
-      </div>
-      <h3>Department Usage Insights</h3>
-      <p>Analyze usage by departments</p>
-    </mat-card>
+  <button mat-raised-button color="primary" (click)="loadReport()">
+    Apply
+  </button>
+</div>
+<!-- LOADING -->
+<div *ngIf="loading" class="loading">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<!-- EMPTY STATE -->
+<div *ngIf="!loading && dataSource.length === 0" class="empty-state">
+  <mat-icon>bar_chart</mat-icon>
+  <h3>No Data Available</h3>
+  <p>No usage records found for report.</p>
+</div>
+
+<!-- TABLE -->
+<div *ngIf="!loading && dataSource.length > 0" class="report-view">
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" class="report-table">
+      <!-- DEPARTMENT -->
+      <ng-container matColumnDef="department">
+        <th mat-header-cell *matHeaderCellDef class="left">Department</th>
+
+        <td mat-cell *matCellDef="let r" class="left">
+          <b *ngIf="r.department === 'Total'">{{ r.department }}</b>
+          <span *ngIf="r.department !== 'Total'">{{ r.department }}</span>
+        </td>
+      </ng-container>
+
+      <!-- CATEGORY -->
+      <ng-container *ngFor="let col of categories" [matColumnDef]="col">
+        <th mat-header-cell *matHeaderCellDef class="right">
+          {{ col }}
+        </th>
+
+        <td mat-cell *matCellDef="let r" class="right">
+          <b *ngIf="r.department === 'Total'">
+            {{ r[col] | currency: "INR" : "symbol" : "1.0-0" }}
+          </b>
+
+          <span *ngIf="r.department !== 'Total'">
+            {{ r[col] | currency: "INR" : "symbol" : "1.0-0" }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- TOTAL -->
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef class="right total-header">
+          Total
+        </th>
+
+        <td mat-cell *matCellDef="let r" class="right total-cell">
+          <b>
+            {{ r.total | currency: "INR" : "symbol" : "1.0-0" }}
+          </b>
+        </td>
+      </ng-container>
+
+      <!-- HEADER -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <!-- ROW -->
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        [class.total-row]="row.department === 'Total'"
+      ></tr>
+    </table>
   </div>
 </div>

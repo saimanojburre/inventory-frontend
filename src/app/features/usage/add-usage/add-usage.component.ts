@@ -1,34 +1,21 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { UsageService } from 'src/app/core/services/usage.service';
+
 @Component({
   selector: 'app-add-usage',
   templateUrl: './add-usage.component.html',
   styleUrls: ['./add-usage.component.scss'],
 })
-export class AddUsageComponent {
+export class AddUsageComponent implements OnInit {
   usageForm!: FormGroup;
   items: any[] = [];
 
-  departments = [
-    'Tiffin',
-    'North Indian',
-    'Chinese',
-    'Service',
-    'Meals',
-    'Staff Food',
-    'Cleaning',
-    'Reception',
-    'Finger Foods',
-    'Line Parcel',
-    'Hot Drinks',
-  ];
-  usedForList = ['Restaurant', 'Party Order'];
-
-  displayedColumns: string[] = [
+  displayedColumns = [
     'item',
     'units',
     'available',
@@ -36,8 +23,22 @@ export class AddUsageComponent {
     'department',
     'takenBy',
     'givenBy',
-    'usedFor',
     'actions',
+  ];
+
+  departments: string[] = [
+    'Tiffins',
+    'Staff Food',
+    'Reception',
+    'Line Parcel',
+    'Hot Drinks',
+    'Service',
+    'Chinese',
+    'North Indian',
+    'South Indian',
+    'Cleaning',
+    'Finger Foods',
+    'Meals',
   ];
 
   @ViewChild(MatTable) table!: MatTable<any>;
@@ -47,9 +48,9 @@ export class AddUsageComponent {
     private inventoryService: InventoryService,
     private usageService: UsageService,
     private router: Router,
+    private snackBar: MatSnackBar,
   ) {}
 
-  // ================= INIT =================
   ngOnInit(): void {
     this.usageForm = this.fb.group({
       usages: this.fb.array([]),
@@ -58,58 +59,58 @@ export class AddUsageComponent {
     this.addRow();
     this.loadItems();
   }
-  pageTitle = 'Usage';
 
   goBack() {
     this.router.navigate(['/app/usage']);
   }
 
-  // ================= FORM ARRAY =================
   get usages(): FormArray {
     return this.usageForm.get('usages') as FormArray;
   }
 
   createRow(): FormGroup {
     return this.fb.group({
-      item: [null],
-      units: [''],
+      item: [null, Validators.required],
+      units: [{ value: '', disabled: true }],
       available: [0],
-      quantity: [0],
-      department: [''],
-      takenBy: [''],
-      givenBy: [''],
-      usedFor: [''],
+      quantity: [null, [Validators.required, Validators.min(1)]],
+      department: ['', Validators.required],
+      takenBy: ['', Validators.required],
+      givenBy: ['', Validators.required],
     });
   }
 
   addRow() {
     this.usages.push(this.createRow());
-    setTimeout(() => this.table.renderRows());
+
+    if (this.table) {
+      this.table.renderRows();
+    }
   }
 
   removeRow(index: number) {
     this.usages.removeAt(index);
-    setTimeout(() => this.table.renderRows());
+
+    if (this.table) {
+      this.table.renderRows();
+    }
   }
 
-  // ================= LOAD INVENTORY =================
   loadItems() {
     this.inventoryService.getInventory().subscribe((res) => {
       this.items = res;
     });
   }
 
-  // ================= ITEM SELECT =================
   onItemChange(item: any, index: number) {
     if (!item) return;
 
     this.usages.at(index).patchValue({
       units: item.units,
-      available: item.quantity, // ✅ show available stock
+      available: item.quantity,
     });
   }
 
-  // ================= VALIDATION =================
   isInvalidQuantity(row: any): boolean {
     const qty = Number(row.get('quantity')?.value) || 0;
     const available = Number(row.get('available')?.value) || 0;
@@ -121,39 +122,55 @@ export class AddUsageComponent {
     return this.usages.controls.some((row) => this.isInvalidQuantity(row));
   }
 
-  // ================= SAVE =================
   saveUsage() {
+    if (this.usageForm.invalid || this.hasInvalidRows()) {
+      this.usageForm.markAllAsTouched();
+
+      this.snackBar.open('Please fill all required fields correctly', 'Close', {
+        duration: 3000,
+        verticalPosition: 'top',
+        horizontalPosition: 'right',
+        panelClass: ['error-snackbar'],
+      });
+
+      return;
+    }
+
     const payload = this.usages.value.map((row: any) => ({
-      // backend will ignore id if null (for new records)
-      itemId: row.item?.itemId,
-
+      item: { id: row.item?.itemId },
       quantity: Number(row.quantity),
-
       department: row.department,
-
-      usedFor: row.usedFor,
-
-      givenBy: row.givenBy,
-
       takenBy: row.takenBy,
-
-      // system generated datetime
-      usageTime: this.getSystemDateTime(),
+      givenBy: row.givenBy,
+      usedDateTime: new Date(
+        new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+      )
+        .toISOString()
+        .slice(0, 19),
     }));
-
-    console.log('Sending Payload:', payload);
 
     this.usageService.bulkUsage(payload).subscribe({
       next: () => {
-        alert('Usage Saved Successfully');
+        this.snackBar.open('Usage saved successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+          panelClass: ['success-snackbar'],
+        });
+
         this.usages.clear();
-        this.goBack();
         this.addRow();
+        this.goBack();
       },
-      error: (err) => console.error(err),
+
+      error: () => {
+        this.snackBar.open('Failed to save usage', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+          panelClass: ['error-snackbar'],
+        });
+      },
     });
-  }
-  getSystemDateTime(): string {
-    return new Date().toISOString();
   }
 }

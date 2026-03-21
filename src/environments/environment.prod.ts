@@ -1,4 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://airawat-inventory-backend.onrender.com',
+  apiBaseUrl: 'https://inventory-backend-production-a22a.up.railway.app',
+  // apiBaseUrl: 'http://localhost:8080',
 };

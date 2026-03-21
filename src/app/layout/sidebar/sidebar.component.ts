@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -7,4 +8,7 @@ import { Component, Input } from '@angular/core';
 })
 export class SidebarComponent {
   @Input() open = true;
+  constructor(public authService: AuthService) {}
+
+  // this.authService.isManagerOrOwner();
 }

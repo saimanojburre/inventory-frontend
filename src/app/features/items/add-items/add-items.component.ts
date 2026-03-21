@@ -1,8 +1,9 @@
 import { Component, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { ItemService } from 'src/app/core/services/item.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -14,13 +15,31 @@ export class AddItemsComponent {
   itemForm!: FormGroup;
 
   displayedColumns = [
-    'itemName',
+    'name',
     'category',
     'unit',
+    'minStock',
     'quantity',
-    'pricePerUnit',
-    'total',
     'actions',
+  ];
+  categories: string[] = [
+    'Raw Materials',
+    'Packing Materials',
+    'Chicken',
+    'Mutton',
+    'Fish & Prawns',
+    'Butter, Cheese, Cream',
+    'Cool Drinks & Water Bottles',
+    'Sanitary',
+  ];
+  units: string[] = [
+    'KG',
+    'Packet',
+    'Litre',
+    'Tray',
+    'Case',
+    'Bottle',
+    'Piece',
   ];
 
   @ViewChild(MatTable) table!: MatTable<any>;
@@ -29,6 +48,7 @@ export class AddItemsComponent {
     private fb: FormBuilder,
     private itemService: ItemService,
     private router: Router,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit() {
@@ -40,80 +60,116 @@ export class AddItemsComponent {
   }
 
   // ================= FORM ARRAY =================
+
   get itemsFormArray(): FormArray {
     return this.itemForm.get('items') as FormArray;
   }
 
   createRow(data?: any): FormGroup {
     return this.fb.group({
-      itemName: [data?.itemName || ''],
-      category: [data?.category || ''],
-      unit: [data?.unit || ''],
+      name: [data?.name || '', Validators.required],
+      category: [data?.category || '', Validators.required],
+      unit: [data?.unit || '', Validators.required],
+      minStock: [data?.minStock || '', Validators.required],
       quantity: [data?.quantity || 0],
-      pricePerUnit: [data?.pricePerUnit || 0],
     });
   }
 
   addRow() {
     this.itemsFormArray.push(this.createRow());
+
     setTimeout(() => this.table.renderRows());
   }
 
   removeRow(index: number) {
     this.itemsFormArray.removeAt(index);
+
     setTimeout(() => this.table.renderRows());
   }
 
   // ================= XLSX UPLOAD =================
+
   onFileUpload(event: any) {
     const file = event.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
+    const reader: FileReader = new FileReader();
 
     reader.onload = (e: any) => {
-      const binary = e.target.result;
+      const binaryStr = e.target.result;
 
-      const workbook = XLSX.read(binary, { type: 'binary' });
+      const workbook = XLSX.read(binaryStr, { type: 'binary' });
+
       const sheetName = workbook.SheetNames[0];
       const sheet = workbook.Sheets[sheetName];
 
       const data = XLSX.utils.sheet_to_json(sheet);
 
-      this.itemsFormArray.clear();
+      console.log('Excel Data:', data);
 
-      data.forEach((row: any) => {
-        this.itemsFormArray.push(
-          this.createRow({
-            itemName: row['itemName'],
-            category: row['category'],
-            unit: row['unit'],
-            quantity: 0,
-            pricePerUnit: 0,
-            totalPrice: 0,
-          }),
-        );
+      const formattedData = data.map((row: any) => ({
+        name: row['Product'],
+        category: row['Category'],
+        unit: row['Unit'],
+        minStock: row['MinStock'],
+        active: true,
+      }));
+
+      this.itemService.bulkSave(formattedData).subscribe({
+        next: () => {
+          this.snackBar.open('Products uploaded successfully', 'Close', {
+            duration: 3000,
+          });
+          // this.loadItems();
+        },
+        error: () => {
+          this.snackBar.open('Upload failed', 'Close', {
+            duration: 3000,
+          });
+        },
       });
-
-      setTimeout(() => this.table.renderRows());
     };
 
     reader.readAsBinaryString(file);
   }
 
   // ================= SAVE =================
+
   saveItems() {
+    if (this.itemForm.invalid) {
+      this.itemsFormArray.controls.forEach((row: any) => {
+        row.markAllAsTouched();
+      });
+
+      this.snackBar.open(
+        'Please fill all required product fields before saving',
+        'Close',
+        {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+          panelClass: ['error-snackbar'],
+        },
+      );
+
+      return;
+    }
+
     const payload = this.itemsFormArray.value.map((r: any) => ({
-      itemName: r.itemName,
+      name: r.name,
       category: r.category,
       unit: r.unit,
-      quantity: Number(r.quantity),
-      pricePerUnit: Number(r.pricePerUnit),
-      totalPrice: Number(r.quantity) * Number(r.pricePerUnit),
+      minStock: Number(r.minStock),
+      active: true,
     }));
 
-    this.itemService.bulkSave(payload).subscribe(() => {
-      alert('Items Saved Successfully');
+    this.itemService.bulkSave(payload).subscribe((res: any) => {
+      this.snackBar.open(
+        `✔ ${res.savedCount} products saved | ⚠ ${res.duplicateCount} duplicates skipped`,
+        'OK',
+        { duration: 4000 },
+      );
+
       this.router.navigate(['/app/items']);
     });
   }

@@ -5,4 +5,5 @@ export interface Inventory {
   quantity: number;
   totalPrice: number;
   avgPricePerUnit: number;
+  minStock: number;
 }

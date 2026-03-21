@@ -1,0 +1,195 @@
+<app-page-header
+  title="Manage Users"
+  subtitle="View and manage system users"
+></app-page-header>
+
+<!-- TOOLBAR -->
+
+<div class="page-header" [formGroup]="filterForm">
+  <div class="left-actions">
+    <button mat-raised-button color="primary" routerLink="/app/user/add">
+      <mat-icon>add</mat-icon>
+      Add User
+    </button>
+  </div>
+
+  <div class="right-actions">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search</mat-label>
+
+      <input
+        matInput
+        formControlName="search"
+        (keyup)="applyFilter()"
+        placeholder="Name or Email"
+      />
+
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+  </div>
+</div>
+
+<!-- LOADING -->
+
+<div *ngIf="loading" class="loading">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<!-- EMPTY STATE -->
+
+<div *ngIf="!loading && dataSource.data.length === 0" class="empty-state">
+  <mat-icon>group</mat-icon>
+
+  <h3>No Users Found</h3>
+
+  <p>Add users to manage system access.</p>
+
+  <button mat-raised-button color="primary" routerLink="/app/user/add">
+    <mat-icon>add</mat-icon>
+    Add User
+  </button>
+</div>
+
+<!-- TABLE -->
+
+<div *ngIf="!loading && dataSource.data.length > 0" class="users-view">
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- NAME -->
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else nameView">
+            <input class="inline-input" [(ngModel)]="r.name" />
+          </ng-container>
+
+          <ng-template #nameView>
+            {{ r.name }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- EMAIL -->
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else emailView">
+            <input class="inline-input" [(ngModel)]="r.email" />
+          </ng-container>
+
+          <ng-template #emailView>
+            {{ r.email }}
+          </ng-template>
+        </td>
+      </ng-container>
+      <!-- USERNAME -->
+
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+
+        <td mat-cell *matCellDef="let r">
+          {{ r.username }}
+        </td>
+      </ng-container>
+
+      <!-- PHONE -->
+
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Phone</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else phoneView">
+            <input class="inline-input" [(ngModel)]="r.phone" />
+          </ng-container>
+
+          <ng-template #phoneView>
+            {{ r.phone }}
+          </ng-template>
+        </td>
+      </ng-container>
+      <!-- ROLE -->
+
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+
+        <td mat-cell *matCellDef="let r">
+          <!-- EDIT MODE -->
+
+          <ng-container *ngIf="editingId === r.id; else roleView">
+            <mat-select [(ngModel)]="r.role.name" class="inline-select">
+              <mat-option *ngFor="let role of roles" [value]="role">
+                {{ role }}
+              </mat-option>
+            </mat-select>
+          </ng-container>
+
+          <!-- VIEW MODE -->
+
+          <ng-template #roleView>
+            {{ r.role?.name }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- STATUS -->
+
+      <ng-container matColumnDef="active">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else activeView">
+            <mat-slide-toggle [(ngModel)]="r.active"></mat-slide-toggle>
+          </ng-container>
+
+          <ng-template #activeView>
+            <span *ngIf="r.active" class="badge active">Active</span>
+
+            <span *ngIf="!r.active" class="badge inactive">Inactive</span>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- ACTIONS -->
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else normalActions">
+            <button mat-icon-button color="primary" (click)="saveEdit(r)">
+              <mat-icon>check</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="cancelEdit(r)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </ng-container>
+
+          <ng-template #normalActions>
+            <button mat-icon-button color="primary" (click)="edit(r)">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="delete(r)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 20]"
+    [pageSize]="10"
+    showFirstLastButtons
+  ></mat-paginator>
+</div>

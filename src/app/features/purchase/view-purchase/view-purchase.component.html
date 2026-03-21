@@ -1,6 +1,13 @@
+<app-page-header
+  title="Purchase History"
+  subtitle="Track and review past purchase records"
+>
+</app-page-header>
+
 <div class="page-header">
   <button mat-button class="back-btn" (click)="goBack()">← Back</button>
 </div>
+
 <div class="purchase-view">
   <h2>Purchase History</h2>
 
@@ -17,9 +24,10 @@
         (dateChange)="applyFilter()"
       />
 
-      <mat-datepicker-toggle matSuffix [for]="fromPicker">
-      </mat-datepicker-toggle>
-
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="fromPicker"
+      ></mat-datepicker-toggle>
       <mat-datepicker #fromPicker></mat-datepicker>
     </mat-form-field>
 
@@ -34,48 +42,83 @@
         (dateChange)="applyFilter()"
       />
 
-      <mat-datepicker-toggle matSuffix [for]="toPicker">
-      </mat-datepicker-toggle>
-
+      <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
       <mat-datepicker #toPicker></mat-datepicker>
     </mat-form-field>
 
     <!-- SEARCH -->
     <mat-form-field appearance="outline">
       <mat-label>Search</mat-label>
+
       <input matInput formControlName="search" (keyup)="applyFilter()" />
     </mat-form-field>
   </form>
 
   <!-- TABLE -->
+
   <table mat-table [dataSource]="dataSource" matSort>
+    <!-- ITEM -->
     <ng-container matColumnDef="item">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
-      <td mat-cell *matCellDef="let r">{{ r.itemName }}</td>
+      <td mat-cell *matCellDef="let r">
+        {{ r.item?.name }}
+      </td>
     </ng-container>
 
+    <!-- QUANTITY -->
     <ng-container matColumnDef="quantity">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty</th>
-      <td mat-cell *matCellDef="let r">{{ r.quantity }}</td>
+
+      <td mat-cell *matCellDef="let r">
+        <ng-container *ngIf="editingId === r.id; else qtyView">
+          <input type="number" class="inline-input" [(ngModel)]="r.quantity" />
+        </ng-container>
+
+        <ng-template #qtyView>
+          {{ r.quantity }}
+        </ng-template>
+      </td>
     </ng-container>
 
+    <!-- PRICE -->
     <ng-container matColumnDef="price">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Price</th>
-      <td mat-cell *matCellDef="let r">₹ {{ r.pricePerUnit }}</td>
+
+      <td mat-cell *matCellDef="let r">
+        <ng-container *ngIf="editingId === r.id; else priceView">
+          <input type="number" class="inline-input" [(ngModel)]="r.price" />
+        </ng-container>
+
+        <ng-template #priceView> ₹ {{ r.price }} </ng-template>
+      </td>
     </ng-container>
 
+    <!-- TOTAL -->
     <ng-container matColumnDef="total">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
-      <td mat-cell *matCellDef="let r">₹ {{ r.totalPrice }}</td>
+
+      <td mat-cell *matCellDef="let r">₹ {{ r.quantity * r.price }}</td>
     </ng-container>
 
+    <!-- SUPPLIER -->
     <ng-container matColumnDef="supplier">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Supplier</th>
-      <td mat-cell *matCellDef="let r">{{ r.purchasedFrom }}</td>
+
+      <td mat-cell *matCellDef="let r">
+        <ng-container *ngIf="editingId === r.id; else supplierView">
+          <input class="inline-input" [(ngModel)]="r.supplier" />
+        </ng-container>
+
+        <ng-template #supplierView>
+          {{ r.supplier }}
+        </ng-template>
+      </td>
     </ng-container>
 
+    <!-- DATE -->
     <ng-container matColumnDef="date">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+
       <td mat-cell *matCellDef="let r">
         {{ r.purchaseDate | date: "medium" }}
       </td>
@@ -83,20 +126,40 @@
 
     <!-- ACTIONS -->
     <ng-container matColumnDef="actions">
-      <th mat-header-cell *matHeaderCellDef></th>
+      <th mat-header-cell *matHeaderCellDef>Action</th>
 
       <td mat-cell *matCellDef="let r">
-        <button mat-icon-button color="primary" (click)="edit(r)">
-          <mat-icon>edit</mat-icon>
-        </button>
+        <ng-container *ngIf="editingId === r.id; else normalActions">
+          <button mat-icon-button color="primary" (click)="saveEdit(r)">
+            <mat-icon>check</mat-icon>
+          </button>
 
-        <button mat-icon-button color="warn" (click)="delete(r)">
-          <mat-icon>delete</mat-icon>
-        </button>
+          <button mat-icon-button color="warn" (click)="cancelEdit(r)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </ng-container>
+
+        <ng-template #normalActions>
+          <button mat-icon-button color="primary" (click)="edit(r)">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="delete(r)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-template>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
   </table>
 </div>
+<!-- PAGINATOR -->
+<mat-paginator
+  [pageSize]="10"
+  [pageSizeOptions]="[5, 10, 20, 50]"
+  showFirstLastButtons
+>
+</mat-paginator>

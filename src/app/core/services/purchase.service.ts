@@ -11,6 +11,7 @@ export class PurchaseService {
 
   constructor(private http: HttpClient) {}
 
+  // ================= HEADERS =================
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token') || '';
 
@@ -20,26 +21,22 @@ export class PurchaseService {
     });
   }
 
-  // ✅ Add Purchase
+  // ================= ADD PURCHASE =================
   addPurchase(data: any): Observable<any> {
-    return this.http.post(this.baseUrl, data, {
-      headers: this.getHeaders(),
-    });
+    return this.http.post(this.baseUrl, data, { headers: this.getHeaders() });
   }
 
-  // ✅ Bulk Purchase
-  bulkPurchase(data: any[]) {
+  // ================= BULK PURCHASE =================
+  bulkPurchase(data: any[]): Observable<any> {
     return this.http.post(`${this.baseUrl}/bulk`, data, {
       headers: this.getHeaders(),
     });
   }
 
-  // ✅ Get All Purchases
+  // ================= GET ALL PURCHASES =================
   getAll(): Observable<any[]> {
     return this.http
-      .get<any[]>(this.baseUrl, {
-        headers: this.getHeaders(),
-      })
+      .get<any[]>(this.baseUrl, { headers: this.getHeaders() })
       .pipe(
         map((purchases) =>
           purchases.sort((a, b) => {
@@ -50,5 +47,27 @@ export class PurchaseService {
           }),
         ),
       );
+  }
+
+  // ================= GET PURCHASE BY ID =================
+  getById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // ================= UPDATE PURCHASE =================
+  update(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`, data, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // ================= DELETE PURCHASE =================
+  delete(id: number) {
+    return this.http.delete(`${this.baseUrl}/${id}`, {
+      headers: this.getHeaders(),
+      responseType: 'text',
+    });
   }
 }

@@ -33,11 +33,14 @@ export class LoginComponent {
     this.loginError = false;
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: (res: any) => {
+      next: (res) => {
         this.authService.saveSession(res);
+
         this.loading = false;
+
         this.router.navigate(['/app/dashboard']);
       },
+
       error: () => {
         this.loading = false;
         this.loginError = true;

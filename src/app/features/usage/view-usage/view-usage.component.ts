@@ -1,9 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { UsageService } from 'src/app/core/services/usage.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
@@ -14,39 +17,46 @@ import { saveAs } from 'file-saver';
   styleUrls: ['./view-usage.component.scss'],
 })
 export class ViewUsageComponent {
-  pageTitle = 'Usage';
-
-  displayedColumns = [
-    'item',
-    'quantity',
-    'department',
-    'usedFor',
-    'takenBy',
-    'givenBy',
-    'time',
-    'actions',
-  ];
-  // dropdown options
-  departments: string[] = ['Kitchen', 'Restaurant', 'Tiffin', 'North'];
-
-  usedForOptions: string[] = ['Restaurant', 'Party Order'];
+  displayedColumns = this.authService.isManagerOrOwner()
+    ? [
+        'item',
+        'quantity',
+        'department',
+        'takenBy',
+        'givenBy',
+        'time',
+        'actions',
+      ]
+    : ['item', 'quantity', 'department', 'takenBy', 'givenBy', 'time'];
 
   dataSource = new MatTableDataSource<any>([]);
   filterForm!: FormGroup;
 
-  // EDIT STATE
+  departments = [
+    'Tiffin',
+    'North Indian',
+    'Chinese',
+    'Service',
+    'Meals',
+    'Cleaning',
+  ];
+
   editingId: number | null = null;
   backupRow: any = null;
 
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private usageService: UsageService,
     private fb: FormBuilder,
     private router: Router,
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
   ) {}
 
   // ================= INIT =================
+
   ngOnInit() {
     this.createForm();
     this.loadUsage();
@@ -54,9 +64,15 @@ export class ViewUsageComponent {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+  }
+
+  goBack() {
+    this.router.navigate(['/app/usage']);
   }
 
   // ================= FORM =================
+
   createForm() {
     this.filterForm = this.fb.group({
       fromDate: [''],
@@ -66,43 +82,54 @@ export class ViewUsageComponent {
   }
 
   // ================= LOAD =================
+
   loadUsage() {
     this.usageService.getUsage().subscribe((res) => {
       this.dataSource.data = res;
+
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+      }
     });
   }
 
   // ================= FILTER =================
+
   applyFilter() {
     const { fromDate, toDate, search } = this.filterForm.value;
 
     this.dataSource.filterPredicate = (data: any) => {
-      const usageDate = new Date(data.usageTime);
+      const usageDate = new Date(data.usedDateTime);
 
       const matchFrom = !fromDate || usageDate >= new Date(fromDate);
+
       const matchTo = !toDate || usageDate <= new Date(toDate);
 
       const matchSearch =
         !search ||
-        data.itemName?.toLowerCase().includes(search.toLowerCase()) ||
+        data.item?.name?.toLowerCase().includes(search.toLowerCase()) ||
         data.department?.toLowerCase().includes(search.toLowerCase());
 
       return matchFrom && matchTo && matchSearch;
     };
 
     this.dataSource.filter = Math.random().toString();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
-  // ================= EXPORT XLSX =================
+  // ================= EXPORT =================
+
   exportToExcel() {
     const exportData = this.dataSource.filteredData.map((r: any) => ({
-      Item: r.itemName,
+      Item: r.item?.name,
       Quantity: r.quantity,
       Department: r.department,
-      'Used For': r.usedFor,
-      'Taken By': r.takenBy,
-      'Given By': r.givenBy,
-      'Usage Time': new Date(r.usageTime).toLocaleString(),
+      TakenBy: r.takenBy,
+      GivenBy: r.givenBy,
+      DateTime: new Date(r.usedDateTime).toLocaleString(),
     }));
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
@@ -112,7 +139,7 @@ export class ViewUsageComponent {
       SheetNames: ['Usage'],
     };
 
-    const excelBuffer: any = XLSX.write(workbook, {
+    const excelBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array',
     });
@@ -121,15 +148,41 @@ export class ViewUsageComponent {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    saveAs(blob, `Usage_Report_${new Date().getTime()}.xlsx`);
+    saveAs(blob, `Usage_Report_${Date.now()}.xlsx`);
   }
 
   // ================= DELETE =================
+
   delete(row: any) {
-    console.log('delete', row);
+    const confirmDelete = confirm(
+      'Are you sure you want to delete this usage record?',
+    );
+
+    if (!confirmDelete) return;
+
+    this.usageService.deleteUsage(row.id).subscribe({
+      next: () => {
+        this.snackBar.open('Usage deleted successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+
+        this.loadUsage();
+      },
+
+      error: () => {
+        this.snackBar.open('Failed to delete usage', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
+    });
   }
 
   // ================= EDIT =================
+
   edit(row: any) {
     this.editingId = row.id;
     this.backupRow = { ...row };
@@ -142,17 +195,34 @@ export class ViewUsageComponent {
   }
 
   saveEdit(row: any) {
-    this.usageService.updateUsage(row.id, row).subscribe({
+    const payload = {
+      quantity: row.quantity,
+      department: row.department,
+      takenBy: row.takenBy,
+      givenBy: row.givenBy,
+    };
+
+    this.usageService.updateUsage(row.id, payload).subscribe({
       next: () => {
+        this.snackBar.open('Usage updated successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+
         this.editingId = null;
         this.backupRow = null;
-      },
-      error: () => alert('Update failed'),
-    });
-  }
 
-  // ================= BACK =================
-  goBack() {
-    this.router.navigate(['/app/usage']);
+        this.loadUsage();
+      },
+
+      error: () => {
+        this.snackBar.open('Failed to update usage', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
+    });
   }
 }

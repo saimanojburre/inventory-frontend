@@ -22,6 +22,10 @@ import { ViewItemsComponent } from './features/items/view-items/view-items.compo
 import { MetricsComponent } from './features/metrics/metrics.component';
 import { TotalUsageComponent } from './features/metrics/total-usage/total-usage.component';
 import { DeptUsageComponent } from './features/metrics/dept-usage/dept-usage.component';
+import { UserComponent } from './features/user/user.component';
+import { AddUserComponent } from './features/user/add-user/add-user.component';
+import { ViewUserComponent } from './features/user/view-user/view-user.component';
+import { LogsComponent } from './features/logs/logs.component';
 
 export const routes: Routes = [
   // Login
@@ -79,12 +83,25 @@ export const routes: Routes = [
         component: ViewUsageComponent,
       },
       {
+        path: 'user',
+        component: UserComponent,
+      },
+      {
+        path: 'user/add',
+        component: AddUserComponent,
+      },
+      {
+        path: 'user/view',
+        component: ViewUserComponent,
+      },
+      {
         path: 'items',
         component: ItemsComponent,
       },
       {
         path: 'items/add',
         component: AddItemsComponent,
+        data: { roles: ['OWNER'] },
       },
       {
         path: 'items/view',
@@ -93,6 +110,10 @@ export const routes: Routes = [
       {
         path: 'metrics',
         component: MetricsComponent,
+      },
+      {
+        path: 'logs',
+        component: LogsComponent,
       },
       {
         path: 'metrics/total-usage',

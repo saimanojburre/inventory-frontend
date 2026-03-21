@@ -21,7 +21,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableModule } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
@@ -43,7 +43,14 @@ import { ItemsComponent } from './features/items/items.component';
 import { TotalUsageComponent } from './features/metrics/total-usage/total-usage.component';
 import { DeptUsageComponent } from './features/metrics/dept-usage/dept-usage.component';
 import { MetricsComponent } from './features/metrics/metrics.component';
-
+import { PageHeaderComponent } from './shared/components/page-header/page-header.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import { AddUserComponent } from './features/user/add-user/add-user.component';
+import { ViewUserComponent } from './features/user/view-user/view-user.component';
+import { UserComponent } from './features/user/user.component';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { LogsComponent } from './features/logs/logs.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -68,6 +75,11 @@ import { MetricsComponent } from './features/metrics/metrics.component';
     TotalUsageComponent,
     DeptUsageComponent,
     MetricsComponent,
+    PageHeaderComponent,
+    AddUserComponent,
+    ViewUserComponent,
+    UserComponent,
+    LogsComponent,
   ],
   imports: [
     BrowserModule,
@@ -99,8 +111,16 @@ import { MetricsComponent } from './features/metrics/metrics.component';
     MatBadgeModule,
     MatDividerModule,
     MatButtonToggleModule,
+    MatSnackBarModule,
+    MatSlideToggleModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

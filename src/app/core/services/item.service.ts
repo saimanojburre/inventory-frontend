@@ -1,6 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment.prod';
+import { Observable } from 'rxjs';
+import { Item } from '../models/item.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,26 +21,45 @@ export class ItemService {
     });
   }
 
-  // ✅ Items dropdown
-  getItems() {
-    return this.http.get<any[]>(`${environment.apiBaseUrl}/items`, {
+  // ================= GET ALL ITEMS =================
+  getItems(): Observable<Item[]> {
+    return this.http.get<Item[]>(this.baseUrl, {
       headers: this.getHeaders(),
     });
   }
 
-  // ✅ Bulk Item save
-  bulkSave(data: any[]) {
+  // ================= GET ITEM BY ID =================
+  getItemById(id: number): Observable<Item> {
+    return this.http.get<Item>(`${this.baseUrl}/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // ================= CREATE ITEM =================
+  createItem(data: Item): Observable<Item> {
+    return this.http.post<Item>(this.baseUrl, data, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // ================= BULK SAVE =================
+  bulkSave(data: Item[]): Observable<any> {
     return this.http.post(`${this.baseUrl}/bulk`, data, {
       headers: this.getHeaders(),
     });
   }
 
-  fileSave(file: File) {
-    const formData = new FormData();
-    formData.append('file', file);
+  // ================= UPDATE ITEM =================
+  updateItem(id: number, data: Item): Observable<Item> {
+    return this.http.put<Item>(`${this.baseUrl}/${id}`, data, {
+      headers: this.getHeaders(),
+    });
+  }
 
-    return this.http.post(`${this.baseUrl}/upload/items`, formData, {
-      headers: this.getHeaders(), // ✅ NO content-type
+  // ================= DELETE ITEM =================
+  deleteItem(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`, {
+      headers: this.getHeaders(),
     });
   }
 }

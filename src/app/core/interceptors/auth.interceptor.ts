@@ -4,29 +4,42 @@ import {
   HttpHandler,
   HttpEvent,
   HttpInterceptor,
-  HttpInterceptorFn,
+  HttpErrorResponse,
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
+  constructor(private router: Router) {}
+
   intercept(
     req: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    throw new Error('Method not implemented.');
-  }
-  authInterceptor: HttpInterceptorFn = (req, next) => {
     const token = localStorage.getItem('token');
 
+    let authReq = req;
+
     if (token) {
-      req = req.clone({
+      authReq = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,
         },
       });
     }
 
-    return next(req);
-  };
+    return next.handle(authReq).pipe(
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          localStorage.removeItem('token');
+          alert('Session expired. Please login again.');
+          this.router.navigate(['/login']);
+        }
+
+        return throwError(() => error);
+      }),
+    );
+  }
 }

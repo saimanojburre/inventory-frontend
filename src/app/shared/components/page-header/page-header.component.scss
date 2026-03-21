@@ -1,0 +1,21 @@
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.title-section h1 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.title-section p {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}

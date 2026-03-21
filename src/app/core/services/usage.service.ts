@@ -9,11 +9,10 @@ import { environment } from 'src/environments/environment.prod';
 export class UsageService {
   private baseUrl = environment.apiBaseUrl;
 
-  // private API = 'http://localhost:8080';
-
   constructor(private http: HttpClient) {}
 
-  // ✅ Common Headers (single place)
+  // ================= AUTH HEADERS =================
+
   private getHeaders(): HttpHeaders {
     const token = localStorage.getItem('token') || '';
 
@@ -23,22 +22,23 @@ export class UsageService {
     });
   }
 
-  // ✅ BULK USAGE
+  // ================= CREATE SINGLE =================
+
+  createUsage(data: any) {
+    return this.http.post(`${this.baseUrl}/usage`, data, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // ================= CREATE BULK =================
+
   bulkUsage(data: any[]) {
     return this.http.post(`${this.baseUrl}/usage/bulk`, data, {
       headers: this.getHeaders(),
     });
   }
-  updateUsage(id: number, data: any) {
-    return this.http.put(`${this.baseUrl}/usage/${id}`, data);
-  }
 
-  // ✅ AVAILABLE STOCK
-  getAvailableStock(itemId: number) {
-    return this.http.get<number>(`${this.baseUrl}/inventory/stock/${itemId}`, {
-      headers: this.getHeaders(),
-    });
-  }
+  // ================= GET ALL =================
 
   getUsage() {
     return this.http
@@ -49,9 +49,46 @@ export class UsageService {
         map((usages) =>
           usages.sort(
             (a, b) =>
-              new Date(b.usageTime).getTime() - new Date(a.usageTime).getTime(),
+              new Date(b.usedDateTime).getTime() -
+              new Date(a.usedDateTime).getTime(),
           ),
         ),
       );
+  }
+
+  // ================= GET BY ID =================
+
+  getUsageById(id: number) {
+    return this.http.get(`${this.baseUrl}/usage/${id}`, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // ================= UPDATE =================
+
+  updateUsage(id: number, data: any) {
+    return this.http.put(`${this.baseUrl}/usage/${id}`, data, {
+      headers: this.getHeaders(),
+    });
+  }
+
+  // ================= DELETE =================
+
+  deleteUsage(id: number) {
+    return this.http.delete(`${this.baseUrl}/usage/${id}`, {
+      headers: this.getHeaders(),
+      responseType: 'text',
+    });
+  }
+
+  getUsageReport(fromDate?: string, toDate?: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/usage/report`, {
+      params: {
+        fromDate: fromDate || '',
+        toDate: toDate || '',
+      },
+      headers: this.getHeaders(),
+      // responseType: 'text',
+    });
   }
 }

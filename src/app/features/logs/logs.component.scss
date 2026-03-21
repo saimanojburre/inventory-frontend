@@ -1,0 +1,19 @@
+.coming-soon {
+    text-align: center;
+    padding: 80px 20px;
+    color: #64748b;
+}
+
+.coming-card mat-icon {
+    font-size: 100px;
+    color: #6366f1; // Indigo (modern SaaS look)
+}
+.coming-soon h2 {
+    margin-bottom: 8px;
+}
+
+.coming-soon p {
+    max-width: 420px;
+    margin: 0 auto;
+    font-size: 14px;
+}

@@ -1,11 +1,7 @@
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  role: string;
-}
-
 export interface LoginResponse {
   token: string;
-  user: User;
+  name: string;
+  email: string;
+  role: string;
+  id: any;
 }

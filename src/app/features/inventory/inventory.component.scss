@@ -1,113 +1,189 @@
-/* ================= CONTAINER ================= */
+/* ================= PAGE HEADER ================= */
 
-.inventory-container {
-  background: #ffffff;
-  padding: 24px;
-  border-radius: 14px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-}
-
-/* ================= HEADER ================= */
-
-.header {
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+
+  margin-bottom: 20px;
+  gap: 20px;
+
+  .search-field {
+    width: 280px;
+  }
 }
 
-.page-title {
-  font-weight: 600;
+/* ================= INVENTORY SUMMARY ================= */
+
+.inventory-summary {
+  display: flex;
+  align-items: center;
 }
 
-.search-field {
-  width: 280px;
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  background: var(--card-bg);
+  padding: 16px 20px;
+
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+
+  box-shadow: var(--shadow-sm);
 }
 
-/* ================= TABLE WRAPPER ================= */
+.summary-icon {
+  width: 44px;
+  height: 44px;
 
-.table-wrapper {
   border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: white;
+
+  mat-icon {
+    font-size: 22px;
+  }
 }
 
-.premium-table {
-  max-height: 520px;
-  overflow: auto;
+.summary-info {
+
+  span {
+    font-size: 13px;
+    color: var(--text-light);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+  }
+
+}
+
+/* ================= LOADING ================= */
+
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+
+  mat-icon {
+    font-size: 48px;
+    margin-bottom: 10px;
+    color: #94a3b8;
+  }
+
+  h3 {
+    margin-bottom: 6px;
+  }
+}
+
+/* ================= TABLE CONTAINER ================= */
+
+.inventory-container {
+  background: var(--card-bg);
+  padding: 24px;
+
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+
+  box-shadow: var(--shadow-md);
+
+  .table-wrapper {
+    max-height: 520px;
+    overflow: auto;
+  }
+
+  table {
+    width: 100%;
+  }
 }
 
 /* ================= TABLE ================= */
 
-.inventory-table {
-  width: 100%;
-  table-layout: fixed;
+.mat-mdc-header-row {
+  background: var(--surface);
 }
 
-/* ===== STICKY HEADER ===== */
-
-th.mat-mdc-header-cell {
+.mat-mdc-header-cell {
   position: sticky;
   top: 0;
   z-index: 5;
-  background: #f8fafc;
+
+  background: var(--surface);
+
   font-weight: 600;
-  border-bottom: 1px solid #eaeaea;
+  color: var(--text-medium);
+
+  padding: 14px 16px;
 }
-
-/* ================= COLUMN WIDTH ================= */
-
-.col-category {
-  width: 18%;
-}
-
-.col-item {
-  width: 28%;
-}
-
-.col-small {
-  width: 10%;
-}
-
-.col-medium {
-  width: 17%;
-}
-
-/* ================= ROW STYLE ================= */
 
 td.mat-mdc-cell {
-  padding: 10px 12px;
+  padding: 12px 16px;
 }
 
-.mat-mdc-row:hover {
-  background: #f6f9ff;
-  transition: 0.2s;
+/* ================= ROW HOVER ================= */
+
+.mat-mdc-row {
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #f1f5f9;
+  }
 }
 
 /* ================= CURRENCY ================= */
 
-.currency {
-  text-align: right;
-}
+// .currency {
+//   text-align: center;
+// }
+
+/* ================= TOTAL ================= */
 
 .total-cell {
   font-weight: 600;
-  color: #2e7d32;
+  color: var(--success);
 }
 
-/* ================= LOW STOCK ALERT ⭐ ================= */
+/* ================= LOW STOCK ================= */
 
 .low-stock {
-  color: #d32f2f;
+  color: var(--danger);
   font-weight: 600;
 }
 
-/* ================= SCROLLBAR ================= */
+/* ================= PAGINATOR ================= */
 
-.premium-table::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+mat-paginator {
+  margin-top: 18px;
 }
 
-.premium-table::-webkit-scrollbar-thumb {
-  background: #d6d6d6;
-  border-radius: 6px;
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+
+    .search-field {
+      width: 100%;
+    }
+  }
+
 }

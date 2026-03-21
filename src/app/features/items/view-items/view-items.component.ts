@@ -5,9 +5,11 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { PurchaseService } from 'src/app/core/services/purchase.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { ItemService } from 'src/app/core/services/item.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Item } from 'src/app/core/models/item.model';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-view-items',
@@ -15,11 +17,11 @@ import { ItemService } from 'src/app/core/services/item.service';
   styleUrls: ['./view-items.component.scss'],
 })
 export class ViewItemsComponent {
-  pageTitle = 'Items';
+  displayedColumns = this.authService.isManagerOrOwner()
+    ? ['name', 'category', 'unit', 'minStock', 'active', 'actions']
+    : ['name', 'category', 'unit', 'minStock', 'active'];
 
-  displayedColumns = ['itemName', 'category', 'unit', 'actions'];
-
-  dataSource = new MatTableDataSource<any>([]);
+  dataSource = new MatTableDataSource<Item>([]);
   filterForm!: FormGroup;
 
   @ViewChild(MatSort) sort!: MatSort;
@@ -29,9 +31,10 @@ export class ViewItemsComponent {
     private itemService: ItemService,
     private fb: FormBuilder,
     private router: Router,
+    private snackBar: MatSnackBar,
+    private authService: AuthService,
   ) {}
 
-  // ================= INIT =================
   ngOnInit() {
     this.createForm();
     this.loadItems();
@@ -42,54 +45,48 @@ export class ViewItemsComponent {
     this.dataSource.paginator = this.paginator;
   }
 
-  // ================= FORM =================
   createForm() {
     this.filterForm = this.fb.group({
       search: [''],
     });
   }
 
-  // ================= LOAD =================
   loadItems() {
-    this.itemService.getItems().subscribe((res: any[]) => {
+    this.itemService.getItems().subscribe((res: Item[]) => {
       this.dataSource.data = res;
     });
   }
 
-  // ================= FILTER =================
   applyFilter() {
     const search = this.filterForm.value.search?.toLowerCase();
 
-    this.dataSource.filterPredicate = (data: any) =>
+    this.dataSource.filterPredicate = (data: Item) =>
       !search ||
-      data.itemName?.toLowerCase().includes(search) ||
+      data.name?.toLowerCase().includes(search) ||
       data.category?.toLowerCase().includes(search) ||
       data.unit?.toLowerCase().includes(search);
 
     this.dataSource.filter = Math.random().toString();
 
-    // ✅ reset paginator
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
   }
 
-  // ================= EXPORT =================
   exportToExcel() {
-    const exportData = this.dataSource.filteredData.map((r: any) => ({
-      Item: r.itemName,
+    const exportData = this.dataSource.filteredData.map((r: Item) => ({
+      Product: r.name,
       Category: r.category,
       Unit: r.unit,
-      Quantity: r.quantity,
-      'Price Per Unit': r.pricePerUnit,
-      'Total Price': r.totalPrice,
+      'Min Stock': r.minStock,
+      Status: r.active ? 'Active' : 'Inactive',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(exportData);
 
     const workbook = {
-      Sheets: { Items: worksheet },
-      SheetNames: ['Items'],
+      Sheets: { Products: worksheet },
+      SheetNames: ['Products'],
     };
 
     const excelBuffer = XLSX.write(workbook, {
@@ -101,16 +98,46 @@ export class ViewItemsComponent {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
 
-    saveAs(blob, `Items_Report_${new Date().getTime()}.xlsx`);
+    saveAs(blob, `Products_${new Date().getTime()}.xlsx`);
   }
 
-  // ================= ACTIONS =================
-  edit(row: any) {
-    console.log('Edit item:', row);
+  edit(row: Item) {
+    console.log('Edit product:', row);
   }
 
-  delete(row: any) {
-    console.log('Delete item:', row);
+  delete(row: Item) {
+    const confirmed = confirm(`Delete product "${row.name}" ?`);
+
+    if (!confirmed) return;
+
+    this.itemService.deleteItem(row.id!).subscribe({
+      next: (res: any) => {
+        this.snackBar.open(
+          res?.message || 'Item deleted successfully',
+          'Close',
+          {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'right',
+          },
+        );
+
+        // remove row instantly instead of reload
+        this.dataSource.data = this.dataSource.data.filter(
+          (item) => item.id !== row.id,
+        );
+      },
+
+      error: (err) => {
+        console.error('Delete error:', err);
+
+        this.snackBar.open('Failed to delete item', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
+    });
   }
 
   goBack() {

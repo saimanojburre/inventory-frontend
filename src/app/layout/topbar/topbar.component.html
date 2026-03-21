@@ -2,11 +2,16 @@
   <!-- LEFT -->
   <div class="left">
     <button class="menu-btn" (click)="menuClick()">☰</button>
-    <span class="title">The Airawat Kitchen</span>
+    <span routerLink="/app/dashboard" class="title">The Airawat Kitchen</span>
   </div>
 
   <!-- RIGHT -->
   <div class="right">
+    <button mat-icon-button (click)="toggleTheme()">
+      <mat-icon>
+        {{ isDark ? "light_mode" : "dark_mode" }}
+      </mat-icon>
+    </button>
     <!-- NOTIFICATIONS -->
     <div class="notification" (click)="openNotifications()">
       🔔
@@ -33,7 +38,7 @@
       <div class="dropdown" *ngIf="showProfileMenu">
         <div class="dropdown-item" (click)="goProfile($event)">Profile</div>
 
-        <div class="dropdown-item" (click)="goSettings($event)">Settings</div>
+        <!-- <div class="dropdown-item" (click)="goSettings($event)">Settings</div> -->
 
         <div class="dropdown-item logout" (click)="logout($event)">Logout</div>
       </div>

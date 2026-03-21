@@ -1,7 +1,9 @@
+<app-page-header title="Add Products" subtitle="Create inventory products">
+</app-page-header>
+
 <div class="page-header">
   <button mat-button (click)="goBack()">← Back</button>
 
-  <!-- ✅ XLSX UPLOAD -->
   <button mat-raised-button color="primary" (click)="fileInput.click()">
     <mat-icon>upload</mat-icon>
     Upload XLSX
@@ -17,8 +19,6 @@
 </div>
 
 <div class="purchase-container">
-  <h2 class="page-title">Add Items</h2>
-
   <form [formGroup]="itemForm">
     <div class="table-wrapper premium-table">
       <table
@@ -26,13 +26,21 @@
         [dataSource]="itemsFormArray.controls"
         class="purchase-table"
       >
-        <!-- ITEM NAME -->
-        <ng-container matColumnDef="itemName">
-          <th mat-header-cell *matHeaderCellDef class="col-item">Item</th>
+        <!-- PRODUCT NAME -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef class="col-item">Product</th>
 
           <td mat-cell *matCellDef="let row">
             <mat-form-field appearance="outline">
-              <input matInput [formControl]="row.get('itemName')" />
+              <input
+                matInput
+                placeholder="Enter product name"
+                [formControl]="row.get('name')"
+              />
+
+              <mat-error *ngIf="row.get('name')?.hasError('required')">
+                Product name is required
+              </mat-error>
             </mat-form-field>
           </td>
         </ng-container>
@@ -43,7 +51,18 @@
 
           <td mat-cell *matCellDef="let row">
             <mat-form-field appearance="outline">
-              <input matInput [formControl]="row.get('category')" />
+              <mat-select
+                placeholder="Select Category"
+                [formControl]="row.get('category')"
+              >
+                <mat-option *ngFor="let c of categories" [value]="c">
+                  {{ c }}
+                </mat-option>
+              </mat-select>
+
+              <mat-error *ngIf="row.get('category')?.hasError('required')">
+                Category is required
+              </mat-error>
             </mat-form-field>
           </td>
         </ng-container>
@@ -54,7 +73,38 @@
 
           <td mat-cell *matCellDef="let row">
             <mat-form-field appearance="outline">
-              <input matInput [formControl]="row.get('unit')" />
+              <mat-select
+                placeholder="Select Unit"
+                [formControl]="row.get('unit')"
+              >
+                <mat-option *ngFor="let u of units" [value]="u">
+                  {{ u }}
+                </mat-option>
+              </mat-select>
+
+              <mat-error *ngIf="row.get('unit')?.hasError('required')">
+                Unit is required
+              </mat-error>
+            </mat-form-field>
+          </td>
+        </ng-container>
+
+        <!-- MIN STOCK -->
+        <ng-container matColumnDef="minStock">
+          <th mat-header-cell *matHeaderCellDef class="col-small">Min Stock</th>
+
+          <td mat-cell *matCellDef="let row">
+            <mat-form-field appearance="outline">
+              <input
+                type="number"
+                matInput
+                placeholder="Minimum stock level"
+                [formControl]="row.get('minStock')"
+              />
+
+              <mat-error *ngIf="row.get('minStock')?.hasError('required')">
+                Minimum stock is required
+              </mat-error>
             </mat-form-field>
           </td>
         </ng-container>
@@ -68,43 +118,16 @@
               <input
                 type="number"
                 matInput
+                placeholder="Initial quantity"
                 [formControl]="row.get('quantity')"
               />
             </mat-form-field>
           </td>
         </ng-container>
 
-        <!-- PRICE -->
-        <ng-container matColumnDef="pricePerUnit">
-          <th mat-header-cell *matHeaderCellDef class="col-small">Price</th>
-
-          <td mat-cell *matCellDef="let row">
-            <mat-form-field appearance="outline">
-              <input
-                type="number"
-                matInput
-                [formControl]="row.get('pricePerUnit')"
-              />
-            </mat-form-field>
-          </td>
-        </ng-container>
-
-        <!-- TOTAL -->
-        <ng-container matColumnDef="total">
-          <th mat-header-cell *matHeaderCellDef class="col-total">Total</th>
-
-          <td mat-cell *matCellDef="let row" class="total-cell">
-            ₹
-            {{
-              (row.get("quantity")?.value || 0) *
-                (row.get("pricePerUnit")?.value || 0)
-            }}
-          </td>
-        </ng-container>
-
         <!-- ACTIONS -->
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef></th>
+          <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
 
           <td mat-cell *matCellDef="let row; let i = index">
             <button mat-icon-button color="primary" (click)="addRow()">
@@ -123,6 +146,7 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
     </div>
@@ -130,7 +154,7 @@
 
   <div class="save-section">
     <button mat-raised-button color="primary" (click)="saveItems()">
-      Save Items
+      Save Products
     </button>
   </div>
 </div>

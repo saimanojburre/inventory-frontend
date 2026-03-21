@@ -1,33 +1,183 @@
-.purchase-home {
-    padding: 10px;
-}
+/* ================= FILTER BAR ================= */
 
-.card-grid {
-    margin-top: 20px;
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
 
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
-}
-
-.action-card {
-    cursor: pointer;
-    padding: 30px;
-    text-align: center;
-
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    padding: 16px 18px;
     border-radius: 12px;
-    transition: 0.25s ease;
+    border: 1px solid #e2e8f0;
+
+    margin-bottom: 18px;
 }
 
-.action-card:hover {
-    transform: translateY(-6px);
+.filter-row mat-form-field {
+    width: 200px;
 }
 
-.icon {
-    font-size: 42px;
-    margin-bottom: 10px;
+.filter-row button {
+    height: 52px;
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0 18px;
+
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
 }
 
-.action-card p {
-    color: var(--text-light);
+/* ================= CONTAINER ================= */
+
+.report-view {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+
+    border: 1px solid #e2e8f0;
+
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.04),
+        0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+/* ================= TABLE ================= */
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.report-table {
+    width: 100%;
+    min-width: 1100px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* ================= HEADER ================= */
+
+.mat-mdc-header-row {
+    background: #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.mat-mdc-header-cell {
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+
+    color: #1e293b;
+    padding: 14px 12px;
+
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* ================= CELLS ================= */
+
+td.mat-mdc-cell {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #334155;
+}
+
+/* ================= ALIGNMENT ================= */
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: center;
+}
+
+/* ================= ROW HOVER ================= */
+
+.mat-mdc-row {
+    transition: all 0.2s ease;
+}
+
+.mat-mdc-row:hover {
+    background: #f8fafc;
+    transform: scale(1.002);
+}
+
+/* ================= TOTAL COLUMN ================= */
+
+.total-header {
+    color: #2563eb;
+    font-weight: 700;
+}
+
+.total-cell {
+    font-weight: 700;
+    color: #1e40af;
+}
+
+/* ================= TOTAL ROW ================= */
+
+.total-row {
+    background: #dbeafe;
+    font-weight: bold;
+
+    border-top: 2px solid #3b82f6;
+}
+
+/* ================= EMPTY ================= */
+
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #64748b;
+}
+
+.empty-state mat-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    color: #cbd5f5;
+}
+
+/* ================= LOADING ================= */
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+/* ================= TITLE ================= */
+
+.report-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    color: #1e293b;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+    .filter-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-row mat-form-field {
+        width: 100%;
+    }
+
+    .filter-row button {
+        width: 100%;
+    }
+
+    .report-view {
+        padding: 14px;
+    }
+
+    .report-table {
+        min-width: 900px;
+    }
 }

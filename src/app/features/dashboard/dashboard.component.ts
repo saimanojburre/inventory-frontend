@@ -15,7 +15,6 @@ import { Router } from '@angular/router';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   stats = {
-    totalItems: 0,
     inventoryValue: 0,
     purchases: 0,
     usage: 0,
@@ -25,7 +24,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
   departmentChart!: Chart;
   categoryChart!: Chart;
   weeklyChart!: Chart;
+
   greetingMessage = '';
+  loading = true;
 
   constructor(
     private inventoryService: InventoryService,
@@ -46,103 +47,94 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.weeklyChart?.destroy();
   }
 
+  /* ================= LOAD DASHBOARD ================= */
+
   loadDashboard() {
-    this.inventoryService.getInventory().subscribe((items) => {
-      this.stats.totalItems = items.length;
-      this.stats.lowStock = items.filter((i) => i.quantity < 10).length;
-    });
+    this.loading = true;
 
     forkJoin({
       items: this.inventoryService.getInventory(),
       purchases: this.purchaseService.getAll(),
       usage: this.usageService.getUsage(),
-    }).subscribe(({ items, purchases, usage }) => {
-      this.stats.purchases = purchases.length;
-      this.stats.usage = usage.length;
-      const itemMap: any = {};
-      /* ===== INVENTORY VALUE ===== */
-      this.stats.inventoryValue = items.reduce(
-        (sum: number, i: any) => sum + (Number(i.totalPrice) || 0),
-        0,
-      );
+    }).subscribe({
+      next: ({ items, purchases, usage }) => {
+        this.stats.purchases = purchases.length;
+        this.stats.usage = usage.length;
 
-      items.forEach((i: any) => {
-        itemMap[i.itemId] = {
-          price: Number(i.avgPricePerUnit) || 0,
-          category: i.category || 'Others',
-        };
-      });
+        this.stats.lowStock = items.filter(
+          (i: any) => i.quantity < i.minStock,
+        ).length;
 
-      // console.log('ITEM MAP:', itemMap);
-      this.createDepartmentChart(usage, itemMap);
-      this.createCategoryChart(usage, itemMap);
-      this.createWeeklyTrend(usage, itemMap);
+        this.stats.inventoryValue = items.reduce(
+          (sum: number, i: any) => sum + (Number(i.total) || 0),
+          0,
+        );
+
+        const itemMap: any = {};
+
+        items.forEach((i: any) => {
+          if (!i.itemId) return;
+          itemMap[i.itemId] = {
+            price: Number(i.cost) || 0,
+            category: i.category || 'Others',
+          };
+        });
+
+        // ✅ FIX: Delay chart rendering
+        setTimeout(() => {
+          this.createDepartmentChart(usage, itemMap);
+          this.createCategoryChart(usage, itemMap);
+          this.createWeeklyTrend(usage, itemMap);
+        });
+
+        this.loading = false;
+      },
+
+      error: (err) => {
+        console.error(err);
+        this.loading = false;
+      },
     });
   }
+
   setGreeting() {
     const hour = new Date().getHours();
-
-    let greeting = '';
-
-    if (hour < 12) {
-      greeting = 'Good Morning';
-    } else if (hour < 17) {
-      greeting = 'Good Afternoon';
-    } else {
-      greeting = 'Good Evening';
-    }
-
-    // you can later fetch username from login user
+    let greeting =
+      hour < 12
+        ? 'Good Morning'
+        : hour < 17
+          ? 'Good Afternoon'
+          : 'Good Evening';
 
     this.greetingMessage = `${greeting}, ${this.authService.getUsername()} 👋`;
   }
+
   goToAddPurchase() {
     this.router.navigate(['/app/purchase/add']);
   }
+
   goToAddUsage() {
     this.router.navigate(['/app/usage/add']);
   }
 
-  /* ================= CHARTS ================= */
-
   private chartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          font: {
-            size: 12,
-            weight: '500',
-          },
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: { display: false },
-      },
-      y: {
-        grid: {
-          color: 'rgba(148,163,184,0.2)',
-        },
-      },
-    },
   };
 
+  /* ================= CHARTS ================= */
+
   createDepartmentChart(usage: any[], itemMap: any) {
-    const departmentMap: any = {};
+    const map: any = {};
 
     usage.forEach((u: any) => {
-      const item = itemMap[u.itemId];
+      if (!u.item || !u.item.id) return;
 
+      const item = itemMap[u.item.id];
       if (!item) return;
 
-      const qty = Number(u.quantity) || 0;
-      const total = qty * item.price;
-
-      departmentMap[u.department] = (departmentMap[u.department] || 0) + total;
+      const total = (Number(u.quantity) || 0) * item.price;
+      map[u.department] = (map[u.department] || 0) + total;
     });
 
     this.departmentChart?.destroy();
@@ -150,60 +142,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.departmentChart = new Chart('departmentChart', {
       type: 'doughnut',
       data: {
-        labels: Object.keys(departmentMap),
-        datasets: [
-          {
-            data: Object.values(departmentMap),
-            borderWidth: 0,
-          },
-        ],
+        labels: Object.keys(map),
+        datasets: [{ data: Object.values(map) }],
       },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom',
-            labels: {
-              generateLabels: (chart: any) => {
-                const data = chart.data;
-                return data.labels.map((label: any, i: number) => {
-                  const value = data.datasets[0].data[i];
-
-                  return {
-                    text: `${label} (₹${value.toLocaleString('en-IN')})`,
-                    fillStyle: chart.data.datasets[0].backgroundColor?.[i],
-                    index: i,
-                  };
-                });
-              },
-            },
-          },
-          tooltip: {
-            callbacks: {
-              label: function (context: any) {
-                const value = context.raw || 0;
-                return ` ₹ ${value.toLocaleString('en-IN')}`;
-              },
-            },
-          },
-        },
-      },
+      options: this.chartOptions,
     });
   }
 
   createCategoryChart(usage: any[], itemMap: any) {
-    const categoryMap: any = {};
+    const map: any = {};
 
     usage.forEach((u: any) => {
-      const item = itemMap[u.itemId];
+      if (!u.item || !u.item.id) return;
+
+      const item = itemMap[u.item.id];
       if (!item) return;
 
-      const qty = Number(u.quantity) || 0;
-      const total = qty * item.price;
-
+      const total = (Number(u.quantity) || 0) * item.price;
       const category = item.category || 'Others';
 
-      categoryMap[category] = (categoryMap[category] || 0) + total;
+      map[category] = (map[category] || 0) + total;
     });
 
     this.categoryChart?.destroy();
@@ -211,36 +169,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.categoryChart = new Chart('categoryChart', {
       type: 'bar',
       data: {
-        labels: Object.keys(categoryMap),
-        datasets: [
-          {
-            label: 'Category Cost (₹)',
-            data: Object.values(categoryMap),
-            borderRadius: 8,
-          },
-        ],
+        labels: Object.keys(map),
+        datasets: [{ data: Object.values(map) }],
       },
       options: this.chartOptions,
     });
   }
 
   createWeeklyTrend(usage: any[], itemMap: any) {
-    const weekly: any = {
-      'Week 1': 0,
-      'Week 2': 0,
-      'Week 3': 0,
-      'Week 4': 0,
-    };
+    const weekly: any = { 'Week 1': 0, 'Week 2': 0, 'Week 3': 0, 'Week 4': 0 };
 
     usage.forEach((u: any) => {
-      const item = itemMap[u.itemId];
+      if (!u.item || !u.item.id) return;
+
+      const item = itemMap[u.item.id];
       if (!item) return;
 
-      const qty = Number(u.quantity) || 0;
-      const total = qty * item.price;
-
-      const day = new Date(u.usageTime).getDate();
-      const week = Math.ceil(day / 7);
+      const total = (Number(u.quantity) || 0) * item.price;
+      const week = Math.ceil(new Date(u.usedDateTime).getDate() / 7);
 
       weekly[`Week ${week}`] += total;
     });
@@ -251,14 +197,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       type: 'line',
       data: {
         labels: Object.keys(weekly),
-        datasets: [
-          {
-            label: 'Weekly Cost (₹)',
-            data: Object.values(weekly),
-            tension: 0.4,
-            fill: true,
-          },
-        ],
+        datasets: [{ data: Object.values(weekly) }],
       },
       options: this.chartOptions,
     });

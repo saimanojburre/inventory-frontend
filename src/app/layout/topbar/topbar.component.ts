@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { ThemeService } from 'src/app/core/services/theme.service';
 
 @Component({
   selector: 'app-topbar',
@@ -13,13 +14,18 @@ export class TopbarComponent {
   showProfileMenu = false;
   notificationCount = 3; // demo
   username: any;
+  isDark = false;
 
   constructor(
     private router: Router,
     private authService: AuthService,
+    private themeService: ThemeService,
   ) {}
   ngOnInit() {
     this.username = this.authService.getUsername();
+    const savedTheme = localStorage.getItem('theme');
+
+    this.isDark = savedTheme === 'dark';
   }
 
   menuClick() {
@@ -28,6 +34,11 @@ export class TopbarComponent {
 
   toggleProfileMenu() {
     this.showProfileMenu = !this.showProfileMenu;
+  }
+  toggleTheme() {
+    this.themeService.toggleTheme();
+
+    this.isDark = !this.isDark;
   }
 
   openNotifications() {

@@ -1,4 +1,4 @@
-import { Component, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { InventoryService } from '../../core/services/inventory.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -8,7 +8,7 @@ import { MatPaginator } from '@angular/material/paginator';
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.scss'],
 })
-export class InventoryComponent implements AfterViewInit {
+export class InventoryComponent {
   displayedColumns: string[] = [
     'category',
     'itemName',
@@ -19,50 +19,48 @@ export class InventoryComponent implements AfterViewInit {
   ];
 
   dataSource = new MatTableDataSource<any>([]);
+  loading = true;
+  totalInventoryValue = 0;
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  // 🔥 FIX: setter instead of normal ViewChild
+  @ViewChild(MatPaginator)
+  set matPaginator(mp: MatPaginator) {
+    if (mp) {
+      this.dataSource.paginator = mp;
+    }
+  }
 
   constructor(private inventoryService: InventoryService) {}
 
   // ================= INIT =================
-  ngAfterViewInit() {
+  ngOnInit() {
     this.loadInventory();
   }
 
-  // ================= LOAD + SORT =================
+  // ================= LOAD =================
   loadInventory() {
+    this.loading = true;
+
     this.inventoryService.getInventory().subscribe((res: any[]) => {
-      // ✅ MULTI LEVEL SORT
       const sortedData = res.sort((a, b) => {
-        const categoryA = (a.category || '').toLowerCase();
-        const categoryB = (b.category || '').toLowerCase();
+        const categoryCompare = (a.category || '').localeCompare(
+          b.category || '',
+        );
 
-        const categoryCompare = categoryA.localeCompare(categoryB);
+        if (categoryCompare !== 0) return categoryCompare;
 
-        // sort by category first
-        if (categoryCompare !== 0) {
-          return categoryCompare;
-        }
-
-        // then sort by item name
-        const itemA = (a.itemName || '').toLowerCase();
-        const itemB = (b.itemName || '').toLowerCase();
-
-        return itemA.localeCompare(itemB);
+        return (a.itemName || '').localeCompare(b.itemName || '');
       });
 
       this.dataSource.data = sortedData;
-      this.dataSource.paginator = this.paginator;
 
-      // ✅ SEARCH FILTER (item + category)
-      this.dataSource.filterPredicate = (data: any, filter: string) => {
-        const search = filter.trim().toLowerCase();
+      // 🔥 total calculation
+      this.totalInventoryValue = sortedData.reduce(
+        (sum, item) => sum + (item.total || 0),
+        0,
+      );
 
-        return (
-          data.itemName?.toLowerCase().includes(search) ||
-          data.category?.toLowerCase().includes(search)
-        );
-      };
+      this.loading = false;
     });
   }
 
@@ -71,15 +69,11 @@ export class InventoryComponent implements AfterViewInit {
     const value = event.target.value.trim().toLowerCase();
     this.dataSource.filter = value;
 
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
+    this.dataSource.paginator?.firstPage();
   }
 
   // ================= DELETE (future) =================
   delete(id: number) {
-    // this.inventoryService.delete(id).subscribe(() => {
-    //   this.loadInventory();
-    // });
+    // future logic
   }
 }

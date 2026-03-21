@@ -1,82 +1,84 @@
-/* ================= SIDEBAR ================= */
-
 .sidebar {
-    width: 240px;
+    width: 250px;
     height: 100vh;
-
-    background: linear-gradient(180deg,
-            #0f172a,
-            #020617);
-
-    color: #e5e7eb;
-    padding: 22px 16px;
-    box-sizing: border-box;
-
+    background: linear-gradient(180deg, #0f172a, #020617);
+    color: white;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* ================= LOGO ================= */
+/* LOGO */
 
 .logo {
-    margin-bottom: 30px;
-    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 30px;
 }
 
-/* ================= NAV ================= */
+.logo mat-icon {
+    font-size: 24px;
+}
 
-nav {
+/* MENU */
+
+.menu {
     display: flex;
     flex-direction: column;
-    gap: 6px;
 }
 
-/* ================= LINKS ================= */
+/* MENU LINKS */
 
-nav a {
-    color: #cbd5e1;
+.menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 12px;
+    margin-bottom: 6px;
+
+    border-radius: 8px;
+
+    color: #cbd5f5;
     text-decoration: none;
-
-    padding: 12px 14px;
-    border-radius: 10px;
-
-    display: block;
-    font-size: 15px;
-    font-weight: 500;
 
     transition: all 0.2s ease;
 }
 
-/* Hover */
-nav a:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: white;
+/* ICON */
+
+.menu a mat-icon {
+    font-size: 20px;
+    opacity: 0.9;
+}
+
+/* HOVER */
+
+.menu a:hover {
+    background: #1e293b;
     transform: translateX(4px);
 }
 
-/* Active Route ⭐ */
-nav a.active {
-    background: var(--primary);
+/* ACTIVE */
+
+.menu a.active {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
-    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
 }
 
-/* ================= SCROLL (future safe) ================= */
+/* GROUP TITLES */
 
-.sidebar nav {
-    // overflow-y: auto;
-}
+.menu-group {
+    margin-top: 22px;
+    margin-bottom: 8px;
 
-/* ================= RESPONSIVE ================= */
+    font-size: 11px;
+    letter-spacing: 0.08em;
 
-@media (max-width: 900px) {
-    .sidebar {
-        width: 210px;
-    }
+    color: #94a3b8;
+    text-transform: uppercase;
 }

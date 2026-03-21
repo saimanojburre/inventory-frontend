@@ -41,7 +41,7 @@ body {
     /* ===== BORDER ===== */
     --border-light: #e5e7eb;
 
-    /* ===== SHADOW SYSTEM (VERY IMPORTANT) ===== */
+    /* ===== SHADOW SYSTEM ===== */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.12);
@@ -59,12 +59,35 @@ body {
     --space-xl: 32px;
 }
 
+/* ================= DARK THEME ================= */
+
+body.dark-theme {
+
+    /* BACKGROUND */
+    --app-bg: #0f172a;
+    --card-bg: #1e293b;
+    --surface: #1e293b;
+
+    /* TEXT */
+    --text-dark: #e5e7eb;
+    --text-medium: #cbd5f5;
+    --text-light: #94a3b8;
+
+    /* BORDER */
+    --border-light: #334155;
+
+    /* SHADOW (lighter for dark UI) */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.6);
+}
+
 /* ================= MATERIAL GLOBAL IMPROVEMENTS ================= */
 
-/* Cards look premium everywhere */
 .mat-mdc-card {
     border-radius: var(--radius-lg) !important;
     box-shadow: var(--shadow-md) !important;
+    background: var(--card-bg) !important;
 }
 
 /* Buttons smoother */
@@ -83,7 +106,22 @@ body {
     display: none;
 }
 
-/* ================= SCROLLBAR (PREMIUM TOUCH) ================= */
+/* ================= TABLES ================= */
+
+.mat-mdc-table {
+    background: var(--card-bg);
+}
+
+.mat-mdc-header-cell {
+    background: var(--surface);
+    color: var(--text-medium);
+}
+
+.mat-mdc-row:hover {
+    background: var(--surface);
+}
+
+/* ================= SCROLLBAR ================= */
 
 ::-webkit-scrollbar {
     width: 8px;
@@ -106,6 +144,7 @@ router-outlet+* {
 }
 
 @keyframes fadeIn {
+
     from {
         opacity: 0;
         transform: translateY(6px);
@@ -128,4 +167,14 @@ router-outlet+* {
 
 .text-muted {
     color: var(--text-light);
+}
+
+.error-snackbar {
+    background: #d32f2f;
+    color: white;
+}
+
+.success-snackbar {
+    background: #2e7d32;
+    color: white;
 }

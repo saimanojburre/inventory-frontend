@@ -1,31 +1,246 @@
-<div class="usage-home">
-  <h2>Usage Management</h2>
+<app-page-header
+  title="Usage History"
+  subtitle="Track and review stock usage"
+></app-page-header>
 
-  <div class="card-grid">
-    <!-- ADD USAGE -->
-    <mat-card class="action-card" routerLink="/app/usage/add">
-      <div class="icon">
-        <img
-          src="assets/minus-sign.png"
-          alt="add"
-          style="width: 20px; height: 20px"
-        />
-      </div>
-      <h3>Record Usage</h3>
-      <p>Record stock usage</p>
-    </mat-card>
+<!-- TOOLBAR -->
 
-    <!-- VIEW USAGE -->
-    <mat-card class="action-card" routerLink="/app/usage/view">
-      <div class="icon">
-        <img
-          src="assets/list.png"
-          alt="add"
-          style="width: 20px; height: 20px"
-        />
-      </div>
-      <h3>Usage History</h3>
-      <p>See usage history</p>
-    </mat-card>
+<div class="page-header" [formGroup]="filterForm">
+  <div class="left-actions">
+    <button
+      *ngIf="!loading && dataSource.data.length > 0"
+      mat-raised-button
+      color="primary"
+      routerLink="/app/usage/add"
+    >
+      <mat-icon>add</mat-icon>
+      Record Usage
+    </button>
   </div>
+
+  <div class="right-actions">
+    <!-- FROM DATE -->
+
+    <mat-form-field appearance="outline">
+      <mat-label>From Date</mat-label>
+
+      <input
+        matInput
+        [matDatepicker]="fromPicker"
+        formControlName="fromDate"
+        (dateChange)="applyFilter()"
+      />
+
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="fromPicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #fromPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- TO DATE -->
+
+    <mat-form-field appearance="outline">
+      <mat-label>To Date</mat-label>
+
+      <input
+        matInput
+        [matDatepicker]="toPicker"
+        formControlName="toDate"
+        (dateChange)="applyFilter()"
+      />
+
+      <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+      <mat-datepicker #toPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- SEARCH -->
+
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search</mat-label>
+
+      <input
+        matInput
+        formControlName="search"
+        placeholder="Item or Department"
+      />
+
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+
+    <!-- EXPORT -->
+
+    <button mat-raised-button color="accent" (click)="exportToExcel()">
+      <mat-icon>download</mat-icon>
+      Export
+    </button>
+  </div>
+</div>
+
+<!-- LOADING -->
+
+<div *ngIf="loading" class="loading">
+  <mat-spinner diameter="40"></mat-spinner>
+</div>
+
+<!-- EMPTY STATE -->
+
+<div *ngIf="!loading && dataSource.data.length === 0" class="empty-state">
+  <mat-icon>inventory</mat-icon>
+
+  <h3>No Usage Records</h3>
+
+  <p>Record usage to track how inventory is consumed.</p>
+
+  <button mat-raised-button color="primary" routerLink="/app/usage/add">
+    <mat-icon>add</mat-icon>
+    Record Usage
+  </button>
+</div>
+
+<!-- TABLE -->
+
+<div *ngIf="!loading && dataSource.data.length > 0" class="usage-view">
+  <div class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- ITEM -->
+
+      <ng-container matColumnDef="item">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
+        <td mat-cell *matCellDef="let r">{{ r.item?.name }}</td>
+      </ng-container>
+
+      <!-- QTY -->
+
+      <ng-container matColumnDef="quantity">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else qtyView">
+            <input
+              class="inline-input"
+              type="number"
+              [(ngModel)]="r.quantity"
+            />
+          </ng-container>
+
+          <ng-template #qtyView>
+            {{ r.quantity }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- DEPARTMENT -->
+
+      <ng-container matColumnDef="department">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else deptView">
+            <mat-select [(ngModel)]="r.department" class="inline-select">
+              <mat-option *ngFor="let d of departments" [value]="d">
+                {{ d }}
+              </mat-option>
+            </mat-select>
+          </ng-container>
+
+          <ng-template #deptView>
+            {{ r.department }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- TAKEN BY -->
+
+      <ng-container matColumnDef="takenBy">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Taken By</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else takenView">
+            <input class="inline-input" [(ngModel)]="r.takenBy" />
+          </ng-container>
+
+          <ng-template #takenView>
+            {{ r.takenBy }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- GIVEN BY -->
+
+      <ng-container matColumnDef="givenBy">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Given By</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else givenView">
+            <input class="inline-input" [(ngModel)]="r.givenBy" />
+          </ng-container>
+
+          <ng-template #givenView>
+            {{ r.givenBy }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- DATE -->
+
+      <ng-container matColumnDef="time">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+
+        <td mat-cell *matCellDef="let r">
+          <!-- EDIT MODE -->
+          <ng-container *ngIf="editingId === r.id; else timeView">
+            <input
+              type="datetime-local"
+              class="inline-input"
+              [(ngModel)]="r.usedDateTime"
+            />
+          </ng-container>
+
+          <!-- VIEW MODE -->
+          <ng-template #timeView>
+            {{ r.usedDateTime | date: "medium" }}
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <!-- ACTIONS -->
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+
+        <td mat-cell *matCellDef="let r">
+          <ng-container *ngIf="editingId === r.id; else normalActions">
+            <button mat-icon-button color="primary" (click)="saveEdit(r)">
+              <mat-icon>check</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="cancelEdit(r)">
+              <mat-icon>close</mat-icon>
+            </button>
+          </ng-container>
+
+          <ng-template #normalActions>
+            <button mat-icon-button color="primary" (click)="edit(r)">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button mat-icon-button color="warn" (click)="delete(r)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-template>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 20, 50]"
+    [pageSize]="10"
+    showFirstLastButtons
+  ></mat-paginator>
 </div>

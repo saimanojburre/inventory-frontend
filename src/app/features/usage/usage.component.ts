@@ -1,140 +1,232 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { MatTable } from '@angular/material/table';
-import { InventoryService } from '../../core/services/inventory.service';
-import { UsageService } from '../../core/services/usage.service';
+import { Component, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/services/auth.service';
+import { UsageService } from 'src/app/core/services/usage.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-usage',
   templateUrl: './usage.component.html',
   styleUrls: ['./usage.component.scss'],
 })
-export class UsageComponent implements OnInit {
-  usageForm!: FormGroup;
-  items: any[] = [];
+export class UsageComponent {
+  displayedColumns = this.authService.isManagerOrOwner()
+    ? [
+        'item',
+        'quantity',
+        'department',
+        'takenBy',
+        'givenBy',
+        'time',
+        'actions',
+      ]
+    : ['item', 'quantity', 'department', 'takenBy', 'givenBy', 'time'];
 
-  departments = ['Tiffin', 'North', 'South', 'Kitchen', 'Packing'];
-  usedForList = ['Restaurant', 'Party Order', 'Parcel Order'];
+  dataSource = new MatTableDataSource<any>([]);
+  filterForm!: FormGroup;
+  loading = true;
 
-  displayedColumns: string[] = [
-    'item',
-    'units',
-    'available',
-    'quantity',
-    'department',
-    'takenBy',
-    'givenBy',
-    'usedFor',
-    'actions',
+  departments = [
+    'Tiffin',
+    'North Indian',
+    'Chinese',
+    'Service',
+    'Meals',
+    'Cleaning',
   ];
 
-  @ViewChild(MatTable) table!: MatTable<any>;
+  editingId: number | null = null;
+  backupRow: any = null;
+
+  // 🔥 FIX: setter-based ViewChild
+  @ViewChild(MatPaginator)
+  set matPaginator(mp: MatPaginator) {
+    if (mp) {
+      this.dataSource.paginator = mp;
+    }
+  }
+
+  @ViewChild(MatSort)
+  set matSort(ms: MatSort) {
+    if (ms) {
+      this.dataSource.sort = ms;
+    }
+  }
 
   constructor(
-    private fb: FormBuilder,
-    private inventoryService: InventoryService,
     private usageService: UsageService,
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
   ) {}
 
   // ================= INIT =================
-  ngOnInit(): void {
-    this.usageForm = this.fb.group({
-      usages: this.fb.array([]),
-    });
 
-    this.addRow();
-    this.loadItems();
+  ngOnInit() {
+    this.createForm();
+    this.loadUsage();
   }
 
-  // ================= FORM ARRAY =================
-  get usages(): FormArray {
-    return this.usageForm.get('usages') as FormArray;
+  goBack() {
+    this.router.navigate(['/app/usage']);
   }
 
-  createRow(): FormGroup {
-    return this.fb.group({
-      item: [null],
-      units: [''],
-      available: [0],
-      quantity: [0],
-      department: [''],
-      takenBy: [''],
-      givenBy: [''],
-      usedFor: [''],
+  // ================= FORM =================
+
+  createForm() {
+    this.filterForm = this.fb.group({
+      fromDate: [''],
+      toDate: [''],
+      search: [''],
     });
   }
 
-  addRow() {
-    this.usages.push(this.createRow());
-    setTimeout(() => this.table.renderRows());
-  }
+  // ================= LOAD =================
 
-  removeRow(index: number) {
-    this.usages.removeAt(index);
-    setTimeout(() => this.table.renderRows());
-  }
+  loadUsage() {
+    this.loading = true;
 
-  // ================= LOAD INVENTORY =================
-  loadItems() {
-    this.inventoryService.getInventory().subscribe((res) => {
-      this.items = res;
+    this.usageService.getUsage().subscribe((res) => {
+      this.dataSource.data = res;
+      this.loading = false;
     });
   }
 
-  // ================= ITEM SELECT =================
-  onItemChange(item: any, index: number) {
-    if (!item) return;
+  // ================= FILTER =================
 
-    this.usages.at(index).patchValue({
-      units: item.units,
-      available: item.quantity, // ✅ show available stock
-    });
+  applyFilter() {
+    const { fromDate, toDate, search } = this.filterForm.value;
+
+    this.dataSource.filterPredicate = (data: any) => {
+      const usageDate = new Date(data.usedDateTime);
+
+      const matchFrom = !fromDate || usageDate >= new Date(fromDate);
+      const matchTo = !toDate || usageDate <= new Date(toDate);
+
+      const matchSearch =
+        !search ||
+        data.item?.name?.toLowerCase().includes(search.toLowerCase()) ||
+        data.department?.toLowerCase().includes(search.toLowerCase());
+
+      return matchFrom && matchTo && matchSearch;
+    };
+
+    this.dataSource.filter = Math.random().toString();
+
+    // 🔥 reset paginator after filter
+    this.dataSource.paginator?.firstPage();
   }
 
-  // ================= VALIDATION =================
-  isInvalidQuantity(row: any): boolean {
-    const qty = Number(row.get('quantity')?.value) || 0;
-    const available = Number(row.get('available')?.value) || 0;
+  // ================= EXPORT =================
 
-    return qty > available;
-  }
-
-  hasInvalidRows(): boolean {
-    return this.usages.controls.some((row) => this.isInvalidQuantity(row));
-  }
-
-  // ================= SAVE =================
-  saveUsage() {
-    const payload = this.usages.value.map((row: any) => ({
-      // backend will ignore id if null (for new records)
-      itemId: row.item?.itemId,
-
-      quantity: Number(row.quantity),
-
-      department: row.department,
-
-      usedFor: row.usedFor,
-
-      givenBy: row.givenBy,
-
-      takenBy: row.takenBy,
-
-      // system generated datetime
-      usageTime: this.getSystemDateTime(),
+  exportToExcel() {
+    const exportData = this.dataSource.filteredData.map((r: any) => ({
+      Item: r.item?.name,
+      Quantity: r.quantity,
+      Department: r.department,
+      TakenBy: r.takenBy,
+      GivenBy: r.givenBy,
+      DateTime: new Date(r.usedDateTime).toLocaleString(),
     }));
 
-    console.log('Sending Payload:', payload);
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
 
-    this.usageService.bulkUsage(payload).subscribe({
+    const workbook: XLSX.WorkBook = {
+      Sheets: { Usage: worksheet },
+      SheetNames: ['Usage'],
+    };
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    saveAs(blob, `Usage_Report_${Date.now()}.xlsx`);
+  }
+
+  // ================= DELETE =================
+
+  delete(row: any) {
+    const confirmDelete = confirm(
+      'Are you sure you want to delete this usage record?',
+    );
+
+    if (!confirmDelete) return;
+
+    this.usageService.deleteUsage(row.id).subscribe({
       next: () => {
-        alert('Usage Saved Successfully');
-        this.usages.clear();
-        this.addRow();
+        this.snackBar.open('Usage deleted successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+
+        this.loadUsage();
       },
-      error: (err) => console.error(err),
+      error: () => {
+        this.snackBar.open('Failed to delete usage', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
     });
   }
-  getSystemDateTime(): string {
-    return new Date().toISOString();
+
+  // ================= EDIT =================
+
+  edit(row: any) {
+    this.editingId = row.id;
+    this.backupRow = { ...row };
+  }
+
+  cancelEdit(row: any) {
+    Object.assign(row, this.backupRow);
+    this.editingId = null;
+    this.backupRow = null;
+  }
+
+  saveEdit(row: any) {
+    const payload = {
+      quantity: row.quantity,
+      department: row.department,
+      takenBy: row.takenBy,
+      givenBy: row.givenBy,
+      usedDateTime: row.usedDateTime,
+    };
+
+    this.usageService.updateUsage(row.id, payload).subscribe({
+      next: () => {
+        this.snackBar.open('Usage updated successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+
+        this.editingId = null;
+        this.backupRow = null;
+
+        this.loadUsage();
+      },
+      error: () => {
+        this.snackBar.open('Failed to update usage', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
+    });
   }
 }

@@ -1,68 +1,55 @@
 .profile-page {
-    padding: 24px;
+    padding: 30px;
     display: flex;
     justify-content: center;
 }
 
-.card {
-    background: white;
-    width: 700px;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-light);
+.profile-card {
+    width: 720px;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
-.header {
+.profile-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.avatar mat-icon {
+    font-size: 25px;
+    color: #5c6bc0;
+}
+
+.title {
+    flex: 1;
+    margin-left: 15px;
+}
+
+.title h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.title span {
+    font-size: 13px;
+    color: #777;
 }
 
 .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 18px;
+    gap: 20px;
 }
 
-.field {
-    display: flex;
-    flex-direction: column;
-}
-
-label {
-    font-size: 13px;
-    margin-bottom: 6px;
-    color: var(--text-medium);
-}
-
-input {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border-light);
+mat-form-field {
+    width: 100%;
 }
 
 .actions {
-    margin-top: 24px;
+    margin-top: 25px;
     display: flex;
     gap: 12px;
-}
-
-.edit-btn,
-.save-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.cancel-btn {
-    background: #eee;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
 }

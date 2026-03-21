@@ -1,10 +1,12 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { InventoryService } from 'src/app/core/services/inventory.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { PurchaseService } from 'src/app/core/services/purchase.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-view-purchase',
@@ -12,44 +14,41 @@ import { PurchaseService } from 'src/app/core/services/purchase.service';
   styleUrls: ['./view-purchase.component.scss'],
 })
 export class ViewPurchaseComponent {
-  displayedColumns = [
-    'item',
-    'quantity',
-    'price',
-    'total',
-    'supplier',
-    'date',
-    'actions',
-  ];
+  displayedColumns = this.authService.isManagerOrOwner()
+    ? ['item', 'quantity', 'price', 'total', 'supplier', 'date', 'actions']
+    : ['item', 'quantity', 'price', 'total', 'supplier', 'date'];
 
   dataSource = new MatTableDataSource<any>([]);
-  itemMap: any = {};
-
   filterForm!: FormGroup;
 
+  editingId: number | null = null;
+  backupRow: any = null;
+
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private purchaseService: PurchaseService,
-    private inventoryService: InventoryService,
     private fb: FormBuilder,
     private router: Router,
+    private authService: AuthService,
+    private snackBar: MatSnackBar,
   ) {}
 
   ngOnInit() {
     this.createForm();
-    this.loadItems();
+    this.loadPurchases();
   }
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
-  pageTitle = 'View Purchase';
 
   goBack() {
     this.router.navigate(['/app/purchase']);
   }
-  // ================= FORM =================
+
   createForm() {
     this.filterForm = this.fb.group({
       fromDate: [''],
@@ -58,25 +57,16 @@ export class ViewPurchaseComponent {
     });
   }
 
-  // ================= LOAD ITEMS =================
-  loadItems() {
-    this.inventoryService.getInventory().subscribe((items) => {
-      items.forEach((i: any) => {
-        this.itemMap[i.id] = i.itemName;
-      });
-
-      this.loadPurchases();
-    });
-  }
-
-  // ================= LOAD PURCHASES =================
   loadPurchases() {
     this.purchaseService.getAll().subscribe((res) => {
       this.dataSource.data = res;
+
+      if (this.paginator) {
+        this.dataSource.paginator = this.paginator;
+      }
     });
   }
 
-  // ================= FILTER =================
   applyFilter() {
     const { fromDate, toDate, search } = this.filterForm.value;
 
@@ -84,32 +74,95 @@ export class ViewPurchaseComponent {
       const purchaseDate = new Date(data.purchaseDate);
 
       const matchFrom = !fromDate || purchaseDate >= new Date(fromDate);
-
       const matchTo = !toDate || purchaseDate <= new Date(toDate);
 
       const matchSearch =
         !search ||
-        data.itemName.toLowerCase().includes(search.toLowerCase()) ||
-        data.purchasedFrom.toLowerCase().includes(search.toLowerCase());
+        data.item?.name?.toLowerCase().includes(search.toLowerCase()) ||
+        data.supplier?.toLowerCase().includes(search.toLowerCase());
 
       return matchFrom && matchTo && matchSearch;
     };
 
-    // trigger filter refresh
     this.dataSource.filter = Math.random().toString();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
   }
 
   // ================= DELETE =================
+
   delete(row: any) {
-    // if (!confirm('Delete this purchase?')) return;
-    // this.purchaseService.delete(row.id).subscribe(() => {
-    //   this.loadPurchases();
-    // });
+    if (!confirm('Are you sure you want to delete this purchase?')) return;
+
+    this.purchaseService.delete(row.id).subscribe({
+      next: () => {
+        this.snackBar.open('Purchase deleted successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+
+        this.loadPurchases();
+      },
+
+      error: () => {
+        this.snackBar.open('Failed to delete purchase', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
+    });
   }
 
   // ================= EDIT =================
+
   edit(row: any) {
-    console.log('Edit purchase', row);
-    // later open dialog
+    this.editingId = row.id;
+    this.backupRow = { ...row };
+  }
+
+  cancelEdit(row: any) {
+    Object.assign(row, this.backupRow);
+    this.editingId = null;
+    this.backupRow = null;
+  }
+
+  saveEdit(row: any) {
+    const payload = {
+      item: {
+        id: row.item?.id,
+      },
+      quantity: row.quantity,
+      price: row.price,
+      supplier: row.supplier,
+      purchaseDate: row.purchaseDate,
+      createdAt: row.createdAt,
+    };
+
+    this.purchaseService.update(row.id, payload).subscribe({
+      next: () => {
+        this.snackBar.open('Purchase updated successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+
+        this.editingId = null;
+        this.backupRow = null;
+
+        this.loadPurchases();
+      },
+
+      error: () => {
+        this.snackBar.open('Failed to update purchase', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
+    });
   }
 }

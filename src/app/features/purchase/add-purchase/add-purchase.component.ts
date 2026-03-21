@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { InventoryService } from 'src/app/core/services/inventory.service';
@@ -10,7 +11,7 @@ import { PurchaseService } from 'src/app/core/services/purchase.service';
   templateUrl: './add-purchase.component.html',
   styleUrls: ['./add-purchase.component.scss'],
 })
-export class AddPurchaseComponent {
+export class AddPurchaseComponent implements OnInit {
   purchaseForm!: FormGroup;
   items: any[] = [];
 
@@ -32,9 +33,9 @@ export class AddPurchaseComponent {
     private purchaseService: PurchaseService,
     private inventoryService: InventoryService,
     private router: Router,
+    private snackBar: MatSnackBar,
   ) {}
 
-  // ================= INIT =================
   ngOnInit(): void {
     this.purchaseForm = this.fb.group({
       purchases: this.fb.array([]),
@@ -43,51 +44,51 @@ export class AddPurchaseComponent {
     this.addRow();
     this.loadItems();
   }
-  pageTitle = 'Add Purchase';
 
   goBack() {
     this.router.navigate(['/app/purchase']);
   }
 
-  // ================= FORM ARRAY =================
   get purchases(): FormArray {
     return this.purchaseForm.get('purchases') as FormArray;
   }
 
   createRow(): FormGroup {
     return this.fb.group({
-      item: [''],
-      units: [''],
-      quantity: [0],
-      price: [0],
-      supplier: [''],
-      date: [new Date()],
+      item: [null, Validators.required],
+      units: [{ value: '', disabled: true }],
+      quantity: [null, [Validators.required, Validators.min(1)]],
+      price: [null, [Validators.required, Validators.min(1)]],
+      supplier: ['', Validators.required],
+      date: [new Date(), Validators.required],
     });
   }
-  getToday(): Date {
-    return new Date();
-  }
-
   addRow() {
     this.purchases.push(this.createRow());
 
-    // refresh material table
-    setTimeout(() => this.table.renderRows());
+    if (this.table) {
+      this.table.renderRows();
+    }
   }
 
   removeRow(index: number) {
+    if (this.purchases.length <= 1) {
+      return;
+    }
+
     this.purchases.removeAt(index);
-    setTimeout(() => this.table.renderRows());
+
+    if (this.table) {
+      this.table.renderRows();
+    }
   }
 
-  // ================= LOAD ITEMS =================
   loadItems() {
     this.inventoryService.getInventory().subscribe((res) => {
       this.items = res;
     });
   }
 
-  // ================= ITEM CHANGE =================
   onItemChange(item: any, index: number) {
     if (!item) return;
 
@@ -95,6 +96,7 @@ export class AddPurchaseComponent {
       units: item.units,
     });
   }
+
   getGrandTotal(): number {
     return this.purchases.controls.reduce((sum, row: any) => {
       const qty = Number(row.get('quantity')?.value) || 0;
@@ -104,37 +106,59 @@ export class AddPurchaseComponent {
     }, 0);
   }
 
-  // ================= SAVE =================
   saveAll() {
+    if (this.purchaseForm.invalid) {
+      this.purchaseForm.markAllAsTouched();
+
+      this.snackBar.open('Please fill all required fields correctly', 'Close', {
+        duration: 3000,
+        verticalPosition: 'top',
+        horizontalPosition: 'right',
+        panelClass: ['error-snackbar'],
+      });
+
+      return;
+    }
+    const now = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+    )
+      .toISOString()
+      .slice(0, 19);
     const payload = this.purchases.value.map((row: any) => ({
-      itemId: row.item?.itemId,
-
+      item: { id: row.item?.itemId },
       quantity: Number(row.quantity),
-
-      pricePerUnit: Number(row.price),
-
-      totalPrice: Number(row.quantity) * Number(row.price),
-
-      purchasedFrom: row.supplier,
-
-      purchaseDate: this.getSystemDateTime(), // backend format compatible
+      price: Number(row.price),
+      supplier: row.supplier,
+      createdAt: now,
+      purchaseDate: new Date(
+        row.date.getTime() - row.date.getTimezoneOffset() * 60000,
+      )
+        .toISOString()
+        .slice(0, 19),
     }));
-
-    console.log('Payload:', payload);
 
     this.purchaseService.bulkPurchase(payload).subscribe({
       next: () => {
-        alert('Purchases Saved Successfully');
+        this.snackBar.open('Purchases saved successfully', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+          panelClass: ['success-snackbar'],
+        });
+
         this.purchases.clear();
-        this.goBack();
         this.addRow();
+        this.goBack();
       },
-      error: (err) => {
-        console.error(err);
+
+      error: () => {
+        this.snackBar.open('Failed to save purchases', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+          panelClass: ['error-snackbar'],
+        });
       },
     });
-  }
-  getSystemDateTime(): string {
-    return new Date().toISOString();
   }
 }

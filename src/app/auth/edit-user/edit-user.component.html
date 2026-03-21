@@ -1,54 +1,101 @@
-<div class="profile-page">
-  <div class="card">
-    <div class="header">
-      <h2>My Profile</h2>
+<app-page-header
+  title="My Profile"
+  subtitle="Manage your account information"
+></app-page-header>
 
-      <button *ngIf="!editMode" (click)="enableEdit()" class="edit-btn">
+<div class="profile-page">
+  <mat-card class="profile-card">
+    <!-- HEADER -->
+
+    <div class="profile-header">
+      <div class="avatar">
+        <mat-icon>account_circle</mat-icon>
+      </div>
+
+      <div class="title">
+        <h2>{{ profileForm.value.name || "User" }}</h2>
+        <span>{{ profileForm.value.role }}</span>
+      </div>
+
+      <button
+        mat-raised-button
+        color="primary"
+        *ngIf="!editMode"
+        (click)="enableEdit()"
+      >
+        <mat-icon>edit</mat-icon>
         Edit Profile
       </button>
     </div>
 
+    <!-- FORM -->
+
     <form [formGroup]="profileForm">
       <div class="grid">
-        <div class="field">
-          <label>Username</label>
-          <input formControlName="username" [readonly]="!editMode" />
-        </div>
+        <!-- USERNAME -->
 
-        <div class="field">
-          <label>Full Name</label>
-          <input formControlName="fullName" [readonly]="!editMode" />
-        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" readonly />
+        </mat-form-field>
 
-        <div class="field">
-          <label>Email</label>
-          <input formControlName="email" [readonly]="!editMode" />
-        </div>
+        <!-- FULL NAME -->
 
-        <div class="field">
-          <label>Phone</label>
-          <input formControlName="phone" [readonly]="!editMode" />
-        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="name" [readonly]="!editMode" />
+        </mat-form-field>
 
-        <div class="field">
-          <label>Role</label>
-          <input formControlName="role" readonly />
-        </div>
+        <!-- EMAIL -->
 
-        <div class="field" *ngIf="editMode">
-          <label>New Password</label>
-          <input type="password" formControlName="password" />
-        </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" [readonly]="!editMode" />
+        </mat-form-field>
+
+        <!-- PHONE -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" [readonly]="!editMode" />
+        </mat-form-field>
+
+        <!-- ROLE -->
+
+        <mat-form-field appearance="outline">
+          <mat-label>Role</mat-label>
+          <input matInput formControlName="role" readonly />
+        </mat-form-field>
+
+        <!-- PASSWORD -->
+
+        <mat-form-field appearance="outline" *ngIf="editMode">
+          <mat-label>New Password</mat-label>
+          <input matInput type="password" formControlName="password" />
+        </mat-form-field>
       </div>
 
       <!-- ACTION BUTTONS -->
-      <div class="actions" *ngIf="editMode">
-        <button type="button" class="save-btn" (click)="save()">Save</button>
 
-        <button type="button" class="cancel-btn" (click)="cancel()">
+      <div class="actions" *ngIf="editMode">
+        <button
+          mat-raised-button
+          color="primary"
+          type="button"
+          (click)="save()"
+        >
+          Save
+        </button>
+
+        <button
+          mat-stroked-button
+          color="warn"
+          type="button"
+          (click)="cancel()"
+        >
           Cancel
         </button>
       </div>
     </form>
-  </div>
+  </mat-card>
 </div>

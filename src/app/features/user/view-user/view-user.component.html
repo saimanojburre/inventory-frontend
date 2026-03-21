@@ -1,0 +1,132 @@
+<app-page-header
+  title="Manage Users"
+  subtitle="View and manage system users"
+></app-page-header>
+
+<div class="page-header">
+  <button mat-button class="back-btn" (click)="goBack()">← Back</button>
+</div>
+
+<div class="users-view">
+  <h2>Users</h2>
+
+  <!-- FILTER -->
+
+  <form [formGroup]="filterForm" class="filter-bar">
+    <mat-form-field appearance="outline">
+      <mat-label>Search</mat-label>
+
+      <input
+        matInput
+        formControlName="search"
+        (keyup)="applyFilter()"
+        placeholder="Name or Email"
+      />
+    </mat-form-field>
+  </form>
+
+  <!-- TABLE -->
+
+  <table mat-table [dataSource]="dataSource" matSort>
+    <!-- NAME -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+
+      <td mat-cell *matCellDef="let r">
+        <ng-container *ngIf="editingId === r.id; else nameView">
+          <input class="inline-input" [(ngModel)]="r.name" />
+        </ng-container>
+
+        <ng-template #nameView>
+          {{ r.name }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- EMAIL -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+
+      <td mat-cell *matCellDef="let r">
+        <ng-container *ngIf="editingId === r.id; else emailView">
+          <input class="inline-input" [(ngModel)]="r.email" />
+        </ng-container>
+
+        <ng-template #emailView>
+          {{ r.email }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- ROLE -->
+    <ng-container matColumnDef="role">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+
+      <td mat-cell *matCellDef="let r">
+        <ng-container *ngIf="editingId === r.id; else roleView">
+          <input class="inline-input" [(ngModel)]="r.role.name" />
+        </ng-container>
+
+        <ng-template #roleView>
+          {{ r.role?.name }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- ACTIVE -->
+    <ng-container matColumnDef="active">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+
+      <td mat-cell *matCellDef="let r">
+        <ng-container *ngIf="editingId === r.id; else activeView">
+          <mat-slide-toggle [(ngModel)]="r.active"></mat-slide-toggle>
+        </ng-container>
+
+        <ng-template #activeView>
+          <span *ngIf="r.active" class="active">Active</span>
+          <span *ngIf="!r.active" class="inactive">Inactive</span>
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- ACTIONS -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+
+      <td mat-cell *matCellDef="let r">
+        <!-- EDIT MODE -->
+        <ng-container *ngIf="editingId === r.id; else normalActions">
+          <button mat-icon-button color="primary" (click)="saveEdit(r)">
+            <mat-icon>check</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="cancelEdit(r)">
+            <mat-icon>close</mat-icon>
+          </button>
+        </ng-container>
+
+        <!-- NORMAL MODE -->
+
+        <ng-template #normalActions>
+          <button mat-icon-button color="primary" (click)="edit(r)">
+            <mat-icon>edit</mat-icon>
+          </button>
+
+          <button mat-icon-button color="warn" (click)="delete(r)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+</div>
+
+<mat-paginator
+  [pageSize]="10"
+  [pageSizeOptions]="[5, 10, 20]"
+  showFirstLastButtons
+></mat-paginator>

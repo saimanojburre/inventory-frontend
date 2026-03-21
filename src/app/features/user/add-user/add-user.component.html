@@ -1,0 +1,71 @@
+<app-page-header
+  title="Add New User"
+  subtitle="Create a new system user"
+></app-page-header>
+
+<div class="user-page">
+  <mat-card class="user-card">
+    <form [formGroup]="userForm" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <!-- NAME -->
+        <mat-form-field appearance="outline">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" />
+        </mat-form-field>
+
+        <!-- USERNAME -->
+        <mat-form-field appearance="outline">
+          <mat-label>Username</mat-label>
+          <input matInput formControlName="username" />
+        </mat-form-field>
+
+        <!-- EMAIL -->
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" />
+        </mat-form-field>
+
+        <!-- PHONE -->
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" />
+        </mat-form-field>
+
+        <!-- PASSWORD -->
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" />
+        </mat-form-field>
+
+        <!-- ROLE -->
+        <mat-form-field appearance="outline">
+          <mat-label>Role</mat-label>
+
+          <mat-select formControlName="role">
+            <mat-option *ngFor="let role of roles" [value]="role">
+              {{ role }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- ACTIVE USER -->
+
+      <div class="active-row">
+        <mat-slide-toggle formControlName="active">
+          Active User
+        </mat-slide-toggle>
+      </div>
+
+      <!-- BUTTONS -->
+
+      <div class="form-actions">
+        <button mat-raised-button color="primary" type="submit">
+          Save User
+        </button>
+
+        <button mat-stroked-button routerLink="/app/user">Cancel</button>
+      </div>
+    </form>
+  </mat-card>
+</div>
