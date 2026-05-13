@@ -80,7 +80,6 @@ export class UsageService {
       responseType: 'text',
     });
   }
-
   getUsageReport(fromDate?: string, toDate?: string) {
     return this.http.get<any[]>(`${this.baseUrl}/usage/report`, {
       params: {

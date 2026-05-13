@@ -24,7 +24,33 @@
                 [formControl]="row.get('item')"
                 (selectionChange)="onItemChange($event.value, i)"
               >
-                <mat-option *ngFor="let item of items" [value]="item">
+                <!-- 🔍 SEARCH BOX -->
+                <mat-option>
+                  <input
+                    matInput
+                    placeholder="Search item..."
+                    [formControl]="itemSearchCtrl"
+                    (click)="$event.stopPropagation()"
+                    (keydown)="$event.stopPropagation()"
+                  />
+                </mat-option>
+
+                <!-- ⏳ LOADER -->
+                <mat-option *ngIf="isLoading" disabled>
+                  <mat-spinner diameter="20"></mat-spinner>
+                  Loading items...
+                </mat-option>
+
+                <!-- ❌ No data -->
+                <mat-option
+                  *ngIf="!isLoading && filteredItems.length === 0"
+                  disabled
+                >
+                  No items found
+                </mat-option>
+
+                <!-- ✅ ITEMS -->
+                <mat-option *ngFor="let item of filteredItems" [value]="item">
                   {{ item.itemName }}
                 </mat-option>
               </mat-select>

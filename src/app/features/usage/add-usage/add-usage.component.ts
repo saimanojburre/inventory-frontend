@@ -1,8 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { debounceTime } from 'rxjs/operators';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { UsageService } from 'src/app/core/services/usage.service';
 
@@ -40,7 +47,9 @@ export class AddUsageComponent implements OnInit {
     'Finger Foods',
     'Meals',
   ];
-
+  itemSearchCtrl = new FormControl('');
+  filteredItems: any[] = [];
+  isLoading = false;
   @ViewChild(MatTable) table!: MatTable<any>;
 
   constructor(
@@ -58,6 +67,18 @@ export class AddUsageComponent implements OnInit {
 
     this.addRow();
     this.loadItems();
+
+    // 🔍 Search logic
+    this.itemSearchCtrl.valueChanges
+      .pipe(debounceTime(300))
+      .subscribe(() => this.filterItems());
+  }
+  filterItems() {
+    const search = this.itemSearchCtrl.value?.toLowerCase() || '';
+
+    this.filteredItems = this.items.filter((item) =>
+      item.itemName.toLowerCase().includes(search),
+    );
   }
 
   goBack() {
@@ -97,8 +118,17 @@ export class AddUsageComponent implements OnInit {
   }
 
   loadItems() {
-    this.inventoryService.getInventory().subscribe((res) => {
-      this.items = res;
+    this.isLoading = true;
+
+    this.inventoryService.getInventory().subscribe({
+      next: (res) => {
+        this.items = res;
+        this.filteredItems = res;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+      },
     });
   }
 
