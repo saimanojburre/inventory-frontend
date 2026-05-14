@@ -170,7 +170,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       type: 'bar',
       data: {
         labels: Object.keys(map),
-        datasets: [{ data: Object.values(map) }],
+        datasets: [
+          {
+            label: 'Category Usage',
+            data: Object.values(map),
+          },
+        ],
       },
       options: this.chartOptions,
     });
@@ -197,7 +202,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
       type: 'line',
       data: {
         labels: Object.keys(weekly),
-        datasets: [{ data: Object.values(weekly) }],
+        datasets: [
+          {
+            label: 'Weekly Usage',
+            data: Object.values(weekly),
+          },
+        ],
       },
       options: this.chartOptions,
     });
