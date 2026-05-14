@@ -3,46 +3,84 @@
   subtitle="View and manage system users"
 ></app-page-header>
 
-<!-- TOOLBAR -->
+<!-- =====================================================
+     TOOLBAR
+====================================================== -->
 
-<div class="page-header" [formGroup]="filterForm">
-  <div class="left-actions">
-    <button mat-raised-button color="primary" routerLink="/app/user/add">
-      <mat-icon>add</mat-icon>
-      Add User
-    </button>
-  </div>
+<div class="toolbar-card">
+  <div class="toolbar" [formGroup]="filterForm">
+    <!-- LEFT -->
 
-  <div class="right-actions">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>Search</mat-label>
+    <div class="toolbar-left">
+      <button
+        mat-raised-button
+        color="primary"
+        routerLink="/app/user/add"
+        class="add-btn"
+      >
+        <mat-icon>add</mat-icon>
+        Add User
+      </button>
+    </div>
 
-      <input
-        matInput
-        formControlName="search"
-        (keyup)="applyFilter()"
-        placeholder="Name or Email"
-      />
+    <!-- RIGHT -->
 
-      <mat-icon matSuffix>search</mat-icon>
-    </mat-form-field>
+    <div class="toolbar-right">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Users</mat-label>
+
+        <input
+          matInput
+          formControlName="search"
+          placeholder="Name, Email or Username"
+        />
+
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
   </div>
 </div>
 
-<!-- LOADING -->
+<!-- =====================================================
+     LOADING
+====================================================== -->
 
-<div *ngIf="loading" class="loading">
-  <mat-spinner diameter="40"></mat-spinner>
+<div *ngIf="loading" class="users-card">
+  <div class="skeleton-row" *ngFor="let i of [1, 2, 3, 4, 5, 6]">
+    <div class="skeleton-user">
+      <div class="skeleton-avatar"></div>
+
+      <div class="skeleton-user-info">
+        <div class="skeleton-line medium"></div>
+
+        <div class="skeleton-line short"></div>
+      </div>
+    </div>
+
+    <div class="skeleton-line medium"></div>
+
+    <div class="skeleton-line medium"></div>
+
+    <div class="skeleton-line short"></div>
+
+    <div class="skeleton-line short"></div>
+
+    <div class="skeleton-line action"></div>
+  </div>
 </div>
 
-<!-- EMPTY STATE -->
+<!-- =====================================================
+     EMPTY STATE
+====================================================== -->
 
 <div *ngIf="!loading && dataSource.data.length === 0" class="empty-state">
-  <mat-icon>group</mat-icon>
+  <div class="empty-icon">
+    <mat-icon>group</mat-icon>
+  </div>
 
   <h3>No Users Found</h3>
 
-  <p>Add users to manage system access.</p>
+  <p>Add users to manage inventory access and permissions.</p>
 
   <button mat-raised-button color="primary" routerLink="/app/user/add">
     <mat-icon>add</mat-icon>
@@ -50,11 +88,37 @@
   </button>
 </div>
 
-<!-- TABLE -->
+<!-- =====================================================
+     TABLE
+====================================================== -->
 
-<div *ngIf="!loading && dataSource.data.length > 0" class="users-view">
+<div *ngIf="!loading && dataSource.data.length > 0" class="users-card">
   <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" matSort>
+    <table mat-table [dataSource]="dataSource" matSort class="users-table">
+      <!-- USERNAME -->
+
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+
+        <td mat-cell *matCellDef="let r">
+          <div class="user-cell">
+            <div class="user-avatar">
+              {{ r.name?.charAt(0) }}
+            </div>
+
+            <div class="user-details">
+              <span class="username">
+                {{ r.username }}
+              </span>
+
+              <small>
+                {{ r.email }}
+              </small>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
       <!-- NAME -->
 
       <ng-container matColumnDef="name">
@@ -68,31 +132,6 @@
           <ng-template #nameView>
             {{ r.name }}
           </ng-template>
-        </td>
-      </ng-container>
-
-      <!-- EMAIL -->
-
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
-
-        <td mat-cell *matCellDef="let r">
-          <ng-container *ngIf="editingId === r.id; else emailView">
-            <input class="inline-input" [(ngModel)]="r.email" />
-          </ng-container>
-
-          <ng-template #emailView>
-            {{ r.email }}
-          </ng-template>
-        </td>
-      </ng-container>
-      <!-- USERNAME -->
-
-      <ng-container matColumnDef="username">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
-
-        <td mat-cell *matCellDef="let r">
-          {{ r.username }}
         </td>
       </ng-container>
 
@@ -111,14 +150,13 @@
           </ng-template>
         </td>
       </ng-container>
+
       <!-- ROLE -->
 
       <ng-container matColumnDef="role">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
 
         <td mat-cell *matCellDef="let r">
-          <!-- EDIT MODE -->
-
           <ng-container *ngIf="editingId === r.id; else roleView">
             <mat-select [(ngModel)]="r.role.name" class="inline-select">
               <mat-option *ngFor="let role of roles" [value]="role">
@@ -127,10 +165,10 @@
             </mat-select>
           </ng-container>
 
-          <!-- VIEW MODE -->
-
           <ng-template #roleView>
-            {{ r.role?.name }}
+            <div class="role-badge" [ngClass]="r.role?.name?.toLowerCase()">
+              {{ r.role?.name }}
+            </div>
           </ng-template>
         </td>
       </ng-container>
@@ -141,14 +179,16 @@
         <th mat-header-cell *matHeaderCellDef>Status</th>
 
         <td mat-cell *matCellDef="let r">
-          <ng-container *ngIf="editingId === r.id; else activeView">
+          <ng-container *ngIf="editingId === r.id; else statusView">
             <mat-slide-toggle [(ngModel)]="r.active"></mat-slide-toggle>
           </ng-container>
 
-          <ng-template #activeView>
-            <span *ngIf="r.active" class="badge active">Active</span>
+          <ng-template #statusView>
+            <span *ngIf="r.active" class="status-badge active"> Active </span>
 
-            <span *ngIf="!r.active" class="badge inactive">Inactive</span>
+            <span *ngIf="!r.active" class="status-badge inactive">
+              Inactive
+            </span>
           </ng-template>
         </td>
       </ng-container>
@@ -159,36 +199,46 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
 
         <td mat-cell *matCellDef="let r">
-          <ng-container *ngIf="editingId === r.id; else normalActions">
-            <button mat-icon-button color="primary" (click)="saveEdit(r)">
-              <mat-icon>check</mat-icon>
-            </button>
+          <div class="action-buttons">
+            <ng-container *ngIf="editingId === r.id; else normalActions">
+              <button mat-icon-button color="primary" (click)="saveEdit(r)">
+                <mat-icon>check</mat-icon>
+              </button>
 
-            <button mat-icon-button color="warn" (click)="cancelEdit(r)">
-              <mat-icon>close</mat-icon>
-            </button>
-          </ng-container>
+              <button mat-icon-button color="warn" (click)="cancelEdit(r)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </ng-container>
 
-          <ng-template #normalActions>
-            <button mat-icon-button color="primary" (click)="edit(r)">
-              <mat-icon>edit</mat-icon>
-            </button>
+            <ng-template #normalActions>
+              <button mat-icon-button color="primary" (click)="edit(r)">
+                <mat-icon>edit</mat-icon>
+              </button>
 
-            <button mat-icon-button color="warn" (click)="delete(r)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </ng-template>
+              <button mat-icon-button color="warn" (click)="delete(r)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </ng-template>
+          </div>
         </td>
       </ng-container>
 
+      <!-- ROWS -->
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr
+        mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        [class.editing-row]="editingId === row.id"
+      ></tr>
     </table>
   </div>
 
+  <!-- PAGINATOR -->
+
   <mat-paginator
-    [pageSizeOptions]="[5, 10, 20]"
+    [pageSizeOptions]="[5, 10, 20, 50]"
     [pageSize]="10"
     showFirstLastButtons
   ></mat-paginator>

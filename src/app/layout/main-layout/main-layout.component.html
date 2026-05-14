@@ -1,11 +1,25 @@
-<div class="layout">
-  <!-- Sidebar -->
-  <app-sidebar *ngIf="showSidebar"></app-sidebar>
+<div class="layout" [class.sidebar-collapsed]="sidebarCollapsed">
+  <!-- SIDEBAR -->
+  <app-sidebar
+    class="sidebar"
+    [collapsed]="sidebarCollapsed"
+    [class.mobile-open]="mobileSidebarOpen"
+  >
+  </app-sidebar>
 
-  <!-- Main Area -->
-  <div class="main">
-    <app-topbar (toggle)="toggleSidebar()"></app-topbar>
+  <!-- MOBILE OVERLAY -->
+  <div
+    class="mobile-overlay"
+    *ngIf="mobileSidebarOpen"
+    (click)="closeMobileSidebar()"
+  ></div>
 
+  <!-- MAIN AREA -->
+  <div class="main" [class.expanded]="sidebarCollapsed">
+    <!-- TOPBAR -->
+    <app-topbar (toggle)="toggleSidebar()"> </app-topbar>
+
+    <!-- CONTENT -->
     <div class="content">
       <router-outlet></router-outlet>
     </div>

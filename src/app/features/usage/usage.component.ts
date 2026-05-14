@@ -1,15 +1,25 @@
 import { Component, ViewChild } from '@angular/core';
+
 import { FormBuilder, FormGroup } from '@angular/forms';
+
 import { MatSort } from '@angular/material/sort';
+
 import { MatPaginator } from '@angular/material/paginator';
+
 import { MatTableDataSource } from '@angular/material/table';
+
 import { Router } from '@angular/router';
+
 import { AuthService } from 'src/app/core/services/auth.service';
+
 import { UsageService } from 'src/app/core/services/usage.service';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as XLSX from 'xlsx';
+
 import { saveAs } from 'file-saver';
+
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
@@ -31,8 +41,14 @@ export class UsageComponent {
     : ['item', 'quantity', 'department', 'takenBy', 'givenBy', 'time'];
 
   dataSource = new MatTableDataSource<any>([]);
+
   filterForm!: FormGroup;
+
   loading = true;
+
+  editingId: number | null = null;
+
+  backupRow: any = null;
 
   departments = [
     'Tiffin',
@@ -43,10 +59,10 @@ export class UsageComponent {
     'Cleaning',
   ];
 
-  editingId: number | null = null;
-  backupRow: any = null;
+  // =====================================================
+  // VIEW CHILD
+  // =====================================================
 
-  // 🔥 FIX: setter-based ViewChild
   @ViewChild(MatPaginator)
   set matPaginator(mp: MatPaginator) {
     if (mp) {
@@ -70,20 +86,25 @@ export class UsageComponent {
     private dashboardCache: DashboardCacheService,
   ) {}
 
-  // ================= INIT =================
+  // =====================================================
+  // INIT
+  // =====================================================
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.createForm();
+
     this.loadUsage();
+
+    this.filterForm.valueChanges.subscribe(() => {
+      this.applyFilter();
+    });
   }
 
-  goBack() {
-    this.router.navigate(['/app/usage']);
-  }
+  // =====================================================
+  // FORM
+  // =====================================================
 
-  // ================= FORM =================
-
-  createForm() {
+  createForm(): void {
     this.filterForm = this.fb.group({
       fromDate: [''],
       toDate: [''],
@@ -91,12 +112,15 @@ export class UsageComponent {
     });
   }
 
-  // ================= LOAD =================
+  // =====================================================
+  // LOAD
+  // =====================================================
 
-  loadUsage() {
+  loadUsage(): void {
     this.loading = true;
 
-    // USE CACHE FIRST
+    // CACHE FIRST
+
     if (this.dashboardCache.dashboardData?.usage) {
       this.dataSource.data = this.dashboardCache.dashboardData.usage;
 
@@ -105,12 +129,12 @@ export class UsageComponent {
       return;
     }
 
-    // API ONLY IF CACHE EMPTY
+    // API
+
     this.usageService.getUsage().subscribe({
       next: (res) => {
         this.dataSource.data = res;
 
-        // STORE IN CACHE
         if (!this.dashboardCache.dashboardData) {
           this.dashboardCache.dashboardData = {};
         }
@@ -123,24 +147,23 @@ export class UsageComponent {
       error: () => {
         this.loading = false;
 
-        this.snackBar.open('Failed to load usage data', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-        });
+        this.showError('Failed to load usage records');
       },
     });
   }
 
-  // ================= FILTER =================
+  // =====================================================
+  // FILTER
+  // =====================================================
 
-  applyFilter() {
+  applyFilter(): void {
     const { fromDate, toDate, search } = this.filterForm.value;
 
     this.dataSource.filterPredicate = (data: any) => {
       const usageDate = new Date(data.usedDateTime);
 
       const matchFrom = !fromDate || usageDate >= new Date(fromDate);
+
       const matchTo = !toDate || usageDate <= new Date(toDate);
 
       const matchSearch =
@@ -153,26 +176,30 @@ export class UsageComponent {
 
     this.dataSource.filter = Math.random().toString();
 
-    // 🔥 reset paginator after filter
     this.dataSource.paginator?.firstPage();
   }
 
-  // ================= EXPORT =================
+  // =====================================================
+  // EXPORT
+  // =====================================================
 
-  exportToExcel() {
+  exportToExcel(): void {
     const exportData = this.dataSource.filteredData.map((r: any) => ({
       Item: r.item?.name,
       Quantity: r.quantity,
       Department: r.department,
       TakenBy: r.takenBy,
       GivenBy: r.givenBy,
-      DateTime: new Date(r.usedDateTime).toLocaleString(),
+      Date: new Date(r.usedDateTime).toLocaleString(),
     }));
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
 
     const workbook: XLSX.WorkBook = {
-      Sheets: { Usage: worksheet },
+      Sheets: {
+        Usage: worksheet,
+      },
+
       SheetNames: ['Usage'],
     };
 
@@ -188,48 +215,53 @@ export class UsageComponent {
     saveAs(blob, `Usage_Report_${Date.now()}.xlsx`);
   }
 
-  // ================= DELETE =================
+  // =====================================================
+  // DELETE
+  // =====================================================
 
-  delete(row: any) {
+  delete(row: any): void {
     const confirmDelete = confirm(
       'Are you sure you want to delete this usage record?',
     );
 
-    if (!confirmDelete) return;
+    if (!confirmDelete) {
+      return;
+    }
 
     this.usageService.deleteUsage(row.id).subscribe({
       next: () => {
-        this.snackBar.open('Usage deleted successfully', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-        });
+        this.showSuccess('Usage deleted successfully');
+
+        this.dashboardCache.clear();
+
         this.loadUsage();
       },
+
       error: () => {
-        this.snackBar.open('Failed to delete usage', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-        });
+        this.showError('Failed to delete usage');
       },
     });
   }
 
-  // ================= EDIT =================
+  // =====================================================
+  // EDIT
+  // =====================================================
 
-  edit(row: any) {
+  edit(row: any): void {
     this.editingId = row.id;
+
     this.backupRow = { ...row };
   }
 
-  cancelEdit(row: any) {
+  cancelEdit(row: any): void {
     Object.assign(row, this.backupRow);
+
     this.editingId = null;
+
     this.backupRow = null;
   }
 
-  saveEdit(row: any) {
+  saveEdit(row: any): void {
     const payload = {
       quantity: row.quantity,
       department: row.department,
@@ -240,23 +272,48 @@ export class UsageComponent {
 
     this.usageService.updateUsage(row.id, payload).subscribe({
       next: () => {
-        this.snackBar.open('Usage updated successfully', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-        });
+        this.showSuccess('Usage updated successfully');
 
         this.editingId = null;
+
         this.backupRow = null;
+
+        this.dashboardCache.clear();
+
         this.loadUsage();
       },
+
       error: () => {
-        this.snackBar.open('Failed to update usage', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-        });
+        this.showError('Failed to update usage');
       },
+    });
+  }
+
+  // =====================================================
+  // HELPERS
+  // =====================================================
+
+  private showSuccess(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+
+      verticalPosition: 'top',
+
+      horizontalPosition: 'right',
+
+      panelClass: ['success-snackbar'],
+    });
+  }
+
+  private showError(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+
+      verticalPosition: 'top',
+
+      horizontalPosition: 'right',
+
+      panelClass: ['error-snackbar'],
     });
   }
 }

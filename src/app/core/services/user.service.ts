@@ -1,52 +1,56 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment.prod';
+
 import { Observable } from 'rxjs';
+
+import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private baseUrl = environment.apiBaseUrl + '/users';
+  private baseUrl = `${environment.apiBaseUrl}/users`;
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-    });
-  }
-
+  // =====================================================
   // CREATE USER
+  // =====================================================
+
   createUser(user: any): Observable<any> {
-    return this.http.post(this.baseUrl, user, { headers: this.getHeaders() });
+    return this.http.post(this.baseUrl, user);
   }
 
+  // =====================================================
   // GET ALL USERS
+  // =====================================================
+
   getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(this.baseUrl, { headers: this.getHeaders() });
+    return this.http.get<any[]>(this.baseUrl);
   }
 
+  // =====================================================
   // GET USER BY ID
+  // =====================================================
+
   getUserById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${id}`, {
-      headers: this.getHeaders(),
-    });
+    return this.http.get(`${this.baseUrl}/${id}`);
   }
 
+  // =====================================================
   // UPDATE USER
+  // =====================================================
+
   updateUser(id: number, user: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, user, {
-      headers: this.getHeaders(),
-    });
+    return this.http.put(`${this.baseUrl}/${id}`, user);
   }
 
+  // =====================================================
   // DELETE USER
+  // =====================================================
+
   deleteUser(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`, {
-      headers: this.getHeaders(),
-    });
+    return this.http.delete(`${this.baseUrl}/${id}`);
   }
 }

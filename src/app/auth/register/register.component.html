@@ -1,61 +1,104 @@
-<div class="login-page">
-  <div class="login-card">
+<!-- register.component.html -->
+
+<div class="register-page">
+  <!-- BACKGROUND GLOW -->
+  <div class="bg-glow"></div>
+
+  <!-- REGISTER CARD -->
+  <div class="register-card">
+    <!-- BRAND -->
     <div class="brand">
+      <div class="logo">
+        <mat-icon>person_add</mat-icon>
+      </div>
+
       <h1>Create Account</h1>
+
       <p>Inventory Portal Registration</p>
     </div>
+
+    <!-- FORM -->
     <form
       #formDirective="ngForm"
       [formGroup]="registerForm"
       (ngSubmit)="register(formDirective)"
     >
-      <!-- USERNAME -->
-      <mat-form-field appearance="outline" class="input-field">
-        <mat-label>Username</mat-label>
-        <input matInput formControlName="username" />
-        <mat-error *ngIf="showError('username', 'required')">
-          Username is required
-        </mat-error>
-        <mat-error *ngIf="showError('username', 'minlength')">
-          Minimum 3 characters required
-        </mat-error>
-      </mat-form-field>
       <!-- NAME -->
       <mat-form-field appearance="outline" class="input-field">
-        <mat-label>Name</mat-label> <input matInput formControlName="name" />
+        <mat-label>Name</mat-label>
+
+        <mat-icon matPrefix> badge </mat-icon>
+
+        <input matInput formControlName="name" />
+
         <mat-error *ngIf="showError('name', 'required')">
           Name is required
         </mat-error>
       </mat-form-field>
+
+      <!-- USERNAME -->
+      <mat-form-field appearance="outline" class="input-field">
+        <mat-label>Username</mat-label>
+
+        <mat-icon matPrefix> person </mat-icon>
+
+        <input matInput formControlName="username" />
+
+        <mat-error *ngIf="showError('username', 'required')">
+          Username is required
+        </mat-error>
+
+        <mat-error *ngIf="showError('username', 'minlength')">
+          Minimum 3 characters required
+        </mat-error>
+      </mat-form-field>
+
       <!-- PHONE -->
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Phone Number</mat-label>
-        <input matInput type="number" formControlName="phone" />
+
+        <mat-icon matPrefix> call </mat-icon>
+
+        <input matInput type="tel" formControlName="phone" />
+
         <mat-error *ngIf="showError('phone', 'required')">
           Phone number is required
         </mat-error>
+
         <mat-error *ngIf="showError('phone', 'pattern')">
           Enter valid 10 digit phone number
         </mat-error>
       </mat-form-field>
+
       <!-- EMAIL -->
       <mat-form-field appearance="outline" class="input-field">
-        <mat-label>Email</mat-label> <input matInput formControlName="email" />
+        <mat-label>Email</mat-label>
+
+        <mat-icon matPrefix> email </mat-icon>
+
+        <input matInput formControlName="email" />
+
         <mat-error *ngIf="showError('email', 'required')">
           Email is required
         </mat-error>
+
         <mat-error *ngIf="showError('email', 'email')">
           Enter valid email address
         </mat-error>
       </mat-form-field>
+
       <!-- PASSWORD -->
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Password</mat-label>
+
+        <mat-icon matPrefix> lock </mat-icon>
+
         <input
           matInput
           [type]="hidePassword ? 'password' : 'text'"
           formControlName="password"
         />
+
         <button
           mat-icon-button
           matSuffix
@@ -66,30 +109,39 @@
             {{ hidePassword ? "visibility_off" : "visibility" }}
           </mat-icon>
         </button>
+
         <mat-error *ngIf="showError('password', 'required')">
           Password is required
         </mat-error>
       </mat-form-field>
+
       <!-- PASSWORD HINT -->
       <div class="password-hint" *ngIf="f.password.touched || f.password.dirty">
         <div [class.valid]="(f.password.value || '').length >= 6">
           ✓ Minimum 6 characters
         </div>
+
         <div [class.valid]="(f.password.value || '').match('.*[A-Z].*')">
           ✓ One uppercase letter
         </div>
+
         <div [class.valid]="(f.password.value || '').match('.*[0-9].*')">
           ✓ One number
         </div>
       </div>
+
       <!-- CONFIRM PASSWORD -->
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Confirm Password</mat-label>
+
+        <mat-icon matPrefix> verified_user </mat-icon>
+
         <input
           matInput
           [type]="hideConfirmPassword ? 'password' : 'text'"
           formControlName="confirmPassword"
         />
+
         <button
           mat-icon-button
           matSuffix
@@ -100,15 +152,9 @@
             {{ hideConfirmPassword ? "visibility_off" : "visibility" }}
           </mat-icon>
         </button>
-        <mat-error
-          *ngIf="
-            registerForm.hasError('passwordMismatch') &&
-            f.confirmPassword.touched
-          "
-        >
-          Passwords do not match
-        </mat-error>
       </mat-form-field>
+
+      <!-- PASSWORD MISMATCH -->
       <div
         class="password-mismatch"
         *ngIf="
@@ -117,33 +163,40 @@
       >
         Passwords do not match
       </div>
+
       <!-- ERROR -->
-      <div class="error-message" *ngIf="error">{{ error }}</div>
+      <div class="error-message" *ngIf="error">
+        {{ error }}
+      </div>
+
       <!-- SUCCESS -->
       <div class="success-box" *ngIf="success">
-        <mat-icon>check_circle</mat-icon>
+        <mat-icon> check_circle </mat-icon>
+
         <div class="success-content">
           <h4>Registration Submitted</h4>
+
           <p>Please wait for owner approval before logging in.</p>
         </div>
       </div>
+
       <!-- BUTTON -->
       <button
         mat-raised-button
         color="primary"
-        class="login-btn"
+        class="register-btn"
         [disabled]="registerForm.invalid || loading"
       >
-        <mat-progress-spinner
-          *ngIf="loading"
-          diameter="20"
-          mode="indeterminate"
-        ></mat-progress-spinner>
+        <mat-spinner *ngIf="loading" diameter="20"> </mat-spinner>
 
-        <span *ngIf="!loading">Register</span>
+        <span *ngIf="!loading"> Register </span>
       </button>
+
+      <!-- LOGIN LINK -->
       <div class="login-link">
-        Already have account? <a (click)="goToLogin()">Login</a>
+        Already have account?
+
+        <a (click)="goToLogin()"> Login </a>
       </div>
     </form>
   </div>

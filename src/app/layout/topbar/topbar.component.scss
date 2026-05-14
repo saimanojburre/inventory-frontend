@@ -1,168 +1,252 @@
-/* ================= TOPBAR ================= */
+/* =========================================================
+   TOPBAR
+========================================================= */
 
 .topbar {
     height: 64px;
-    background: white;
-    color: var(--text-dark);
 
     display: flex;
     align-items: center;
     justify-content: space-between;
 
-    padding: 0 22px;
-    box-sizing: border-box;
+    padding: 0 20px;
+
+    background: var(--card-bg);
 
     border-bottom: 1px solid var(--border-light);
-    box-shadow: var(--shadow-sm);
 
-    position: relative;
-    z-index: 10;
+    position: sticky;
+    top: 0;
+
+    z-index: 100;
+
+    backdrop-filter: blur(10px);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease;
 }
 
-/* ================= LEFT ================= */
+/* =========================================================
+   LEFT SECTION
+========================================================= */
 
-.left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-/* MENU BUTTON */
-
-.menu-btn {
-    background: transparent;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-
-    color: var(--text-medium);
-    border-radius: 8px;
-    padding: 6px 10px;
-
-    transition: 0.2s ease;
-}
-
-.menu-btn:hover {
-    background: var(--surface);
-}
-
-/* TITLE */
-
-.title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--primary);
-    cursor: pointer;
-}
-
-/* ================= RIGHT ================= */
-
-.right {
+.topbar-left {
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
-/* PROFILE */
+/* MENU BUTTON */
 
-.profile {
+.menu-btn {
+    color: var(--text-medium);
+}
+
+/* BRAND */
+
+.brand {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 17px;
+    font-weight: 700;
+
+    color: var(--primary);
+
+    cursor: pointer;
+}
+
+.subtitle {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+/* =========================================================
+   RIGHT SECTION
+========================================================= */
+
+.topbar-right {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--text-medium);
-    font-weight: 500;
+    gap: 12px;
 }
 
-.avatar {
-    background: var(--primary-soft);
-    color: var(--primary);
-    padding: 6px 8px;
-    border-radius: 50%;
-    font-size: 14px;
-}
+/* ICON BUTTONS */
 
-/* LOGOUT BUTTON */
-
-.logout-btn {
-    background: var(--primary);
-    color: white;
-    border: none;
-
-    padding: 7px 14px;
-    border-radius: 8px;
-
-    cursor: pointer;
-    font-weight: 600;
-
-    transition: 0.2s ease;
-}
-
-.logout-btn:hover {
-    background: var(--primary-light);
-    transform: translateY(-1px);
-}
-/* ================= NOTIFICATION ================= */
-
-.notification {
+.icon-btn {
     position: relative;
-    cursor: pointer;
-    font-size: 18px;
-    padding: 6px 10px;
-    border-radius: 8px;
-    transition: 0.2s;
+
+    color: var(--text-medium);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
-.notification:hover {
+.icon-btn:hover {
     background: var(--surface);
+    color: var(--primary);
+}
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+.notification-btn {
+    position: relative;
 }
 
 .badge {
     position: absolute;
-    top: -4px;
-    right: -2px;
-    background: red;
+
+    top: 2px;
+    right: 2px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--danger);
+
     color: white;
+
+    border-radius: 999px;
+
     font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 50%;
+    font-weight: 600;
 }
 
-/* ================= PROFILE DROPDOWN ================= */
+/* =========================================================
+   PROFILE
+========================================================= */
 
 .profile-wrapper {
     position: relative;
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 6px 10px;
+
+    border-radius: 12px;
+
     cursor: pointer;
+
+    transition: background 0.2s ease;
 }
 
-.arrow {
-    font-size: 10px;
-    margin-left: 4px;
+.profile:hover {
+    background: var(--surface);
 }
 
-/* DROPDOWN */
+/* AVATAR */
+
+.avatar {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    flex-shrink: 0;
+
+    border: 2px solid var(--primary-soft);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* PROFILE INFO */
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-size: 14px;
+    font-weight: 600;
+
+    color: var(--text-dark);
+}
+
+.role {
+    font-size: 11px;
+    color: var(--text-light);
+}
+
+/* DROPDOWN ICON */
+
+.dropdown-icon {
+    font-size: 20px;
+    color: var(--text-light);
+}
+
+/* =========================================================
+   DROPDOWN
+========================================================= */
 
 .dropdown {
     position: absolute;
+
+    top: calc(100% + 10px);
     right: 0;
-    top: 48px;
 
-    background: white;
+    width: 200px;
+
+    padding: 8px;
+
+    background: var(--card-bg);
+
     border: 1px solid var(--border-light);
-    border-radius: 10px;
+    border-radius: 14px;
 
-    box-shadow: var(--shadow-sm);
-    min-width: 160px;
+    box-shadow: var(--shadow-lg);
 
-    overflow: hidden;
-    z-index: 100;
+    animation: dropdownEnter 0.18s ease;
 }
 
+/* DROPDOWN ITEM */
+
 .dropdown-item {
-    padding: 10px 14px;
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 12px;
+
+    border: none;
+    background: transparent;
+
+    border-radius: 10px;
+
     cursor: pointer;
-    font-size: 14px;
+
     color: var(--text-medium);
-    transition: 0.2s;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 .dropdown-item:hover {
@@ -170,6 +254,42 @@
 }
 
 .dropdown-item.logout {
-    color: #e53935;
-    font-weight: 600;
+    color: var(--danger);
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes dropdownEnter {
+
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .topbar {
+        padding: 0 14px;
+    }
+
+    .subtitle,
+    .profile-info {
+        display: none;
+    }
+
+    .profile {
+        padding: 4px;
+    }
 }

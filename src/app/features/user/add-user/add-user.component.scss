@@ -1,34 +1,339 @@
+/* =====================================================
+   PAGE
+===================================================== */
+
 .user-page {
-    padding: 20px;
+    padding: 4px 0 24px;
 }
 
-.user-card {
-    max-width: 750px;
-    padding: 30px;
-    border-radius: 14px;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+/* =====================================================
+   LAYOUT
+===================================================== */
+
+.user-layout {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+
+    gap: 24px;
+
+    align-items: start;
 }
+
+/* =====================================================
+   SECTION HEADER
+===================================================== */
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin: 0 0 6px;
+
+    font-size: 26px;
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+.section-header p {
+    margin: 0;
+
+    color: #64748b;
+    font-size: 14px;
+}
+
+.header-badge {
+    width: 70px;
+    height: 70px;
+
+    border-radius: 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(135deg,
+            #6366f1,
+            #4f46e5);
+
+    box-shadow:
+        0 12px 28px rgba(79, 70, 229, 0.28);
+}
+
+.header-badge mat-icon {
+    color: white;
+
+    font-size: 34px;
+    width: 34px;
+    height: 34px;
+}
+
+/* =====================================================
+   FORM CARD
+===================================================== */
+
+.form-card {
+    background: white;
+
+    border-radius: 24px;
+
+    padding: 28px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.04),
+        0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+/* =====================================================
+   FORM GRID
+===================================================== */
 
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 18px;
+
+    gap: 20px;
 }
 
 mat-form-field {
     width: 100%;
 }
 
-.active-row {
-    margin-top: 15px;
+/* =====================================================
+   ACTIVE SECTION
+===================================================== */
+
+.active-section {
+    margin-top: 24px;
+
+    padding: 20px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(135deg,
+            #f8fafc,
+            #f1f5f9);
+
+    border: 1px solid #e2e8f0;
 }
+
+.active-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+}
+
+.active-content h4 {
+    margin: 0 0 4px;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+.active-content p {
+    margin: 0;
+
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* =====================================================
+   ACTIONS
+===================================================== */
 
 .form-actions {
-    margin-top: 25px;
     display: flex;
-    gap: 12px;
+    gap: 14px;
+
+    margin-top: 28px;
 }
 
-button {
-    min-width: 120px;
+.save-btn,
+.cancel-btn {
+    height: 52px;
+
+    padding: 0 24px !important;
+
+    border-radius: 14px !important;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.save-btn {
+    min-width: 170px;
+
+    box-shadow:
+        0 10px 24px rgba(79, 70, 229, 0.28);
+}
+
+/* =====================================================
+   RIGHT PANEL
+===================================================== */
+
+.info-card {
+    background: white;
+
+    border-radius: 24px;
+
+    padding: 28px;
+
+    border: 1px solid #e5e7eb;
+
+    position: sticky;
+    top: 20px;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.04),
+        0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.info-icon {
+    width: 72px;
+    height: 72px;
+
+    border-radius: 20px;
+
+    margin-bottom: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(135deg,
+            #eef2ff,
+            #e0e7ff);
+}
+
+.info-icon mat-icon {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+
+    color: #4f46e5;
+}
+
+.info-card h3 {
+    margin: 0 0 10px;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+.info-card p {
+    color: #64748b;
+
+    line-height: 1.6;
+
+    margin-bottom: 24px;
+}
+
+/* =====================================================
+   ROLE LIST
+===================================================== */
+
+.role-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.role-item {
+    padding: 16px;
+
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    border: 1px solid transparent;
+}
+
+.role-item span {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.role-item small {
+    font-size: 12px;
+}
+
+.role-item.owner {
+    background: #f5f3ff;
+    color: #7c3aed;
+}
+
+.role-item.manager {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.role-item.user {
+    background: #f8fafc;
+    color: #475569;
+}
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+    .user-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .info-card {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .active-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .save-btn,
+    .cancel-btn {
+        width: 100%;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+
+        gap: 16px;
+    }
+
+    .form-card,
+    .info-card {
+        padding: 20px;
+    }
 }

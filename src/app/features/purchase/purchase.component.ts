@@ -36,7 +36,7 @@ export class PurchaseComponent {
   constructor(
     private purchaseService: PurchaseService,
     private fb: FormBuilder,
-    private authService: AuthService,
+    public authService: AuthService,
     private snackBar: MatSnackBar,
     private dashboardCache: DashboardCacheService,
   ) {}

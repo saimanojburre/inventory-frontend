@@ -1,27 +1,38 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
+
 import { AuthService } from '../services/auth.service';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);
+
   const router = inject(Router);
 
-  // ✅ Check login
+  // =====================================================
+  // NOT LOGGED IN
+  // =====================================================
+
   if (!authService.isLoggedIn()) {
-    router.navigate(['/']);
-    return false;
+    return router.createUrlTree(['/']);
   }
 
-  // ✅ Get user role
-  const userRole = authService.getRole(); // implement this
+  // =====================================================
+  // ROLE CHECK
+  // =====================================================
 
-  // ✅ Get allowed roles from route
   const allowedRoles = route.data?.['roles'] as string[];
 
-  // ✅ If roles defined → validate
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
-    router.navigate(['/unauthorized']); // better UX
-    return false;
+  // If route has no roles -> allow access
+  if (!allowedRoles || allowedRoles.length === 0) {
+    return true;
+  }
+
+  // Current user role
+  const userRole = authService.getRole()?.toUpperCase();
+
+  // Role validation
+  if (!allowedRoles.includes(userRole)) {
+    return router.createUrlTree(['/unauthorized']);
   }
 
   return true;

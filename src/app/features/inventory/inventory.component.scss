@@ -1,120 +1,106 @@
-/* ================= PAGE HEADER ================= */
+/* =========================================================
+   TOOLBAR
+========================================================= */
 
-.page-header {
+.toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-
-  margin-bottom: 20px;
+  justify-content: space-between;
   gap: 20px;
 
-  .search-field {
-    width: 280px;
-  }
+  margin-bottom: 20px;
 }
 
-/* ================= INVENTORY SUMMARY ================= */
+/* SEARCH */
 
-.inventory-summary {
-  display: flex;
-  align-items: center;
+.search-field {
+  width: 320px;
 }
+
+/* =========================================================
+   SUMMARY CARD
+========================================================= */
 
 .summary-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
+
+  padding: 18px 22px;
+
+  border-radius: 18px;
 
   background: var(--card-bg);
-  padding: 16px 20px;
 
-  border-radius: var(--radius-md);
   border: 1px solid var(--border-light);
 
   box-shadow: var(--shadow-sm);
 }
 
 .summary-icon {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
 
-  border-radius: 12px;
+  border-radius: 16px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  background:
+    linear-gradient(135deg,
+      #3b82f6,
+      #6366f1);
+
   color: white;
-
-  mat-icon {
-    font-size: 22px;
-  }
 }
 
-.summary-info {
-
-  span {
-    font-size: 13px;
-    color: var(--text-light);
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 22px;
-    font-weight: 700;
-  }
-
+.summary-icon mat-icon {
+  font-size: 24px;
 }
 
-/* ================= LOADING ================= */
-
-.loading {
-  display: flex;
-  justify-content: center;
-  padding: 40px;
-}
-
-/* ================= EMPTY STATE ================= */
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
+.summary-card span {
+  font-size: 13px;
   color: var(--text-light);
-
-  mat-icon {
-    font-size: 48px;
-    margin-bottom: 10px;
-    color: #94a3b8;
-  }
-
-  h3 {
-    margin-bottom: 6px;
-  }
 }
 
-/* ================= TABLE CONTAINER ================= */
+.summary-card h2 {
+  margin: 4px 0 0;
+
+  font-size: 26px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   TABLE CONTAINER
+========================================================= */
 
 .inventory-container {
   background: var(--card-bg);
-  padding: 24px;
 
-  border-radius: var(--radius-lg);
   border: 1px solid var(--border-light);
 
+  border-radius: 22px;
+
+  overflow: hidden;
+
   box-shadow: var(--shadow-md);
-
-  .table-wrapper {
-    max-height: 520px;
-    overflow: auto;
-  }
-
-  table {
-    width: 100%;
-  }
 }
 
-/* ================= TABLE ================= */
+.table-wrapper {
+  overflow: auto;
+  max-height: 620px;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+table {
+  width: 100%;
+}
+
+/* HEADER */
 
 .mat-mdc-header-row {
   background: var(--surface);
@@ -127,63 +113,242 @@
 
   background: var(--surface);
 
-  font-weight: 600;
+  padding: 16px !important;
+
+  font-size: 13px;
+  font-weight: 700;
+
   color: var(--text-medium);
 
-  padding: 14px 16px;
+  border-bottom:
+    1px solid var(--border-light);
 }
+
+/* CELLS */
 
 td.mat-mdc-cell {
-  padding: 12px 16px;
+  padding: 16px !important;
+
+  border-bottom:
+    1px solid #f1f5f9;
 }
 
-/* ================= ROW HOVER ================= */
+/* ROW */
 
 .mat-mdc-row {
-  transition: background 0.2s ease;
-
-  &:hover {
-    background: #f1f5f9;
-  }
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
 }
 
-/* ================= CURRENCY ================= */
+.mat-mdc-row:hover {
+  background: #f8fafc;
+}
 
-// .currency {
-//   text-align: center;
-// }
+/* =========================================================
+   CATEGORY CHIP
+========================================================= */
 
-/* ================= TOTAL ================= */
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 6px 12px;
+
+  border-radius: 999px;
+
+  // background:
+  //   rgba(79, 70, 229, 0.10);
+
+  // color: var(--primary);
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   ITEM NAME
+========================================================= */
+
+.item-name {
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* =========================================================
+   STOCK BADGE
+========================================================= */
+
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 44px;
+
+  padding: 6px 12px;
+
+  border-radius: 10px;
+
+  background:
+    rgba(16, 185, 129, 0.10);
+
+  color: #059669;
+
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.stock-badge.low-stock {
+  background:
+    rgba(239, 68, 68, 0.10);
+
+  color: #dc2626;
+}
+
+/* =========================================================
+   CURRENCY
+========================================================= */
+
+.currency {
+  font-weight: 500;
+}
+
+/* TOTAL */
 
 .total-cell {
-  font-weight: 600;
+  font-weight: 700;
   color: var(--success);
 }
 
-/* ================= LOW STOCK ================= */
-
-.low-stock {
-  color: var(--danger);
-  font-weight: 600;
-}
-
-/* ================= PAGINATOR ================= */
+/* =========================================================
+   PAGINATOR
+========================================================= */
 
 mat-paginator {
-  margin-top: 18px;
+  border-top:
+    1px solid var(--border-light);
 }
 
-/* ================= MOBILE ================= */
+/* =========================================================
+   EMPTY STATE
+========================================================= */
 
-@media (max-width: 768px) {
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
+  padding: 80px 20px;
 
-    .search-field {
-      width: 100%;
-    }
+  text-align: center;
+}
+
+.empty-icon {
+  width: 84px;
+  height: 84px;
+
+  margin-bottom: 20px;
+
+  border-radius: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    rgba(148, 163, 184, 0.10);
+}
+
+.empty-icon mat-icon {
+  font-size: 42px;
+  color: #94a3b8;
+}
+
+.empty-state h3 {
+  margin: 0 0 8px;
+
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.empty-state p {
+  margin: 0;
+
+  color: var(--text-light);
+}
+
+/* =========================================================
+   SKELETONS
+========================================================= */
+
+.skeleton-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns:
+    1fr 1.5fr 1fr 1fr 1fr 1fr;
+
+  gap: 16px;
+
+  padding: 18px;
+}
+
+.skeleton-line {
+  height: 16px;
+
+  border-radius: 8px;
+
+  background:
+    linear-gradient(90deg,
+      #e5e7eb 25%,
+      #f3f4f6 37%,
+      #e5e7eb 63%);
+
+  background-size: 400% 100%;
+
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+.skeleton-line.medium {
+  width: 80%;
+}
+
+.skeleton-line.long {
+  width: 100%;
+}
+
+@keyframes shimmer {
+
+  0% {
+    background-position: 100% 0;
   }
 
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-field {
+    width: 100%;
+  }
 }

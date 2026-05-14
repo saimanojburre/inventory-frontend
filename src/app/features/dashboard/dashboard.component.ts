@@ -1,12 +1,16 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+
+import { Router } from '@angular/router';
+
 import { Chart } from 'chart.js/auto';
+
 import { forkJoin } from 'rxjs';
 
 import { InventoryService } from '../../core/services/inventory.service';
 import { PurchaseService } from '../../core/services/purchase.service';
 import { UsageService } from '../../core/services/usage.service';
+
 import { AuthService } from 'src/app/core/services/auth.service';
-import { Router } from '@angular/router';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
@@ -15,6 +19,10 @@ import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.ser
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  /* =========================================================
+     STATS
+  ========================================================= */
+
   stats = {
     inventoryValue: 0,
     purchases: 0,
@@ -22,12 +30,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     lowStock: 0,
   };
 
+  /* =========================================================
+     CHARTS
+  ========================================================= */
+
   departmentChart!: Chart;
   categoryChart!: Chart;
   weeklyChart!: Chart;
 
+  /* =========================================================
+     UI STATE
+  ========================================================= */
+
   greetingMessage = '';
   loading = true;
+
+  /* =========================================================
+     CONSTRUCTOR
+  ========================================================= */
 
   constructor(
     private inventoryService: InventoryService,
@@ -38,37 +58,52 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private dashboardCache: DashboardCacheService,
   ) {}
 
-  ngOnInit() {
+  /* =========================================================
+     INIT
+  ========================================================= */
+
+  ngOnInit(): void {
+    this.setGreeting();
+
     if (this.dashboardCache.loaded) {
       this.setCachedData();
     } else {
       this.loadDashboard();
     }
-    this.setGreeting();
-  }
-  setCachedData() {
-    const data = this.dashboardCache.dashboardData;
-
-    this.stats = data.stats;
-
-    setTimeout(() => {
-      this.createDepartmentChart(data.usage, data.itemMap);
-      this.createCategoryChart(data.usage, data.itemMap);
-      this.createWeeklyTrend(data.usage, data.itemMap);
-    });
-
-    this.loading = false;
   }
 
-  ngOnDestroy() {
+  /* =========================================================
+     DESTROY
+  ========================================================= */
+
+  ngOnDestroy(): void {
     this.departmentChart?.destroy();
     this.categoryChart?.destroy();
     this.weeklyChart?.destroy();
   }
 
-  /* ================= LOAD DASHBOARD ================= */
+  /* =========================================================
+     GREETING
+  ========================================================= */
 
-  loadDashboard() {
+  setGreeting(): void {
+    const hour = new Date().getHours();
+
+    const greeting =
+      hour < 12
+        ? 'Good Morning'
+        : hour < 17
+          ? 'Good Afternoon'
+          : 'Good Evening';
+
+    this.greetingMessage = `${greeting}, ${this.authService.getUsername()} 👋`;
+  }
+
+  /* =========================================================
+     LOAD DASHBOARD
+  ========================================================= */
+
+  loadDashboard(): void {
     this.loading = true;
 
     forkJoin({
@@ -77,27 +112,41 @@ export class DashboardComponent implements OnInit, OnDestroy {
       usage: this.usageService.getUsage(),
     }).subscribe({
       next: ({ items, purchases, usage }) => {
+        /* ===============================
+           KPI STATS
+        =============================== */
+
         this.stats.purchases = purchases.length;
+
         this.stats.usage = usage.length;
 
         this.stats.lowStock = items.filter(
-          (i: any) => i.quantity < i.minStock,
+          (item: any) => item.quantity < item.minStock,
         ).length;
 
         this.stats.inventoryValue = items.reduce(
-          (sum: number, i: any) => sum + (Number(i.total) || 0),
+          (sum: number, item: any) => sum + (Number(item.total) || 0),
           0,
         );
 
+        /* ===============================
+           ITEM MAP
+        =============================== */
+
         const itemMap: any = {};
 
-        items.forEach((i: any) => {
-          if (!i.itemId) return;
-          itemMap[i.itemId] = {
-            price: Number(i.cost) || 0,
-            category: i.category || 'Others',
+        items.forEach((item: any) => {
+          if (!item.itemId) return;
+
+          itemMap[item.itemId] = {
+            price: Number(item.cost) || 0,
+            category: item.category || 'Others',
           };
         });
+
+        /* ===============================
+           CACHE
+        =============================== */
 
         this.dashboardCache.dashboardData = {
           stats: this.stats,
@@ -109,85 +158,153 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         this.dashboardCache.loaded = true;
 
-        // ✅ FIX: Delay chart rendering
+        /* ===============================
+           CHARTS
+        =============================== */
+
         setTimeout(() => {
           this.createDepartmentChart(usage, itemMap);
+
           this.createCategoryChart(usage, itemMap);
+
           this.createWeeklyTrend(usage, itemMap);
         });
 
         this.loading = false;
       },
 
-      error: (err) => {
-        console.error(err);
+      error: (error) => {
+        console.error(error);
+
         this.loading = false;
       },
     });
   }
 
-  setGreeting() {
-    const hour = new Date().getHours();
-    let greeting =
-      hour < 12
-        ? 'Good Morning'
-        : hour < 17
-          ? 'Good Afternoon'
-          : 'Good Evening';
+  /* =========================================================
+     LOAD CACHE
+  ========================================================= */
 
-    this.greetingMessage = `${greeting}, ${this.authService.getUsername()} 👋`;
+  setCachedData(): void {
+    const data = this.dashboardCache.dashboardData;
+
+    this.stats = data.stats;
+
+    setTimeout(() => {
+      this.createDepartmentChart(data.usage, data.itemMap);
+
+      this.createCategoryChart(data.usage, data.itemMap);
+
+      this.createWeeklyTrend(data.usage, data.itemMap);
+    });
+
+    this.loading = false;
   }
 
-  goToAddPurchase() {
+  /* =========================================================
+     REFRESH
+  ========================================================= */
+
+  refreshDashboard(): void {
+    this.dashboardCache.clear();
+
+    this.destroyCharts();
+
+    this.loadDashboard();
+  }
+
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
+
+  goToAddPurchase(): void {
     this.router.navigate(['/app/purchase/add']);
   }
 
-  goToAddUsage() {
+  goToAddUsage(): void {
     this.router.navigate(['/app/usage/add']);
   }
+
+  /* =========================================================
+     CHART OPTIONS
+  ========================================================= */
 
   private chartOptions: any = {
     responsive: true,
     maintainAspectRatio: false,
+
+    plugins: {
+      legend: {
+        labels: {
+          usePointStyle: true,
+          padding: 18,
+        },
+      },
+    },
   };
 
-  /* ================= CHARTS ================= */
+  /* =========================================================
+     DEPARTMENT CHART
+  ========================================================= */
 
-  createDepartmentChart(usage: any[], itemMap: any) {
+  createDepartmentChart(usage: any[], itemMap: any): void {
     const map: any = {};
 
-    usage.forEach((u: any) => {
-      if (!u.item || !u.item.id) return;
+    usage.forEach((usageItem: any) => {
+      if (!usageItem.item || !usageItem.item.id) {
+        return;
+      }
 
-      const item = itemMap[u.item.id];
-      if (!item) return;
+      const item = itemMap[usageItem.item.id];
 
-      const total = (Number(u.quantity) || 0) * item.price;
-      map[u.department] = (map[u.department] || 0) + total;
+      if (!item) {
+        return;
+      }
+
+      const total = (Number(usageItem.quantity) || 0) * item.price;
+
+      map[usageItem.department] = (map[usageItem.department] || 0) + total;
     });
 
     this.departmentChart?.destroy();
 
     this.departmentChart = new Chart('departmentChart', {
       type: 'doughnut',
+
       data: {
         labels: Object.keys(map),
-        datasets: [{ data: Object.values(map) }],
+
+        datasets: [
+          {
+            data: Object.values(map),
+          },
+        ],
       },
+
       options: this.chartOptions,
     });
   }
 
-  createCategoryChart(usage: any[], itemMap: any) {
+  /* =========================================================
+     CATEGORY CHART
+  ========================================================= */
+
+  createCategoryChart(usage: any[], itemMap: any): void {
     const map: any = {};
 
-    usage.forEach((u: any) => {
-      if (!u.item || !u.item.id) return;
+    usage.forEach((usageItem: any) => {
+      if (!usageItem.item || !usageItem.item.id) {
+        return;
+      }
 
-      const item = itemMap[u.item.id];
-      if (!item) return;
+      const item = itemMap[usageItem.item.id];
 
-      const total = (Number(u.quantity) || 0) * item.price;
+      if (!item) {
+        return;
+      }
+
+      const total = (Number(usageItem.quantity) || 0) * item.price;
+
       const category = item.category || 'Others';
 
       map[category] = (map[category] || 0) + total;
@@ -197,30 +314,50 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.categoryChart = new Chart('categoryChart', {
       type: 'bar',
+
       data: {
         labels: Object.keys(map),
+
         datasets: [
           {
             label: 'Category Usage',
             data: Object.values(map),
+
+            borderRadius: 8,
           },
         ],
       },
+
       options: this.chartOptions,
     });
   }
 
-  createWeeklyTrend(usage: any[], itemMap: any) {
-    const weekly: any = { 'Week 1': 0, 'Week 2': 0, 'Week 3': 0, 'Week 4': 0 };
+  /* =========================================================
+     WEEKLY TREND
+  ========================================================= */
 
-    usage.forEach((u: any) => {
-      if (!u.item || !u.item.id) return;
+  createWeeklyTrend(usage: any[], itemMap: any): void {
+    const weekly: any = {
+      'Week 1': 0,
+      'Week 2': 0,
+      'Week 3': 0,
+      'Week 4': 0,
+    };
 
-      const item = itemMap[u.item.id];
-      if (!item) return;
+    usage.forEach((usageItem: any) => {
+      if (!usageItem.item || !usageItem.item.id) {
+        return;
+      }
 
-      const total = (Number(u.quantity) || 0) * item.price;
-      const week = Math.ceil(new Date(u.usedDateTime).getDate() / 7);
+      const item = itemMap[usageItem.item.id];
+
+      if (!item) {
+        return;
+      }
+
+      const total = (Number(usageItem.quantity) || 0) * item.price;
+
+      const week = Math.ceil(new Date(usageItem.usedDateTime).getDate() / 7);
 
       weekly[`Week ${week}`] += total;
     });
@@ -229,16 +366,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.weeklyChart = new Chart('weeklyChart', {
       type: 'line',
+
       data: {
         labels: Object.keys(weekly),
+
         datasets: [
           {
             label: 'Weekly Usage',
             data: Object.values(weekly),
+
+            tension: 0.4,
+            fill: true,
           },
         ],
       },
+
       options: this.chartOptions,
     });
+  }
+
+  /* =========================================================
+     DESTROY CHARTS
+  ========================================================= */
+
+  private destroyCharts(): void {
+    this.departmentChart?.destroy();
+    this.categoryChart?.destroy();
+    this.weeklyChart?.destroy();
   }
 }

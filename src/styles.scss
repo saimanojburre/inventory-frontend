@@ -1,20 +1,21 @@
-/* ================= GLOBAL RESET ================= */
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
 
 html,
 body {
     height: 100%;
 }
 
-body {
-    margin: 0;
-    font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
-    background: var(--app-bg);
-    color: var(--text-dark);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-/* ================= DESIGN SYSTEM ================= */
+/* =========================================================
+   DESIGN SYSTEM
+========================================================= */
 
 :root {
 
@@ -59,69 +60,138 @@ body {
     --space-xl: 32px;
 }
 
-/* ================= DARK THEME ================= */
+/* =========================================================
+   DARK THEME
+========================================================= */
 
 body.dark-theme {
 
-    /* BACKGROUND */
+    /* ===== BACKGROUND ===== */
     --app-bg: #0f172a;
     --card-bg: #1e293b;
     --surface: #1e293b;
 
-    /* TEXT */
-    --text-dark: #e5e7eb;
-    --text-medium: #cbd5f5;
+    /* ===== TEXT ===== */
+    --text-dark: #f1f5f9;
+    --text-medium: #cbd5e1;
     --text-light: #94a3b8;
 
-    /* BORDER */
+    /* ===== BORDER ===== */
     --border-light: #334155;
 
-    /* SHADOW (lighter for dark UI) */
+    /* ===== SHADOW ===== */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 10px 28px rgba(0, 0, 0, 0.6);
 }
 
-/* ================= MATERIAL GLOBAL IMPROVEMENTS ================= */
+/* =========================================================
+   BODY
+========================================================= */
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+
+    font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+
+    background: var(--app-bg);
+    color: var(--text-dark);
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease;
+}
+
+/* =========================================================
+   TEXT SELECTION
+========================================================= */
+
+::selection {
+    background: rgba(79, 70, 229, 0.2);
+}
+
+/* =========================================================
+   MATERIAL GLOBAL IMPROVEMENTS
+========================================================= */
 
 .mat-mdc-card {
     border-radius: var(--radius-lg) !important;
     box-shadow: var(--shadow-md) !important;
     background: var(--card-bg) !important;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.25s ease;
 }
 
-/* Buttons smoother */
-.mat-mdc-raised-button {
+.mat-mdc-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg) !important;
+}
+
+/* ===== BUTTONS ===== */
+
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button {
     border-radius: var(--radius-md) !important;
-    font-weight: 600;
+    font-weight: 600 !important;
 }
 
-/* Form fields cleaner */
+/* ===== FORM FIELDS ===== */
+
 .mat-mdc-form-field {
+    width: 100%;
     --mdc-outlined-text-field-container-shape: 10px;
 }
 
-/* Remove extra material spacing */
+/* Optional cleaner spacing */
 .mat-mdc-form-field-subscript-wrapper {
     display: none;
 }
 
-/* ================= TABLES ================= */
+/* =========================================================
+   TABLES
+========================================================= */
 
 .mat-mdc-table {
     background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+
+    transition:
+        background-color 0.25s ease;
+}
+
+.mat-mdc-header-row {
+    background: var(--surface);
 }
 
 .mat-mdc-header-cell {
-    background: var(--surface);
     color: var(--text-medium);
+    font-weight: 600;
+}
+
+.mat-mdc-row {
+    transition: background 0.2s ease;
 }
 
 .mat-mdc-row:hover {
-    background: var(--surface);
+    background: rgba(79, 70, 229, 0.04);
 }
 
-/* ================= SCROLLBAR ================= */
+body.dark-theme .mat-mdc-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
 
 ::-webkit-scrollbar {
     width: 8px;
@@ -129,15 +199,17 @@ body.dark-theme {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #d1d5db;
+    background: #cbd5e1;
     border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #9ca3af;
+    background: #94a3b8;
 }
 
-/* ================= PAGE TRANSITION ================= */
+/* =========================================================
+   PAGE TRANSITION
+========================================================= */
 
 router-outlet+* {
     animation: fadeIn 0.25s ease;
@@ -156,25 +228,90 @@ router-outlet+* {
     }
 }
 
-/* ================= UTILITIES ================= */
+/* =========================================================
+   LAYOUT UTILITIES
+========================================================= */
+
+.page-container {
+    padding: var(--space-lg);
+}
 
 .card {
     background: var(--card-bg);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-md);
     padding: var(--space-lg);
+
+    transition:
+        background-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-lg);
+}
+
+.grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-lg);
+}
+
+/* =========================================================
+   TEXT UTILITIES
+========================================================= */
 
 .text-muted {
     color: var(--text-light);
 }
 
-.error-snackbar {
-    background: #d32f2f;
-    color: white;
-}
+/* =========================================================
+   SNACKBAR STYLES
+========================================================= */
 
 .success-snackbar {
-    background: #2e7d32;
-    color: white;
+    --mdc-snackbar-container-color: #16a34a !important;
+    --mdc-snackbar-supporting-text-color: #ffffff !important;
+}
+
+.error-snackbar {
+    --mdc-snackbar-container-color: #dc2626 !important;
+    --mdc-snackbar-supporting-text-color: #ffffff !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1024px) {
+
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+
+    .grid-4,
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .page-container {
+        padding: var(--space-md);
+    }
 }

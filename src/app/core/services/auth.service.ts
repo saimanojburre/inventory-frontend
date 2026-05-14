@@ -1,8 +1,24 @@
 import { HttpClient } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
+
 import { Observable } from 'rxjs';
+
+import { Router } from '@angular/router';
+
 import { environment } from 'src/environments/environment.prod';
+
 import { LoginResponse } from '../models/login-response';
+
+export interface LoggedInUser {
+  name: string;
+
+  email: string;
+
+  role: string;
+
+  userId: number;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -10,20 +26,27 @@ import { LoginResponse } from '../models/login-response';
 export class AuthService {
   private baseUrl = environment.apiBaseUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {}
 
-  // ================= LOGIN =================
+  // =====================================================
+  // LOGIN
+  // =====================================================
 
   login(data: any): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/auth/login`, data);
   }
 
-  // ================= SESSION SAVE =================
+  // =====================================================
+  // SAVE SESSION
+  // =====================================================
 
-  saveSession(res: LoginResponse) {
+  saveSession(res: LoginResponse): void {
     localStorage.setItem('token', res.token);
 
-    const user = {
+    const user: LoggedInUser = {
       name: res.name,
       email: res.email,
       role: res.role,
@@ -33,52 +56,79 @@ export class AuthService {
     localStorage.setItem('user', JSON.stringify(user));
   }
 
-  // ================= AUTH CHECK =================
+  // =====================================================
+  // AUTH CHECK
+  // =====================================================
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('token');
+    return !!this.getToken();
   }
 
-  // ================= GET USER =================
+  // =====================================================
+  // USER
+  // =====================================================
 
-  getUser() {
-    const user = localStorage.getItem('user');
+  getUser(): LoggedInUser | null {
+    try {
+      const user = localStorage.getItem('user');
 
-    return user ? JSON.parse(user) : null;
+      return user ? JSON.parse(user) : null;
+    } catch {
+      return null;
+    }
   }
 
-  getUsername() {
-    return this.getUser()?.name;
+  getUsername(): string {
+    return this.getUser()?.name || '';
   }
 
-  getEmail() {
-    return this.getUser()?.email;
+  getEmail(): string {
+    return this.getUser()?.email || '';
   }
-  getUserId() {
-    return this.getUser()?.userId;
+
+  getUserId(): number {
+    return this.getUser()?.userId || 0;
   }
-  getRole() {
-    return this.getUser()?.role;
+
+  getRole(): string {
+    return this.getUser()?.role || '';
   }
+
+  // =====================================================
+  // ROLE HELPERS
+  // =====================================================
+
+  isOwner(): boolean {
+    return this.getRole() === 'OWNER';
+  }
+
+  isManager(): boolean {
+    return this.getRole() === 'MANAGER';
+  }
+
+  isUser(): boolean {
+    return this.getRole() === 'USER';
+  }
+
   isManagerOrOwner(): boolean {
-    const role = this.getRole();
-
-    return role === 'OWNER' || role === 'MANAGER';
+    return this.isOwner() || this.isManager();
   }
 
-  getToken() {
-    return localStorage.getItem('token');
+  // =====================================================
+  // TOKEN
+  // =====================================================
+
+  getToken(): string {
+    return localStorage.getItem('token') || '';
   }
 
-  // ================= REGISTER =================
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
-  register(data: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/auth/register`, data);
-  }
-
-  // ================= LOGOUT =================
-
-  logout() {
+  logout(): void {
     localStorage.clear();
+
+    this.router.navigate(['/']);
   }
 }

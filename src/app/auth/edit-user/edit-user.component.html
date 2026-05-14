@@ -1,95 +1,171 @@
 <app-page-header
   title="My Profile"
-  subtitle="Manage your account information"
+  subtitle="Manage your account settings and personal information"
 ></app-page-header>
 
 <div class="profile-page">
-  <mat-card class="profile-card">
-    <!-- HEADER -->
+  <!-- =====================================================
+       PROFILE CARD
+  ====================================================== -->
+
+  <div class="profile-card">
+    <!-- =====================================================
+         TOP HEADER
+    ====================================================== -->
 
     <div class="profile-header">
-      <div class="avatar">
-        <mat-icon>account_circle</mat-icon>
+      <!-- LEFT -->
+
+      <div class="profile-user">
+        <div class="avatar">
+          {{ profileForm.value.name?.charAt(0) || "U" }}
+        </div>
+
+        <div class="profile-info">
+          <h2>
+            {{ profileForm.value.name || "User" }}
+          </h2>
+
+          <div class="profile-meta">
+            <span class="role-badge">
+              {{ profileForm.value.role }}
+            </span>
+
+            <span class="username"> @{{ profileForm.value.username }} </span>
+          </div>
+        </div>
       </div>
 
-      <div class="title">
-        <h2>{{ profileForm.value.name || "User" }}</h2>
-        <span>{{ profileForm.value.role }}</span>
-      </div>
+      <!-- RIGHT -->
 
-      <button
-        mat-raised-button
-        color="primary"
-        *ngIf="!editMode"
-        (click)="enableEdit()"
-      >
-        <mat-icon>edit</mat-icon>
-        Edit Profile
-      </button>
+      <div class="profile-actions">
+        <button
+          *ngIf="!editMode"
+          mat-raised-button
+          color="primary"
+          class="edit-btn"
+          (click)="enableEdit()"
+        >
+          <mat-icon>edit</mat-icon>
+
+          Edit Profile
+        </button>
+      </div>
     </div>
 
-    <!-- FORM -->
+    <!-- =====================================================
+         FORM
+    ====================================================== -->
 
     <form [formGroup]="profileForm">
-      <div class="grid">
+      <div class="form-grid">
         <!-- USERNAME -->
 
         <mat-form-field appearance="outline">
           <mat-label>Username</mat-label>
+
           <input matInput formControlName="username" readonly />
+
+          <mat-icon matSuffix>person</mat-icon>
         </mat-form-field>
 
-        <!-- FULL NAME -->
+        <!-- NAME -->
 
         <mat-form-field appearance="outline">
           <mat-label>Full Name</mat-label>
+
           <input matInput formControlName="name" [readonly]="!editMode" />
+
+          <mat-icon matSuffix>badge</mat-icon>
+
+          <mat-error *ngIf="profileForm.get('name')?.hasError('required')">
+            Name is required
+          </mat-error>
         </mat-form-field>
 
         <!-- EMAIL -->
 
         <mat-form-field appearance="outline">
           <mat-label>Email</mat-label>
+
           <input matInput formControlName="email" [readonly]="!editMode" />
+
+          <mat-icon matSuffix>mail</mat-icon>
+
+          <mat-error *ngIf="profileForm.get('email')?.hasError('required')">
+            Email is required
+          </mat-error>
+
+          <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
+            Enter valid email
+          </mat-error>
         </mat-form-field>
 
         <!-- PHONE -->
 
         <mat-form-field appearance="outline">
-          <mat-label>Phone</mat-label>
+          <mat-label>Phone Number</mat-label>
+
           <input matInput formControlName="phone" [readonly]="!editMode" />
+
+          <mat-icon matSuffix>call</mat-icon>
         </mat-form-field>
 
         <!-- ROLE -->
 
         <mat-form-field appearance="outline">
           <mat-label>Role</mat-label>
+
           <input matInput formControlName="role" readonly />
+
+          <mat-icon matSuffix>admin_panel_settings</mat-icon>
         </mat-form-field>
 
         <!-- PASSWORD -->
 
         <mat-form-field appearance="outline" *ngIf="editMode">
           <mat-label>New Password</mat-label>
-          <input matInput type="password" formControlName="password" />
+
+          <input
+            matInput
+            [type]="hidePassword ? 'password' : 'text'"
+            formControlName="password"
+          />
+
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="hidePassword = !hidePassword"
+          >
+            <mat-icon>
+              {{ hidePassword ? "visibility_off" : "visibility" }}
+            </mat-icon>
+          </button>
         </mat-form-field>
       </div>
 
-      <!-- ACTION BUTTONS -->
+      <!-- =====================================================
+           ACTION BUTTONS
+      ====================================================== -->
 
-      <div class="actions" *ngIf="editMode">
+      <div class="form-actions" *ngIf="editMode">
         <button
           mat-raised-button
           color="primary"
+          class="save-btn"
           type="button"
+          [disabled]="loading"
           (click)="save()"
         >
-          Save
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+
+          <span *ngIf="!loading"> Save Changes </span>
         </button>
 
         <button
           mat-stroked-button
-          color="warn"
+          class="cancel-btn"
           type="button"
           (click)="cancel()"
         >
@@ -97,5 +173,5 @@
         </button>
       </div>
     </form>
-  </mat-card>
+  </div>
 </div>

@@ -7,8 +7,11 @@ import { AuthService } from 'src/app/core/services/auth.service';
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent {
-  @Input() open = true;
+  @Input() collapsed = false;
+
   constructor(public authService: AuthService) {}
 
-  // this.authService.isManagerOrOwner();
+  get isAdmin(): boolean {
+    return this.authService.isManagerOrOwner();
+  }
 }

@@ -1,26 +1,40 @@
 <app-page-header
   title="Usage Entry"
-  subtitle="Record supplier purchases and update stock"
+  subtitle="Record stock usage and reduce inventory"
 >
 </app-page-header>
+
+<!-- =====================================================
+     BACK BUTTON
+====================================================== -->
+
 <div class="page-header">
-  <button mat-button class="back-btn" (click)="goBack()">← Back</button>
+  <button mat-stroked-button class="back-btn" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+    Back
+  </button>
 </div>
 
-<div class="usage-container">
-  <h2 class="page-title">Stock Usage Entry</h2>
+<!-- =====================================================
+     MAIN CARD
+====================================================== -->
 
+<div class="usage-container">
   <form [formGroup]="usageForm">
     <div class="table-wrapper premium-table">
       <table mat-table [dataSource]="usages.controls" class="usage-table">
-        <!-- ITEM -->
+        <!-- =====================================================
+             ITEM
+        ====================================================== -->
+
         <ng-container matColumnDef="item">
           <th mat-header-cell *matHeaderCellDef class="col-item">Item</th>
 
           <td mat-cell *matCellDef="let row; let i = index" class="col-item">
             <mat-form-field appearance="outline">
+              <mat-label>Select Item</mat-label>
+
               <mat-select
-                placeholder="Select item"
                 [formControl]="row.get('item')"
                 (selectionChange)="onItemChange($event.value, i)"
               >
@@ -36,43 +50,51 @@
           </td>
         </ng-container>
 
-        <!-- UNITS -->
+        <!-- =====================================================
+             UNIT
+        ====================================================== -->
+
         <ng-container matColumnDef="units">
           <th mat-header-cell *matHeaderCellDef class="col-small">Unit</th>
 
           <td mat-cell *matCellDef="let row" class="col-small">
             <mat-form-field appearance="outline">
-              <input
-                matInput
-                placeholder="Unit"
-                readonly
-                [formControl]="row.get('units')"
-              />
+              <mat-label>Unit</mat-label>
+
+              <input matInput readonly [formControl]="row.get('units')" />
             </mat-form-field>
           </td>
         </ng-container>
 
-        <!-- AVAILABLE -->
+        <!-- =====================================================
+             AVAILABLE
+        ====================================================== -->
+
         <ng-container matColumnDef="available">
           <th mat-header-cell *matHeaderCellDef class="col-small">Available</th>
 
           <td mat-cell *matCellDef="let row" class="col-small">
-            <span class="available-stock">
+            <div class="available-badge">
               {{ row.get("available")?.value }}
-            </span>
+            </div>
           </td>
         </ng-container>
 
-        <!-- QUANTITY -->
+        <!-- =====================================================
+             QUANTITY
+        ====================================================== -->
+
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef class="col-small">Qty</th>
 
           <td mat-cell *matCellDef="let row" class="col-small">
             <mat-form-field appearance="outline">
+              <mat-label>Quantity</mat-label>
+
               <input
                 type="number"
+                min="1"
                 matInput
-                placeholder="Enter quantity"
                 [formControl]="row.get('quantity')"
               />
 
@@ -91,7 +113,10 @@
           </td>
         </ng-container>
 
-        <!-- DEPARTMENT -->
+        <!-- =====================================================
+             DEPARTMENT
+        ====================================================== -->
+
         <ng-container matColumnDef="department">
           <th mat-header-cell *matHeaderCellDef class="col-medium">
             Department
@@ -99,10 +124,9 @@
 
           <td mat-cell *matCellDef="let row" class="col-medium">
             <mat-form-field appearance="outline">
-              <mat-select
-                placeholder="Select department"
-                [formControl]="row.get('department')"
-              >
+              <mat-label>Select Department</mat-label>
+
+              <mat-select [formControl]="row.get('department')">
                 <mat-option *ngFor="let d of departments" [value]="d">
                   {{ d }}
                 </mat-option>
@@ -115,17 +139,18 @@
           </td>
         </ng-container>
 
-        <!-- TAKEN BY -->
+        <!-- =====================================================
+             TAKEN BY
+        ====================================================== -->
+
         <ng-container matColumnDef="takenBy">
           <th mat-header-cell *matHeaderCellDef class="col-medium">Taken By</th>
 
           <td mat-cell *matCellDef="let row" class="col-medium">
             <mat-form-field appearance="outline">
-              <input
-                matInput
-                placeholder="Staff name"
-                [formControl]="row.get('takenBy')"
-              />
+              <mat-label>Staff Name</mat-label>
+
+              <input matInput [formControl]="row.get('takenBy')" />
 
               <mat-error *ngIf="row.get('takenBy')?.hasError('required')">
                 Name required
@@ -134,17 +159,18 @@
           </td>
         </ng-container>
 
-        <!-- GIVEN BY -->
+        <!-- =====================================================
+             GIVEN BY
+        ====================================================== -->
+
         <ng-container matColumnDef="givenBy">
           <th mat-header-cell *matHeaderCellDef class="col-medium">Given By</th>
 
           <td mat-cell *matCellDef="let row" class="col-medium">
             <mat-form-field appearance="outline">
-              <input
-                matInput
-                placeholder="Store manager"
-                [formControl]="row.get('givenBy')"
-              />
+              <mat-label>Store Manager</mat-label>
+
+              <input matInput [formControl]="row.get('givenBy')" />
 
               <mat-error *ngIf="row.get('givenBy')?.hasError('required')">
                 Name required
@@ -153,25 +179,40 @@
           </td>
         </ng-container>
 
-        <!-- ACTION -->
+        <!-- =====================================================
+             ACTIONS
+        ====================================================== -->
+
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+          <th mat-header-cell *matHeaderCellDef class="col-actions">Actions</th>
 
           <td mat-cell *matCellDef="let row; let i = index" class="col-actions">
-            <button mat-icon-button color="primary" (click)="addRow()">
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="action-buttons">
+              <button
+                mat-mini-fab
+                color="primary"
+                type="button"
+                (click)="addRow()"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
 
-            <button
-              mat-icon-button
-              color="warn"
-              *ngIf="usages.length > 1"
-              (click)="removeRow(i)"
-            >
-              <mat-icon>remove</mat-icon>
-            </button>
+              <button
+                mat-mini-fab
+                color="warn"
+                type="button"
+                *ngIf="usages.length > 1"
+                (click)="removeRow(i)"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+            </div>
           </td>
         </ng-container>
+
+        <!-- =====================================================
+             ROWS
+        ====================================================== -->
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
@@ -184,14 +225,33 @@
     </div>
   </form>
 
-  <div class="save-section">
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
+  <div class="footer-section">
+    <div class="usage-summary">
+      <span>Total Entries</span>
+
+      <strong>
+        {{ usages.length }}
+      </strong>
+    </div>
+
     <button
       mat-raised-button
       color="primary"
+      class="save-btn"
       (click)="saveUsage()"
-      [disabled]="hasInvalidRows()"
+      [disabled]="hasInvalidRows() || loading"
     >
-      Save Usage
+      <mat-progress-spinner
+        *ngIf="loading"
+        diameter="22"
+        mode="indeterminate"
+      ></mat-progress-spinner>
+
+      <span *ngIf="!loading"> Save Usage </span>
     </button>
   </div>
 </div>

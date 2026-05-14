@@ -1,10 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
+
 import { MatTable } from '@angular/material/table';
+
 import { Router } from '@angular/router';
+
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
+
 import { InventoryService } from 'src/app/core/services/inventory.service';
+
 import { UsageService } from 'src/app/core/services/usage.service';
 
 @Component({
@@ -14,6 +21,7 @@ import { UsageService } from 'src/app/core/services/usage.service';
 })
 export class AddUsageComponent implements OnInit {
   usageForm!: FormGroup;
+  loading = false;
   items: any[] = [];
 
   displayedColumns = [
@@ -42,7 +50,8 @@ export class AddUsageComponent implements OnInit {
     'Meals',
   ];
 
-  @ViewChild(MatTable) table!: MatTable<any>;
+  @ViewChild(MatTable)
+  table!: MatTable<any>;
 
   constructor(
     private fb: FormBuilder,
@@ -53,17 +62,26 @@ export class AddUsageComponent implements OnInit {
     private dashboardCache: DashboardCacheService,
   ) {}
 
+  // =====================================================
+  // INIT
+  // =====================================================
+
   ngOnInit(): void {
-    this.usageForm = this.fb.group({
-      usages: this.fb.array([]),
-    });
+    this.initializeForm();
 
     this.addRow();
+
     this.loadItems();
   }
 
-  goBack() {
-    this.router.navigate(['/app/usage']);
+  // =====================================================
+  // FORM
+  // =====================================================
+
+  initializeForm(): void {
+    this.usageForm = this.fb.group({
+      usages: this.fb.array([]),
+    });
   }
 
   get usages(): FormArray {
@@ -73,45 +91,69 @@ export class AddUsageComponent implements OnInit {
   createRow(): FormGroup {
     return this.fb.group({
       item: [null, Validators.required],
-      units: [{ value: '', disabled: true }],
+
+      units: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+
       available: [0],
+
       quantity: [null, [Validators.required, Validators.min(1)]],
+
       department: ['', Validators.required],
+
       takenBy: ['', Validators.required],
+
       givenBy: ['', Validators.required],
     });
   }
 
-  addRow() {
+  // =====================================================
+  // ROWS
+  // =====================================================
+
+  addRow(): void {
     this.usages.push(this.createRow());
 
-    if (this.table) {
-      this.table.renderRows();
-    }
+    setTimeout(() => {
+      this.table?.renderRows();
+    });
   }
 
-  removeRow(index: number) {
+  removeRow(index: number): void {
+    if (this.usages.length <= 1) {
+      return;
+    }
+
     this.usages.removeAt(index);
 
-    if (this.table) {
-      this.table.renderRows();
-    }
+    setTimeout(() => {
+      this.table?.renderRows();
+    });
   }
 
-  loadItems() {
-    // USE CACHE FIRST
+  // =====================================================
+  // LOAD ITEMS
+  // =====================================================
+
+  loadItems(): void {
+    // CACHE FIRST
+
     if (this.dashboardCache.dashboardData?.items) {
       this.items = this.dashboardCache.dashboardData.items;
 
       return;
     }
 
-    // API ONLY IF CACHE EMPTY
+    // API
+
     this.inventoryService.getInventory().subscribe({
       next: (res) => {
         this.items = res;
 
-        // STORE IN CACHE
         if (!this.dashboardCache.dashboardData) {
           this.dashboardCache.dashboardData = {};
         }
@@ -120,18 +162,19 @@ export class AddUsageComponent implements OnInit {
       },
 
       error: () => {
-        this.snackBar.open('Failed to load items', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-          panelClass: ['error-snackbar'],
-        });
+        this.showError('Failed to load items');
       },
     });
   }
 
-  onItemChange(item: any, index: number) {
-    if (!item) return;
+  // =====================================================
+  // ITEM CHANGE
+  // =====================================================
+
+  onItemChange(item: any, index: number): void {
+    if (!item) {
+      return;
+    }
 
     this.usages.at(index).patchValue({
       units: item.units,
@@ -139,8 +182,13 @@ export class AddUsageComponent implements OnInit {
     });
   }
 
+  // =====================================================
+  // VALIDATION
+  // =====================================================
+
   isInvalidQuantity(row: any): boolean {
     const qty = Number(row.get('quantity')?.value) || 0;
+
     const available = Number(row.get('available')?.value) || 0;
 
     return qty > available;
@@ -150,26 +198,32 @@ export class AddUsageComponent implements OnInit {
     return this.usages.controls.some((row) => this.isInvalidQuantity(row));
   }
 
-  saveUsage() {
+  // =====================================================
+  // SAVE
+  // =====================================================
+
+  saveUsage(): void {
     if (this.usageForm.invalid || this.hasInvalidRows()) {
       this.usageForm.markAllAsTouched();
 
-      this.snackBar.open('Please fill all required fields correctly', 'Close', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'right',
-        panelClass: ['error-snackbar'],
-      });
+      this.showError('Please fill all required fields correctly');
 
       return;
     }
-
+    this.loading = true;
     const payload = this.usages.value.map((row: any) => ({
-      item: { id: row.item?.itemId },
+      item: {
+        id: row.item?.itemId,
+      },
+
       quantity: Number(row.quantity),
+
       department: row.department,
+
       takenBy: row.takenBy,
+
       givenBy: row.givenBy,
+
       usedDateTime: new Date(
         new Date().getTime() - new Date().getTimezoneOffset() * 60000,
       )
@@ -179,26 +233,58 @@ export class AddUsageComponent implements OnInit {
 
     this.usageService.bulkUsage(payload).subscribe({
       next: () => {
-        this.snackBar.open('Usage saved successfully', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-          panelClass: ['success-snackbar'],
-        });
+        this.loading = false;
+        this.showSuccess('Usage saved successfully');
+
         this.dashboardCache.clear();
+
         this.usages.clear();
+
         this.addRow();
+
         this.goBack();
       },
 
       error: () => {
-        this.snackBar.open('Failed to save usage', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-          panelClass: ['error-snackbar'],
-        });
+        this.loading = false;
+        this.showError('Failed to save usage');
       },
+    });
+  }
+
+  // =====================================================
+  // NAVIGATION
+  // =====================================================
+
+  goBack(): void {
+    this.router.navigate(['/app/usage']);
+  }
+
+  // =====================================================
+  // SNACKBAR
+  // =====================================================
+
+  private showSuccess(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+
+      verticalPosition: 'top',
+
+      horizontalPosition: 'right',
+
+      panelClass: ['success-snackbar'],
+    });
+  }
+
+  private showError(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+
+      verticalPosition: 'top',
+
+      horizontalPosition: 'right',
+
+      panelClass: ['error-snackbar'],
     });
   }
 }

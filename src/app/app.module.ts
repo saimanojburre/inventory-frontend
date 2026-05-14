@@ -29,16 +29,13 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AddPurchaseComponent } from './features/purchase/add-purchase/add-purchase.component';
-import { ViewPurchaseComponent } from './features/purchase/view-purchase/view-purchase.component';
 import { AddUsageComponent } from './features/usage/add-usage/add-usage.component';
-import { ViewUsageComponent } from './features/usage/view-usage/view-usage.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { EditUserComponent } from './auth/edit-user/edit-user.component';
 import { AddItemsComponent } from './features/items/add-items/add-items.component';
-import { ViewItemsComponent } from './features/items/view-items/view-items.component';
 import { ItemsComponent } from './features/items/items.component';
 import { TotalUsageComponent } from './features/metrics/total-usage/total-usage.component';
 import { DeptUsageComponent } from './features/metrics/dept-usage/dept-usage.component';
@@ -47,10 +44,11 @@ import { PageHeaderComponent } from './shared/components/page-header/page-header
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { AddUserComponent } from './features/user/add-user/add-user.component';
-import { ViewUserComponent } from './features/user/view-user/view-user.component';
 import { UserComponent } from './features/user/user.component';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LogsComponent } from './features/logs/logs.component';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
+import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -63,23 +61,20 @@ import { LogsComponent } from './features/logs/logs.component';
     PurchaseComponent,
     UsageComponent,
     AddPurchaseComponent,
-    ViewPurchaseComponent,
     UsageComponent,
     AddUsageComponent,
-    ViewUsageComponent,
     RegisterComponent,
     EditUserComponent,
     AddItemsComponent,
-    ViewItemsComponent,
     ItemsComponent,
     TotalUsageComponent,
     DeptUsageComponent,
     MetricsComponent,
     PageHeaderComponent,
     AddUserComponent,
-    ViewUserComponent,
     UserComponent,
     LogsComponent,
+    UnauthorizedComponent,
   ],
   imports: [
     BrowserModule,
@@ -113,6 +108,7 @@ import { LogsComponent } from './features/logs/logs.component';
     MatButtonToggleModule,
     MatSnackBarModule,
     MatSlideToggleModule,
+    NgxSkeletonLoaderModule,
   ],
   providers: [
     {

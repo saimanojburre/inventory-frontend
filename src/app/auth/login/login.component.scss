@@ -1,147 +1,222 @@
-/* ================= PAGE BACKGROUND ================= */
+/* =========================================================
+   PAGE
+========================================================= */
 
 .login-page {
+    position: relative;
+
     height: 100vh;
+
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
 
     background:
-        radial-gradient(circle at 20% 20%, #1f2937, #020617);
-
-    position: relative;
-    overflow: hidden;
+        radial-gradient(circle at top left,
+            #1e293b,
+            #020617);
 }
 
-/* soft animated glow */
-.login-page::before {
-    content: "";
+/* =========================================================
+   BACKGROUND GLOW
+========================================================= */
+
+.bg-glow {
     position: absolute;
-    width: 600px;
-    height: 600px;
-    background: #2563eb30;
+
+    width: 650px;
+    height: 650px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(79, 70, 229, 0.18);
+
     filter: blur(140px);
-    top: -100px;
-    left: -100px;
-    animation: float 10s ease-in-out infinite;
+
+    top: -120px;
+    left: -120px;
+
+    animation: floatGlow 10s ease-in-out infinite;
 }
 
-@keyframes float {
+@keyframes floatGlow {
+
     50% {
-        transform: translate(80px, 60px);
+        transform:
+            translate(60px, 50px) scale(1.08);
     }
 }
 
-/* ================= LOGIN CARD ================= */
+/* =========================================================
+   LOGIN CARD
+========================================================= */
 
 .login-card {
-    width: 380px;
+    position: relative;
+    z-index: 1;
+
+    width: 400px;
+
     padding: 42px 36px;
 
-    border-radius: 18px;
+    border-radius: 24px;
 
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(14px);
+    background:
+        rgba(255, 255, 255, 0.92);
+
+    backdrop-filter: blur(16px);
 
     box-shadow:
-        0 30px 60px rgba(0, 0, 0, 0.25);
+        0 25px 60px rgba(0, 0, 0, 0.3);
 
-    transition: all 0.3s ease;
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .login-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
 }
 
-/* ================= BRAND ================= */
+/* =========================================================
+   BRAND
+========================================================= */
 
 .brand {
     text-align: center;
     margin-bottom: 28px;
 }
 
+/* LOGO */
+
+.logo {
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(135deg,
+            #6366f1,
+            #4f46e5);
+
+    box-shadow:
+        0 12px 30px rgba(79, 70, 229, 0.35);
+}
+
+.logo mat-icon {
+    color: white;
+    font-size: 34px;
+}
+
+/* TITLE */
+
 .brand h1 {
+    margin: 0 0 6px;
+
     font-size: 30px;
     font-weight: 700;
+
     color: #111827;
-    margin-bottom: 6px;
 }
 
 .brand p {
+    margin: 0;
+
     font-size: 14px;
+
     color: #6b7280;
 }
 
-/* ================= INPUTS ================= */
+/* =========================================================
+   FORM
+========================================================= */
 
 .input-field {
     width: 100%;
     margin-bottom: 18px;
 }
 
-.mat-mdc-form-field {
-    --mdc-outlined-text-field-container-shape: 12px;
-}
-
-/* focus glow */
-.mat-mdc-form-field.mat-focused {
-    transform: scale(1.02);
-    transition: 0.15s ease;
-}
-
-/* ================= BUTTON ================= */
+/* =========================================================
+   BUTTONS
+========================================================= */
 
 .action-buttons {
     display: flex;
     gap: 12px;
-    align-items: center;
-    margin-top: 16px;
+
+    margin-top: 12px;
 }
 
 .login-btn,
 .signup-btn {
     flex: 1;
+
     height: 48px;
-    font-size: 15px;
-    font-weight: 600;
+
     border-radius: 12px;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
-/* ================= ERROR ================= */
+/* SPINNER ALIGNMENT */
+
+.login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
 
 .error-message {
-    color: #dc2626;
-    text-align: center;
-    font-size: 13px;
+    margin-top: -4px;
     margin-bottom: 10px;
+
+    color: #dc2626;
+
+    text-align: center;
+
+    font-size: 13px;
+    font-weight: 500;
 }
 
-/* ================= SHAKE ================= */
+/* =========================================================
+   SHAKE
+========================================================= */
 
 .shake {
     animation: shake 0.35s;
 }
 
 @keyframes shake {
+
     0% {
         transform: translateX(0);
     }
 
     25% {
-        transform: translateX(-7px);
+        transform: translateX(-6px);
     }
 
     50% {
-        transform: translateX(7px);
+        transform: translateX(6px);
     }
 
     75% {
-        transform: translateX(-5px);
+        transform: translateX(-4px);
     }
 
     100% {
@@ -149,11 +224,18 @@
     }
 }
 
-/* ================= MOBILE ================= */
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (max-width: 500px) {
+
     .login-card {
-        width: 90%;
+        width: 92%;
         padding: 32px 24px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
     }
 }

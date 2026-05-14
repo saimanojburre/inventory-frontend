@@ -1,71 +1,208 @@
 <app-page-header
   title="Add New User"
-  subtitle="Create a new system user"
+  subtitle="Create and manage system access"
 ></app-page-header>
 
 <div class="user-page">
-  <mat-card class="user-card">
-    <form [formGroup]="userForm" (ngSubmit)="submit()">
-      <div class="form-grid">
-        <!-- NAME -->
-        <mat-form-field appearance="outline">
-          <mat-label>Name</mat-label>
-          <input matInput formControlName="name" />
-        </mat-form-field>
+  <div class="user-layout">
+    <!-- =====================================================
+         LEFT CONTENT
+    ====================================================== -->
 
-        <!-- USERNAME -->
-        <mat-form-field appearance="outline">
-          <mat-label>Username</mat-label>
-          <input matInput formControlName="username" />
-        </mat-form-field>
+    <div class="user-left">
+      <!-- FORM CARD -->
 
-        <!-- EMAIL -->
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" />
-        </mat-form-field>
+      <div class="form-card">
+        <form [formGroup]="userForm" (ngSubmit)="submit()">
+          <div class="form-grid">
+            <!-- NAME -->
 
-        <!-- PHONE -->
-        <mat-form-field appearance="outline">
-          <mat-label>Phone</mat-label>
-          <input matInput formControlName="phone" />
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Full Name</mat-label>
 
-        <!-- PASSWORD -->
-        <mat-form-field appearance="outline">
-          <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" />
-        </mat-form-field>
+              <input matInput formControlName="name" />
 
-        <!-- ROLE -->
-        <mat-form-field appearance="outline">
-          <mat-label>Role</mat-label>
+              <mat-icon matSuffix>person</mat-icon>
 
-          <mat-select formControlName="role">
-            <mat-option *ngFor="let role of roles" [value]="role">
-              {{ role }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+              <mat-error *ngIf="userForm.get('name')?.hasError('required')">
+                Name is required
+              </mat-error>
+            </mat-form-field>
+
+            <!-- USERNAME -->
+
+            <mat-form-field appearance="outline">
+              <mat-label>Username</mat-label>
+
+              <input matInput formControlName="username" />
+
+              <mat-icon matSuffix>alternate_email</mat-icon>
+
+              <mat-error *ngIf="userForm.get('username')?.hasError('required')">
+                Username is required
+              </mat-error>
+            </mat-form-field>
+
+            <!-- EMAIL -->
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email Address</mat-label>
+
+              <input matInput formControlName="email" />
+
+              <mat-icon matSuffix>mail</mat-icon>
+
+              <mat-error *ngIf="userForm.get('email')?.hasError('required')">
+                Email is required
+              </mat-error>
+
+              <mat-error *ngIf="userForm.get('email')?.hasError('email')">
+                Enter valid email
+              </mat-error>
+            </mat-form-field>
+
+            <!-- PHONE -->
+
+            <mat-form-field appearance="outline">
+              <mat-label>Phone Number</mat-label>
+
+              <input matInput formControlName="phone" />
+
+              <mat-icon matSuffix>call</mat-icon>
+
+              <mat-error *ngIf="userForm.get('phone')?.hasError('required')">
+                Phone is required
+              </mat-error>
+
+              <mat-error *ngIf="userForm.get('phone')?.hasError('pattern')">
+                Enter valid phone number
+              </mat-error>
+            </mat-form-field>
+
+            <!-- PASSWORD -->
+
+            <mat-form-field appearance="outline">
+              <mat-label>Password</mat-label>
+
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+              />
+
+              <button
+                type="button"
+                mat-icon-button
+                matSuffix
+                (click)="hidePassword = !hidePassword"
+              >
+                <mat-icon>
+                  {{ hidePassword ? "visibility_off" : "visibility" }}
+                </mat-icon>
+              </button>
+
+              <mat-error *ngIf="userForm.get('password')?.hasError('required')">
+                Password is required
+              </mat-error>
+            </mat-form-field>
+
+            <!-- ROLE -->
+
+            <mat-form-field appearance="outline">
+              <mat-label>User Role</mat-label>
+
+              <mat-select formControlName="role">
+                <mat-option *ngFor="let role of roles" [value]="role">
+                  {{ role }}
+                </mat-option>
+              </mat-select>
+
+              <mat-icon matSuffix>shield</mat-icon>
+
+              <mat-error *ngIf="userForm.get('role')?.hasError('required')">
+                Role is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- ACTIVE -->
+
+          <div class="active-section">
+            <div class="active-content">
+              <div>
+                <h4>Account Status</h4>
+
+                <p>Enable or disable access for this user.</p>
+              </div>
+
+              <mat-slide-toggle formControlName="active">
+                Active User
+              </mat-slide-toggle>
+            </div>
+          </div>
+
+          <!-- ACTIONS -->
+
+          <div class="form-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              class="save-btn"
+              [disabled]="loading"
+            >
+              <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+
+              <span *ngIf="!loading">Create User</span>
+            </button>
+
+            <button
+              mat-stroked-button
+              type="button"
+              routerLink="/app/user"
+              class="cancel-btn"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- ACTIVE USER -->
+    <!-- =====================================================
+         RIGHT PANEL
+    ====================================================== -->
 
-      <div class="active-row">
-        <mat-slide-toggle formControlName="active">
-          Active User
-        </mat-slide-toggle>
+    <div class="user-right">
+      <div class="info-card">
+        <div class="info-icon">
+          <mat-icon>manage_accounts</mat-icon>
+        </div>
+
+        <h3>User Access Control</h3>
+
+        <p>
+          Assign roles and permissions carefully to maintain secure inventory
+          management operations.
+        </p>
+
+        <div class="role-list">
+          <div class="role-item owner">
+            <span>OWNER</span>
+            <small>Full system access</small>
+          </div>
+
+          <div class="role-item manager">
+            <span>MANAGER</span>
+            <small>Manage inventory & staff</small>
+          </div>
+
+          <div class="role-item user">
+            <span>USER</span>
+            <small>Basic usage access</small>
+          </div>
+        </div>
       </div>
-
-      <!-- BUTTONS -->
-
-      <div class="form-actions">
-        <button mat-raised-button color="primary" type="submit">
-          Save User
-        </button>
-
-        <button mat-stroked-button routerLink="/app/user">Cancel</button>
-      </div>
-    </form>
-  </mat-card>
+    </div>
+  </div>
 </div>

@@ -5,23 +5,28 @@
 </app-page-header>
 
 <div class="page-header">
-  <button mat-button class="back-btn" (click)="goBack()">← Back</button>
+  <button mat-stroked-button class="back-btn" (click)="goBack()">
+    <mat-icon>arrow_back</mat-icon>
+    Back
+  </button>
 </div>
 
 <div class="purchase-container">
-  <h2 class="page-title">Purchase Entry</h2>
+  <!-- FORM -->
 
   <form [formGroup]="purchaseForm">
     <div class="table-wrapper premium-table">
       <table mat-table [dataSource]="purchases.controls" class="purchase-table">
         <!-- ITEM -->
+
         <ng-container matColumnDef="item">
           <th mat-header-cell *matHeaderCellDef class="col-item">Item</th>
 
           <td mat-cell *matCellDef="let row; let i = index" class="col-item">
             <mat-form-field appearance="outline">
+              <mat-label>Select Item</mat-label>
+
               <mat-select
-                placeholder="Select item"
                 [formControl]="row.get('item')"
                 (selectionChange)="onItemChange($event.value, i)"
               >
@@ -37,32 +42,33 @@
           </td>
         </ng-container>
 
-        <!-- UNITS -->
+        <!-- UNIT -->
+
         <ng-container matColumnDef="units">
           <th mat-header-cell *matHeaderCellDef class="col-small">Unit</th>
 
           <td mat-cell *matCellDef="let row" class="col-small">
             <mat-form-field appearance="outline">
-              <input
-                matInput
-                placeholder="Unit"
-                readonly
-                [formControl]="row.get('units')"
-              />
+              <mat-label>Unit</mat-label>
+
+              <input matInput readonly [formControl]="row.get('units')" />
             </mat-form-field>
           </td>
         </ng-container>
 
-        <!-- QTY -->
+        <!-- QUANTITY -->
+
         <ng-container matColumnDef="quantity">
           <th mat-header-cell *matHeaderCellDef class="col-small">Qty</th>
 
           <td mat-cell *matCellDef="let row" class="col-small">
             <mat-form-field appearance="outline">
+              <mat-label>Quantity</mat-label>
+
               <input
                 type="number"
+                min="1"
                 matInput
-                placeholder="Enter quantity"
                 [formControl]="row.get('quantity')"
               />
 
@@ -71,22 +77,25 @@
               </mat-error>
 
               <mat-error *ngIf="row.get('quantity')?.hasError('min')">
-                Quantity must be greater than 0
+                Must be greater than 0
               </mat-error>
             </mat-form-field>
           </td>
         </ng-container>
 
         <!-- PRICE -->
+
         <ng-container matColumnDef="price">
           <th mat-header-cell *matHeaderCellDef class="col-small">Price</th>
 
           <td mat-cell *matCellDef="let row" class="col-small">
             <mat-form-field appearance="outline">
+              <mat-label>Price</mat-label>
+
               <input
                 type="number"
+                min="1"
                 matInput
-                placeholder="Enter price"
                 [formControl]="row.get('price')"
               />
 
@@ -95,35 +104,38 @@
               </mat-error>
 
               <mat-error *ngIf="row.get('price')?.hasError('min')">
-                Price must be greater than 0
+                Must be greater than 0
               </mat-error>
             </mat-form-field>
           </td>
         </ng-container>
 
         <!-- TOTAL -->
+
         <ng-container matColumnDef="total">
           <th mat-header-cell *matHeaderCellDef class="col-total">Total</th>
 
           <td mat-cell *matCellDef="let row" class="col-total total-cell">
             ₹
             {{
-              (row.get("quantity")?.value || 0) * (row.get("price")?.value || 0)
+              (
+                (row.get("quantity")?.value || 0) *
+                (row.get("price")?.value || 0)
+              ).toFixed(2)
             }}
           </td>
         </ng-container>
 
         <!-- SUPPLIER -->
+
         <ng-container matColumnDef="supplier">
           <th mat-header-cell *matHeaderCellDef class="col-medium">Supplier</th>
 
           <td mat-cell *matCellDef="let row" class="col-medium">
             <mat-form-field appearance="outline">
-              <input
-                matInput
-                placeholder="Supplier name"
-                [formControl]="row.get('supplier')"
-              />
+              <mat-label>Supplier Name</mat-label>
+
+              <input matInput [formControl]="row.get('supplier')" />
 
               <mat-error *ngIf="row.get('supplier')?.hasError('required')">
                 Supplier is required
@@ -133,14 +145,18 @@
         </ng-container>
 
         <!-- DATE -->
+
         <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef class="col-medium">Date</th>
+          <th mat-header-cell *matHeaderCellDef class="col-medium">
+            Purchase Date
+          </th>
 
           <td mat-cell *matCellDef="let row" class="col-medium">
             <mat-form-field appearance="outline">
+              <mat-label>Select Date</mat-label>
+
               <input
                 matInput
-                placeholder="Select date"
                 [matDatepicker]="picker"
                 [formControl]="row.get('date')"
               />
@@ -149,30 +165,42 @@
                 matSuffix
                 [for]="picker"
               ></mat-datepicker-toggle>
+
               <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
           </td>
         </ng-container>
 
         <!-- ACTIONS -->
+
         <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+          <th mat-header-cell *matHeaderCellDef class="col-actions">Actions</th>
 
           <td mat-cell *matCellDef="let row; let i = index" class="col-actions">
-            <button mat-icon-button color="primary" (click)="addRow()">
-              <mat-icon>add</mat-icon>
-            </button>
+            <div class="action-buttons">
+              <button
+                mat-mini-fab
+                color="primary"
+                type="button"
+                (click)="addRow()"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
 
-            <button
-              mat-icon-button
-              color="warn"
-              *ngIf="purchases.length > 1"
-              (click)="removeRow(i)"
-            >
-              <mat-icon>remove</mat-icon>
-            </button>
+              <button
+                mat-mini-fab
+                color="warn"
+                type="button"
+                *ngIf="purchases.length > 1"
+                (click)="removeRow(i)"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+            </div>
           </td>
         </ng-container>
+
+        <!-- ROWS -->
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
@@ -181,26 +209,29 @@
     </div>
   </form>
 
-  <!-- GRAND TOTAL -->
-  <div class="grand-total">
-    <span>Grand Total :</span>
-    <strong>₹ {{ getGrandTotal() }}</strong>
-  </div>
+  <!-- FOOTER -->
 
-  <!-- SAVE -->
-  <div class="save-section">
+  <div class="footer-section">
+    <div class="grand-total">
+      <span>Total Purchase Amount</span>
+
+      <strong> ₹ {{ getGrandTotal() | number: "1.2-2" }} </strong>
+    </div>
+
     <button
       mat-raised-button
       color="primary"
+      class="save-btn"
       [disabled]="loading"
       (click)="saveAll()"
     >
       <mat-progress-spinner
         *ngIf="loading"
-        diameter="20"
+        diameter="22"
         mode="indeterminate"
       ></mat-progress-spinner>
-      <span *ngIf="!loading">Save Purchases</span>
+
+      <span *ngIf="!loading"> Save Purchases </span>
     </button>
   </div>
 </div>
