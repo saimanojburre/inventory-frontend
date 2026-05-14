@@ -1,8 +1,12 @@
+// add-purchase.component.ts
+
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
+
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { PurchaseService } from 'src/app/core/services/purchase.service';
@@ -14,7 +18,9 @@ import { PurchaseService } from 'src/app/core/services/purchase.service';
 })
 export class AddPurchaseComponent implements OnInit {
   purchaseForm!: FormGroup;
+
   items: any[] = [];
+
   loading = false;
 
   displayedColumns: string[] = [
@@ -28,7 +34,8 @@ export class AddPurchaseComponent implements OnInit {
     'actions',
   ];
 
-  @ViewChild(MatTable) table!: MatTable<any>;
+  @ViewChild(MatTable)
+  table!: MatTable<any>;
 
   constructor(
     private fb: FormBuilder,
@@ -40,16 +47,17 @@ export class AddPurchaseComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.purchaseForm = this.fb.group({
-      purchases: this.fb.array([]),
-    });
+    this.initializeForm();
 
     this.addRow();
+
     this.loadItems();
   }
 
-  goBack() {
-    this.router.navigate(['/app/purchase']);
+  initializeForm(): void {
+    this.purchaseForm = this.fb.group({
+      purchases: this.fb.array([]),
+    });
   }
 
   get purchases(): FormArray {
@@ -59,34 +67,40 @@ export class AddPurchaseComponent implements OnInit {
   createRow(): FormGroup {
     return this.fb.group({
       item: [null, Validators.required],
+
       units: [{ value: '', disabled: true }],
-      quantity: [null, [Validators.required, Validators.min(1)]],
+
+      quantity: [1, [Validators.required, Validators.min(1)]],
+
       price: [null, [Validators.required, Validators.min(1)]],
+
       supplier: ['', Validators.required],
+
       date: [new Date(), Validators.required],
     });
   }
-  addRow() {
+
+  addRow(): void {
     this.purchases.push(this.createRow());
 
-    if (this.table) {
-      this.table.renderRows();
-    }
+    setTimeout(() => {
+      this.table?.renderRows();
+    });
   }
 
-  removeRow(index: number) {
+  removeRow(index: number): void {
     if (this.purchases.length <= 1) {
       return;
     }
 
     this.purchases.removeAt(index);
 
-    if (this.table) {
-      this.table.renderRows();
-    }
+    setTimeout(() => {
+      this.table?.renderRows();
+    });
   }
 
-  loadItems() {
+  loadItems(): void {
     if (this.dashboardCache.dashboardData?.items) {
       this.items = this.dashboardCache.dashboardData.items;
 
@@ -94,7 +108,7 @@ export class AddPurchaseComponent implements OnInit {
     }
 
     this.inventoryService.getInventory().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.items = res;
 
         if (!this.dashboardCache.dashboardData) {
@@ -105,17 +119,15 @@ export class AddPurchaseComponent implements OnInit {
       },
 
       error: () => {
-        this.snackBar.open('Failed to load items', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-        });
+        this.showError('Failed to load items');
       },
     });
   }
 
-  onItemChange(item: any, index: number) {
-    if (!item) return;
+  onItemChange(item: any, index: number): void {
+    if (!item) {
+      return;
+    }
 
     this.purchases.at(index).patchValue({
       units: item.units,
@@ -123,39 +135,45 @@ export class AddPurchaseComponent implements OnInit {
   }
 
   getGrandTotal(): number {
-    return this.purchases.controls.reduce((sum, row: any) => {
-      const qty = Number(row.get('quantity')?.value) || 0;
+    return this.purchases.controls.reduce((sum: number, row: any) => {
+      const quantity = Number(row.get('quantity')?.value) || 0;
+
       const price = Number(row.get('price')?.value) || 0;
 
-      return sum + qty * price;
+      return sum + quantity * price;
     }, 0);
   }
 
-  saveAll() {
-    this.loading = true;
+  saveAll(): void {
     if (this.purchaseForm.invalid) {
       this.purchaseForm.markAllAsTouched();
 
-      this.snackBar.open('Please fill all required fields correctly', 'Close', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'right',
-        panelClass: ['error-snackbar'],
-      });
+      this.showError('Please fill all required fields correctly');
 
       return;
     }
+
+    this.loading = true;
+
     const now = new Date(
       new Date().getTime() - new Date().getTimezoneOffset() * 60000,
     )
       .toISOString()
       .slice(0, 19);
+
     const payload = this.purchases.value.map((row: any) => ({
-      item: { id: row.item?.itemId },
+      item: {
+        id: row.item?.itemId,
+      },
+
       quantity: Number(row.quantity),
+
       price: Number(row.price),
+
       supplier: row.supplier,
+
       createdAt: now,
+
       purchaseDate: new Date(
         row.date.getTime() - row.date.getTimezoneOffset() * 60000,
       )
@@ -165,28 +183,46 @@ export class AddPurchaseComponent implements OnInit {
 
     this.purchaseService.bulkPurchase(payload).subscribe({
       next: () => {
-        this.snackBar.open('Purchases saved successfully', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-          panelClass: ['success-snackbar'],
-        });
         this.loading = false;
+
         this.dashboardCache.clear();
+
+        this.showSuccess('Purchases saved successfully');
+
         this.purchases.clear();
+
         this.addRow();
+
         this.goBack();
       },
 
       error: () => {
-        this.snackBar.open('Failed to save purchases', 'Close', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-          panelClass: ['error-snackbar'],
-        });
         this.loading = false;
+
+        this.showError('Failed to save purchases');
       },
+    });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/app/purchase']);
+  }
+
+  private showSuccess(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      verticalPosition: 'top',
+      horizontalPosition: 'right',
+      panelClass: ['success-snackbar'],
+    });
+  }
+
+  private showError(message: string): void {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      verticalPosition: 'top',
+      horizontalPosition: 'right',
+      panelClass: ['error-snackbar'],
     });
   }
 }

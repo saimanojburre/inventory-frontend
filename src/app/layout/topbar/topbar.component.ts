@@ -14,7 +14,7 @@ export class TopbarComponent {
 
   showProfileMenu = false;
   notificationCount = 3; // demo
-  username: any;
+  username = '';
   isDark = false;
 
   constructor(
@@ -61,7 +61,7 @@ export class TopbarComponent {
 
   logout(event?: Event) {
     event?.stopPropagation();
-    localStorage.clear();
+    this.authService.logout();
     this.dashboardCache.clear();
     this.router.navigate(['/']);
   }

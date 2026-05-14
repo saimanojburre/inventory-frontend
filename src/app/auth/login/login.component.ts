@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
+
 import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
@@ -9,42 +11,69 @@ import { AuthService } from 'src/app/core/services/auth.service';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
+  hidePassword = true;
+  loading = false;
+  loginError = false;
+
+  loginForm = this.fb.group({
+    username: ['', Validators.required],
+    password: ['', Validators.required],
+  });
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
   ) {}
 
-  hidePassword = true;
-  loading = false;
-  loginError = false;
-  loginForm = this.fb.group({
-    username: ['', Validators.required],
-    password: ['', Validators.required],
-  });
+  ngOnInit(): void {
+    // Optional future enhancements
+  }
 
-  goToRegister() {
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
+
+  goToRegister(): void {
     this.router.navigate(['/register']);
   }
-  login() {
-    if (this.loginForm.invalid) return;
 
-    this.loading = true;
+  /* =========================================================
+     LOGIN
+  ========================================================= */
+
+  login(): void {
+    // RESET ERROR
     this.loginError = false;
 
-    this.authService.login(this.loginForm.value).subscribe({
-      next: (res) => {
-        this.authService.saveSession(res);
+    // VALIDATION
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
 
-        this.loading = false;
+    // START LOADING
+    this.loading = true;
 
-        this.router.navigate(['/app/dashboard']);
-      },
+    this.authService
+      .login(this.loginForm.getRawValue())
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          // SAVE SESSION
+          this.authService.saveSession(response);
 
-      error: () => {
-        this.loading = false;
-        this.loginError = true;
-      },
-    });
+          // NAVIGATE
+          this.router.navigate(['/app/dashboard']);
+        },
+
+        error: () => {
+          this.loginError = true;
+        },
+      });
   }
 }

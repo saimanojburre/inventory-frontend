@@ -1,6 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
+
+import { map, Observable } from 'rxjs';
+
 import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
@@ -11,43 +14,32 @@ export class UsageService {
 
   constructor(private http: HttpClient) {}
 
-  // ================= AUTH HEADERS =================
+  // =====================================================
+  // CREATE SINGLE
+  // =====================================================
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
-
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
+  createUsage(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/usage`, data);
   }
 
-  // ================= CREATE SINGLE =================
+  // =====================================================
+  // CREATE BULK
+  // =====================================================
 
-  createUsage(data: any) {
-    return this.http.post(`${this.baseUrl}/usage`, data, {
-      headers: this.getHeaders(),
-    });
+  bulkUsage(data: any[]): Observable<any> {
+    return this.http.post(`${this.baseUrl}/usage/bulk`, data);
   }
 
-  // ================= CREATE BULK =================
+  // =====================================================
+  // GET ALL
+  // =====================================================
 
-  bulkUsage(data: any[]) {
-    return this.http.post(`${this.baseUrl}/usage/bulk`, data, {
-      headers: this.getHeaders(),
-    });
-  }
-
-  // ================= GET ALL =================
-
-  getUsage() {
+  getUsage(): Observable<any[]> {
     return this.http
-      .get<any[]>(`${this.baseUrl}/usage`, {
-        headers: this.getHeaders(),
-      })
+      .get<any[]>(`${this.baseUrl}/usage`)
       .pipe(
         map((usages) =>
-          usages.sort(
+          [...usages].sort(
             (a, b) =>
               new Date(b.usedDateTime).getTime() -
               new Date(a.usedDateTime).getTime(),
@@ -56,39 +48,42 @@ export class UsageService {
       );
   }
 
-  // ================= GET BY ID =================
+  // =====================================================
+  // GET BY ID
+  // =====================================================
 
-  getUsageById(id: number) {
-    return this.http.get(`${this.baseUrl}/usage/${id}`, {
-      headers: this.getHeaders(),
-    });
+  getUsageById(id: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/usage/${id}`);
   }
 
-  // ================= UPDATE =================
+  // =====================================================
+  // UPDATE
+  // =====================================================
 
-  updateUsage(id: number, data: any) {
-    return this.http.put(`${this.baseUrl}/usage/${id}`, data, {
-      headers: this.getHeaders(),
-    });
+  updateUsage(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.baseUrl}/usage/${id}`, data);
   }
 
-  // ================= DELETE =================
+  // =====================================================
+  // DELETE
+  // =====================================================
 
-  deleteUsage(id: number) {
+  deleteUsage(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/usage/${id}`, {
-      headers: this.getHeaders(),
-      responseType: 'text',
+      responseType: 'text' as 'json',
     });
   }
 
-  getUsageReport(fromDate?: string, toDate?: string) {
+  // =====================================================
+  // REPORT
+  // =====================================================
+
+  getUsageReport(fromDate?: string, toDate?: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/usage/report`, {
       params: {
         fromDate: fromDate || '',
         toDate: toDate || '',
       },
-      headers: this.getHeaders(),
-      // responseType: 'text',
     });
   }
 }

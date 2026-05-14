@@ -1,0 +1,31 @@
+.unauthorized-page {
+    height: 80vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+}
+
+mat-icon {
+    width: 80px;
+    height: 80px;
+
+    font-size: 80px;
+
+    color: #ef4444;
+
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin-bottom: 12px;
+}
+
+p {
+    color: #64748b;
+
+    margin-bottom: 24px;
+}

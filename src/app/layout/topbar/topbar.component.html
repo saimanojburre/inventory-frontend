@@ -1,47 +1,71 @@
-<div class="topbar">
+<header class="topbar">
   <!-- LEFT -->
-  <div class="left">
-    <button class="menu-btn" (click)="menuClick()">☰</button>
-    <span routerLink="/app/dashboard" class="title">The Airawat Kitchen</span>
+  <div class="topbar-left">
+    <!-- MENU BUTTON -->
+    <button mat-icon-button class="menu-btn" (click)="menuClick()">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+    <!-- TITLE -->
+    <div class="brand">
+      <span routerLink="/app/dashboard" class="title">
+        The Airawat Kitchen
+      </span>
+
+      <span class="subtitle"> Inventory Portal </span>
+    </div>
   </div>
 
   <!-- RIGHT -->
-  <div class="right">
-    <button mat-icon-button (click)="toggleTheme()">
+  <div class="topbar-right">
+    <!-- THEME TOGGLE -->
+    <button mat-icon-button class="icon-btn" (click)="toggleTheme()">
       <mat-icon>
         {{ isDark ? "light_mode" : "dark_mode" }}
       </mat-icon>
     </button>
-    <!-- NOTIFICATIONS -->
-    <div class="notification" (click)="openNotifications()">
-      🔔
+
+    <!-- NOTIFICATION -->
+    <button
+      mat-icon-button
+      class="icon-btn notification-btn"
+      (click)="openNotifications()"
+    >
+      <mat-icon>notifications</mat-icon>
+
       <span class="badge" *ngIf="notificationCount > 0">
         {{ notificationCount }}
       </span>
-    </div>
+    </button>
 
-    <!-- PROFILE DROPDOWN -->
+    <!-- PROFILE -->
     <div class="profile-wrapper" (click)="toggleProfileMenu()">
       <div class="profile">
-        <span class="avatar">
-          <img
-            src="assets/user.png"
-            alt="User"
-            style="width: 20px; height: 20px"
-          />
-        </span>
-        <span class="name">{{ username }}</span>
-        <span class="arrow">▼</span>
+        <div class="avatar">
+          <img src="assets/user.png" alt="User" />
+        </div>
+
+        <div class="profile-info">
+          <span class="name">
+            {{ username }}
+          </span>
+        </div>
+
+        <mat-icon class="dropdown-icon"> expand_more </mat-icon>
       </div>
 
       <!-- DROPDOWN -->
       <div class="dropdown" *ngIf="showProfileMenu">
-        <div class="dropdown-item" (click)="goProfile($event)">Profile</div>
+        <button class="dropdown-item" (click)="goProfile($event)">
+          <mat-icon>person</mat-icon>
+          Profile
+        </button>
 
-        <!-- <div class="dropdown-item" (click)="goSettings($event)">Settings</div> -->
-
-        <div class="dropdown-item logout" (click)="logout($event)">Logout</div>
+        <button class="dropdown-item logout" (click)="logout($event)">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
       </div>
     </div>
   </div>
-</div>
+</header>

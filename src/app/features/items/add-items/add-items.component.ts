@@ -1,9 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+
 import { MatTable } from '@angular/material/table';
+
 import { Router } from '@angular/router';
+
 import { ItemService } from 'src/app/core/services/item.service';
+
 import { MatSnackBar } from '@angular/material/snack-bar';
+
 import * as XLSX from 'xlsx';
 
 @Component({
@@ -22,6 +27,7 @@ export class AddItemsComponent {
     'quantity',
     'actions',
   ];
+
   categories: string[] = [
     'Raw Materials',
     'Packing Materials',
@@ -32,6 +38,7 @@ export class AddItemsComponent {
     'Cool Drinks & Water Bottles',
     'Sanitary',
   ];
+
   units: string[] = [
     'KG',
     'Packet',
@@ -42,7 +49,10 @@ export class AddItemsComponent {
     'Piece',
   ];
 
-  @ViewChild(MatTable) table!: MatTable<any>;
+  @ViewChild(MatTable)
+  table!: MatTable<any>;
+
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -51,7 +61,11 @@ export class AddItemsComponent {
     private snackBar: MatSnackBar,
   ) {}
 
-  ngOnInit() {
+  /* =====================================================
+       INIT
+  ====================================================== */
+
+  ngOnInit(): void {
     this.itemForm = this.fb.group({
       items: this.fb.array([]),
     });
@@ -59,53 +73,79 @@ export class AddItemsComponent {
     this.addRow();
   }
 
-  // ================= FORM ARRAY =================
+  /* =====================================================
+       FORM ARRAY
+  ====================================================== */
 
   get itemsFormArray(): FormArray {
     return this.itemForm.get('items') as FormArray;
   }
 
+  /* =====================================================
+       CREATE ROW
+  ====================================================== */
+
   createRow(data?: any): FormGroup {
     return this.fb.group({
       name: [data?.name || '', Validators.required],
+
       category: [data?.category || '', Validators.required],
+
       unit: [data?.unit || '', Validators.required],
+
       minStock: [data?.minStock || '', Validators.required],
+
       quantity: [data?.quantity || 0],
     });
   }
 
-  addRow() {
+  /* =====================================================
+       ADD ROW
+  ====================================================== */
+
+  addRow(): void {
     this.itemsFormArray.push(this.createRow());
 
-    setTimeout(() => this.table.renderRows());
+    setTimeout(() => {
+      this.table?.renderRows();
+    });
   }
 
-  removeRow(index: number) {
+  /* =====================================================
+       REMOVE ROW
+  ====================================================== */
+
+  removeRow(index: number): void {
     this.itemsFormArray.removeAt(index);
 
-    setTimeout(() => this.table.renderRows());
+    setTimeout(() => {
+      this.table?.renderRows();
+    });
   }
 
-  // ================= XLSX UPLOAD =================
+  /* =====================================================
+       XLSX UPLOAD
+  ====================================================== */
 
-  onFileUpload(event: any) {
+  onFileUpload(event: any): void {
     const file = event.target.files[0];
+
     if (!file) return;
 
-    const reader: FileReader = new FileReader();
+    const reader = new FileReader();
 
     reader.onload = (e: any) => {
       const binaryStr = e.target.result;
 
-      const workbook = XLSX.read(binaryStr, { type: 'binary' });
+      const workbook = XLSX.read(binaryStr, {
+        type: 'binary',
+      });
 
       const sheetName = workbook.SheetNames[0];
+
       const sheet = workbook.Sheets[sheetName];
 
       const data = XLSX.utils.sheet_to_json(sheet);
-
-      console.log('Excel Data:', data);
 
       const formattedData = data.map((row: any) => ({
         name: row['Product'],
@@ -115,14 +155,22 @@ export class AddItemsComponent {
         active: true,
       }));
 
+      this.loading = true;
+
       this.itemService.bulkSave(formattedData).subscribe({
         next: () => {
+          this.loading = false;
+
           this.snackBar.open('Products uploaded successfully', 'Close', {
             duration: 3000,
           });
-          // this.loadItems();
+
+          this.router.navigate(['/app/items']);
         },
+
         error: () => {
+          this.loading = false;
+
           this.snackBar.open('Upload failed', 'Close', {
             duration: 3000,
           });
@@ -133,24 +181,20 @@ export class AddItemsComponent {
     reader.readAsBinaryString(file);
   }
 
-  // ================= SAVE =================
+  /* =====================================================
+       SAVE
+  ====================================================== */
 
-  saveItems() {
+  saveItems(): void {
     if (this.itemForm.invalid) {
       this.itemsFormArray.controls.forEach((row: any) => {
         row.markAllAsTouched();
       });
 
-      this.snackBar.open(
-        'Please fill all required product fields before saving',
-        'Close',
-        {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'right',
-          panelClass: ['error-snackbar'],
-        },
-      );
+      this.snackBar.open('Please fill all required fields', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
 
       return;
     }
@@ -163,18 +207,38 @@ export class AddItemsComponent {
       active: true,
     }));
 
-    this.itemService.bulkSave(payload).subscribe((res: any) => {
-      this.snackBar.open(
-        `✔ ${res.savedCount} products saved | ⚠ ${res.duplicateCount} duplicates skipped`,
-        'OK',
-        { duration: 4000 },
-      );
+    this.loading = true;
 
-      this.router.navigate(['/app/items']);
+    this.itemService.bulkSave(payload).subscribe({
+      next: (res: any) => {
+        this.loading = false;
+
+        this.snackBar.open(
+          `✔ ${res.savedCount} products saved | ⚠ ${res.duplicateCount} duplicates skipped`,
+          'OK',
+          {
+            duration: 4000,
+          },
+        );
+
+        this.router.navigate(['/app/items']);
+      },
+
+      error: () => {
+        this.loading = false;
+
+        this.snackBar.open('Failed to save products', 'Close', {
+          duration: 3000,
+        });
+      },
     });
   }
 
-  goBack() {
+  /* =====================================================
+       NAVIGATION
+  ====================================================== */
+
+  goBack(): void {
     this.router.navigate(['/app/items']);
   }
 }

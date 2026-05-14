@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-main-layout',
@@ -6,9 +6,29 @@ import { Component } from '@angular/core';
   styleUrls: ['./main-layout.component.scss'],
 })
 export class MainLayoutComponent {
-  showSidebar = true;
+  sidebarCollapsed = false;
+  mobileSidebarOpen = false;
 
-  toggleSidebar() {
-    this.showSidebar = !this.showSidebar;
+  isMobile = window.innerWidth < 992;
+
+  toggleSidebar(): void {
+    if (this.isMobile) {
+      this.mobileSidebarOpen = !this.mobileSidebarOpen;
+    } else {
+      this.sidebarCollapsed = !this.sidebarCollapsed;
+    }
+  }
+
+  closeMobileSidebar(): void {
+    this.mobileSidebarOpen = false;
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.isMobile = window.innerWidth < 992;
+
+    if (!this.isMobile) {
+      this.mobileSidebarOpen = false;
+    }
   }
 }

@@ -1,56 +1,109 @@
-/* ================= CONTAINER ================= */
+/* =====================================================
+   PAGE HEADER
+====================================================== */
+
+.page-header {
+    margin-bottom: 18px;
+}
+
+.back-btn {
+    border-radius: 10px;
+}
+
+/* =====================================================
+   MAIN CONTAINER
+====================================================== */
 
 .usage-container {
     background: #ffffff;
+
+    border-radius: 20px;
+
     padding: 24px;
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.04),
+        0 10px 24px rgba(15, 23, 42, 0.06);
 }
 
-.page-title {
-    font-weight: 600;
-}
-
-/* ================= HEADER ================= */
-
-.page-header {
-    margin-bottom: 12px;
-}
-
-/* ================= TABLE WRAPPER ================= */
+/* =====================================================
+   TABLE WRAPPER
+====================================================== */
 
 .table-wrapper {
-    margin-top: 15px;
+    border: 1px solid #e2e8f0;
+
+    border-radius: 18px;
+
+    overflow: hidden;
 }
 
 .premium-table {
-    max-height: 520px;
+    max-height: 72vh;
     overflow: auto;
 }
 
-/* ================= TABLE ================= */
+/* =====================================================
+   TABLE
+====================================================== */
 
 .usage-table {
     width: 100%;
+    min-width: 1250px;
     table-layout: fixed;
 }
 
-/* ===== STICKY HEADER ===== */
+/* =====================================================
+   HEADER
+====================================================== */
 
 th.mat-mdc-header-cell {
     position: sticky;
     top: 0;
+    z-index: 10;
+
     background: #f8fafc;
-    z-index: 5;
-    font-weight: 600;
-    border-bottom: 1px solid #eaeaea;
+
+    font-weight: 700;
+
+    color: #475569;
+
+    border-bottom: 1px solid #e2e8f0;
 }
 
-/* ================= COLUMN WIDTHS ================= */
+/* =====================================================
+   CELLS
+====================================================== */
+
+td.mat-mdc-cell,
+th.mat-mdc-header-cell {
+    padding: 14px 14px;
+    vertical-align: middle;
+}
+
+/* =====================================================
+   ROWS
+====================================================== */
+
+.mat-mdc-row {
+    transition: background 0.2s ease;
+}
+
+.mat-mdc-row:hover {
+    background: #f8fbff;
+}
+
+.invalid-row {
+    background: #fff5f5 !important;
+}
+
+/* =====================================================
+   COLUMN WIDTHS
+====================================================== */
 
 .col-item {
     width: 24%;
-    min-width: 240px;
+    min-width: 260px;
 }
 
 .col-small {
@@ -62,11 +115,13 @@ th.mat-mdc-header-cell {
 }
 
 .col-actions {
-    width: 6%;
+    width: 8%;
     text-align: center;
 }
 
-/* ================= FORM FIELD ================= */
+/* =====================================================
+   FORM FIELD
+====================================================== */
 
 mat-form-field {
     width: 100%;
@@ -76,52 +131,146 @@ mat-form-field {
     display: none;
 }
 
-/* ================= ROW STYLE ================= */
-
-td.mat-mdc-cell {
-    padding: 8px 10px;
+::ng-deep .mat-mdc-text-field-wrapper {
+    border-radius: 12px !important;
 }
 
-.mat-mdc-row:hover {
-    background: #f6f9ff;
-    transition: 0.2s;
+/* =====================================================
+   AVAILABLE STOCK
+====================================================== */
+
+.available-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 56px;
+    height: 34px;
+
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    background: #ecfdf5;
+
+    color: #059669;
+
+    font-weight: 700;
 }
 
-/* ================= STOCK ================= */
-
-.available-stock {
-    font-weight: 600;
-    color: #2e7d32;
-}
-
-/* ================= VALIDATION ================= */
-
-.invalid-row {
-    background-color: #fff0f0 !important;
-}
+/* =====================================================
+   VALIDATION
+====================================================== */
 
 .error-text {
-    color: #d32f2f;
+    margin-top: 4px;
+
+    color: #dc2626;
+
     font-size: 11px;
-    margin-top: 2px;
+
+    font-weight: 500;
 }
 
-/* ================= SAVE BUTTON ================= */
+/* =====================================================
+   ACTIONS
+====================================================== */
 
-.save-section {
-    margin-top: 20px;
+.action-buttons {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
+    gap: 10px;
 }
 
-/* ================= SCROLLBAR ================= */
+/* =====================================================
+   FOOTER
+====================================================== */
+
+.footer-section {
+    margin-top: 24px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 16px;
+
+    flex-wrap: wrap;
+}
+
+.usage-summary {
+    background: #f8fafc;
+
+    border-radius: 16px;
+
+    padding: 18px 22px;
+
+    min-width: 220px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.usage-summary span {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.usage-summary strong {
+    font-size: 30px;
+    color: #0f172a;
+}
+
+/* =====================================================
+   SAVE BUTTON
+====================================================== */
+
+.save-btn {
+    min-width: 220px;
+    height: 52px;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* =====================================================
+   SCROLLBAR
+====================================================== */
 
 .premium-table::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 .premium-table::-webkit-scrollbar-thumb {
-    background: #d6d6d6;
-    border-radius: 6px;
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.premium-table::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+
+/* =====================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 992px) {
+
+    .usage-container {
+        padding: 18px;
+    }
+
+    .footer-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .save-btn,
+    .usage-summary {
+        width: 100%;
+    }
 }

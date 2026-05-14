@@ -1,16 +1,38 @@
 <div class="login-page">
+  <!-- BACKGROUND GLOW -->
+  <div class="bg-glow"></div>
+
+  <!-- LOGIN CARD -->
   <div class="login-card" [class.shake]="loginError">
-    <!-- LOGO / TITLE -->
+    <!-- BRAND -->
     <div class="brand">
+      <div class="logo">
+        <mat-icon>inventory_2</mat-icon>
+      </div>
+
       <h1>Inventory Portal</h1>
-      <p>Smart Inventory Management</p>
+
+      <p>Smart Inventory Management System</p>
     </div>
 
+    <!-- FORM -->
     <form [formGroup]="loginForm" (ngSubmit)="login()">
       <!-- USERNAME -->
       <mat-form-field appearance="outline" class="input-field">
         <mat-label>Username</mat-label>
-        <input matInput formControlName="username" autofocus />
+
+        <input matInput formControlName="username" autocomplete="username" />
+
+        <mat-icon matPrefix> person </mat-icon>
+
+        <mat-error
+          *ngIf="
+            loginForm.get('username')?.touched &&
+            loginForm.get('username')?.invalid
+          "
+        >
+          Username is required
+        </mat-error>
       </mat-form-field>
 
       <!-- PASSWORD -->
@@ -21,7 +43,10 @@
           matInput
           [type]="hidePassword ? 'password' : 'text'"
           formControlName="password"
+          autocomplete="current-password"
         />
+
+        <mat-icon matPrefix> lock </mat-icon>
 
         <button
           mat-icon-button
@@ -33,6 +58,15 @@
             {{ hidePassword ? "visibility_off" : "visibility" }}
           </mat-icon>
         </button>
+
+        <mat-error
+          *ngIf="
+            loginForm.get('password')?.touched &&
+            loginForm.get('password')?.invalid
+          "
+        >
+          Password is required
+        </mat-error>
       </mat-form-field>
 
       <!-- ERROR -->
@@ -40,7 +74,6 @@
         Invalid username or password
       </div>
 
-      <!-- LOGIN BUTTON -->
       <!-- ACTION BUTTONS -->
       <div class="action-buttons">
         <!-- LOGIN -->
@@ -49,18 +82,14 @@
           color="primary"
           class="login-btn"
           type="submit"
-          [disabled]="loading"
+          [disabled]="loading || loginForm.invalid"
         >
-          <mat-progress-spinner
-            *ngIf="loading"
-            diameter="20"
-            mode="indeterminate"
-          ></mat-progress-spinner>
+          <mat-spinner *ngIf="loading" diameter="20"> </mat-spinner>
 
-          <span *ngIf="!loading">Login</span>
+          <span *ngIf="!loading"> Login </span>
         </button>
 
-        <!-- SIGN UP -->
+        <!-- REGISTER -->
         <button
           mat-stroked-button
           color="primary"

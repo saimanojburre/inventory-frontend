@@ -1,182 +1,282 @@
-.login-page {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: radial-gradient(circle at 20% 20%, #1f2937, #020617);
+/* register.component.scss */
+
+.register-page {
     position: relative;
+
+    min-height: 100vh;
+    padding: 24px 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     overflow: hidden;
+
+    background:
+        radial-gradient(circle at top left,
+            #1e293b,
+            #020617);
 }
 
-.login-page::before {
-    content: '';
+/* =========================================================
+   BACKGROUND GLOW
+========================================================= */
+
+.bg-glow {
     position: absolute;
-    width: 600px;
-    height: 600px;
-    background: #2563eb30;
+
+    width: 650px;
+    height: 650px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(79, 70, 229, 0.18);
+
     filter: blur(140px);
-    top: -100px;
-    left: -100px;
-    animation: float 10s ease-in-out infinite;
+
+    top: -120px;
+    left: -120px;
+
+    animation: floatGlow 10s ease-in-out infinite;
 }
 
-@keyframes float {
+@keyframes floatGlow {
+
     50% {
-        transform: translate(80px, 60px);
+        transform:
+            translate(60px, 50px) scale(1.08);
     }
 }
 
-.login-card {
-    width: 380px;
-    padding: 42px 36px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(14px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
-    transition: all 0.3s ease;
+/* =========================================================
+   REGISTER CARD
+========================================================= */
+
+.register-card {
+    position: relative;
+    z-index: 1;
+
+    width: 420px;
+
+    padding: 40px 36px;
+
+    border-radius: 24px;
+
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    backdrop-filter: blur(16px);
+
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.3);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
-.login-card:hover {
-    transform: translateY(-4px);
+.register-card:hover {
+    transform: translateY(-3px);
 }
+
+/* =========================================================
+   BRAND
+========================================================= */
 
 .brand {
     text-align: center;
-    margin-bottom: 28px;
+    margin-bottom: 26px;
+}
+
+.logo {
+    width: 70px;
+    height: 70px;
+
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(135deg,
+            #6366f1,
+            #4f46e5);
+
+    box-shadow:
+        0 12px 30px rgba(79, 70, 229, 0.35);
+}
+
+.logo mat-icon {
+    color: white;
+    font-size: 34px;
 }
 
 .brand h1 {
+    margin: 0 0 6px;
+
     font-size: 30px;
     font-weight: 700;
+
     color: #111827;
-    margin-bottom: 6px;
 }
 
 .brand p {
+    margin: 0;
+
     font-size: 14px;
+
     color: #6b7280;
 }
 
+/* =========================================================
+   FORM
+========================================================= */
+
 .input-field {
     width: 100%;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
-.mat-mdc-form-field {
-    --mdc-outlined-text-field-container-shape: 12px;
-}
-
-.mat-mdc-form-field.mat-focused {
-    transform: scale(1.02);
-    transition: 0.15s ease;
-}
-
-.login-btn {
-    width: 100%;
-    height: 48px;
-    margin-top: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    border-radius: 12px;
-}
-
-.login-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.error-message {
-    color: #dc2626;
-    text-align: center;
-    font-size: 13px;
-    margin-bottom: 10px;
-}
+/* =========================================================
+   PASSWORD HINT
+========================================================= */
 
 .password-hint {
-    margin-top: -8px;
+    margin-top: -6px;
     margin-bottom: 16px;
+
     padding: 12px 14px;
-    border-radius: 10px;
+
+    border-radius: 12px;
+
     background: #f8fafc;
     border: 1px solid #e2e8f0;
+
     font-size: 13px;
 }
 
 .password-hint div {
     margin: 6px 0;
+
     color: #64748b;
+
     transition: 0.2s ease;
 }
 
 .password-hint div.valid {
     color: #16a34a;
+    font-weight: 600;
+}
+
+/* =========================================================
+   PASSWORD MISMATCH
+========================================================= */
+
+.password-mismatch {
+    margin-top: -6px;
+    margin-bottom: 16px;
+
+    padding-left: 4px;
+
+    color: #dc2626;
+
+    font-size: 13px;
     font-weight: 500;
 }
 
-.password-mismatch {
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.register-btn {
+    width: 100%;
+    height: 48px;
+
+    margin-top: 10px;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.error-message {
+    margin-bottom: 12px;
+
     color: #dc2626;
+
+    text-align: center;
+
     font-size: 13px;
-    margin-top: -8px;
-    margin-bottom: 16px;
-    padding-left: 4px;
     font-weight: 500;
 }
+
+/* =========================================================
+   SUCCESS BOX
+========================================================= */
 
 .success-box {
     display: flex;
     align-items: flex-start;
     gap: 12px;
-    margin-top: 16px;
+
+    margin-top: 12px;
     margin-bottom: 14px;
+
     padding: 14px;
-    border-radius: 12px;
-    background: rgba(76, 175, 80, 0.1);
-    border: 1px solid rgba(76, 175, 80, 0.3);
-    color: #2e7d32;
-    animation: fadeIn 0.3s ease;
+
+    border-radius: 14px;
+
+    background:
+        rgba(34, 197, 94, 0.08);
+
+    border:
+        1px solid rgba(34, 197, 94, 0.2);
+
+    color: #15803d;
+
+    animation: successFade 0.3s ease;
 }
 
 .success-box mat-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
     margin-top: 2px;
+
+    font-size: 24px;
 }
 
 .success-content h4 {
     margin: 0;
+
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .success-content p {
     margin: 4px 0 0;
+
     font-size: 13px;
     line-height: 1.4;
-    color: #3d3d3d;
+
+    color: #3f3f46;
 }
 
-.login-link {
-    margin-top: 16px;
-    text-align: center;
-    font-size: 14px;
-}
+@keyframes successFade {
 
-.login-link a {
-    cursor: pointer;
-    color: #2563eb;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
-}
-
-@keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(6px);
+        transform: translateY(8px);
     }
 
     to {
@@ -185,9 +285,44 @@
     }
 }
 
+/* =========================================================
+   LOGIN LINK
+========================================================= */
+
+.login-link {
+    margin-top: 18px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+    color: var(--text-medium);
+}
+
+.login-link a {
+    margin-left: 4px;
+
+    cursor: pointer;
+
+    color: var(--primary);
+
+    font-weight: 600;
+
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
 @media (max-width: 500px) {
-    .login-card {
-        width: 90%;
+
+    .register-card {
+        width: 92%;
         padding: 32px 24px;
     }
 }

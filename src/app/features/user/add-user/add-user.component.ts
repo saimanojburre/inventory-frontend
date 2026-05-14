@@ -10,6 +10,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./add-user.component.scss'],
 })
 export class AddUserComponent {
+  loading = false;
+  hidePassword = true;
+
+  roles = ['OWNER', 'MANAGER', 'USER'];
+
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
@@ -17,20 +22,30 @@ export class AddUserComponent {
     private snackBar: MatSnackBar,
   ) {}
 
-  roles = ['OWNER', 'MANAGER', 'USER'];
-
   userForm = this.fb.group({
     name: ['', Validators.required],
+
     username: ['', Validators.required],
+
     email: ['', [Validators.required, Validators.email]],
+
     phone: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
-    password: ['', Validators.required],
+
+    password: ['', [Validators.required, Validators.minLength(6)]],
+
     role: ['', Validators.required],
+
     active: [true],
   });
 
   submit() {
-    if (this.userForm.invalid) return;
+    if (this.userForm.invalid) {
+      this.userForm.markAllAsTouched();
+
+      return;
+    }
+
+    this.loading = true;
 
     const payload = this.userForm.value;
 
@@ -40,9 +55,25 @@ export class AddUserComponent {
           duration: 3000,
           verticalPosition: 'top',
           horizontalPosition: 'right',
+
+          panelClass: ['success-snackbar'],
         });
 
+        this.loading = false;
+
         this.router.navigate(['/app/user']);
+      },
+
+      error: () => {
+        this.loading = false;
+
+        this.snackBar.open('Failed to create user', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+
+          panelClass: ['error-snackbar'],
+        });
       },
     });
   }

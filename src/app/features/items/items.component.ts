@@ -68,7 +68,7 @@ export class ItemsComponent {
     private itemService: ItemService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private authService: AuthService,
+    public authService: AuthService,
   ) {}
 
   // ================= INIT =================

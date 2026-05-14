@@ -1,6 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+
 import { Injectable } from '@angular/core';
+
 import { map, Observable } from 'rxjs';
+
 import { environment } from 'src/environments/environment.prod';
 
 @Injectable({
@@ -11,63 +14,65 @@ export class PurchaseService {
 
   constructor(private http: HttpClient) {}
 
-  // ================= HEADERS =================
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || '';
+  // =====================================================
+  // ADD PURCHASE
+  // =====================================================
 
-    return new HttpHeaders({
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
-  }
-
-  // ================= ADD PURCHASE =================
   addPurchase(data: any): Observable<any> {
-    return this.http.post(this.baseUrl, data, { headers: this.getHeaders() });
+    return this.http.post(this.baseUrl, data);
   }
 
-  // ================= BULK PURCHASE =================
+  // =====================================================
+  // BULK PURCHASE
+  // =====================================================
+
   bulkPurchase(data: any[]): Observable<any> {
-    return this.http.post(`${this.baseUrl}/bulk`, data, {
-      headers: this.getHeaders(),
-    });
+    return this.http.post(`${this.baseUrl}/bulk`, data);
   }
 
-  // ================= GET ALL PURCHASES =================
+  // =====================================================
+  // GET ALL PURCHASES
+  // =====================================================
+
   getAll(): Observable<any[]> {
-    return this.http
-      .get<any[]>(this.baseUrl, { headers: this.getHeaders() })
-      .pipe(
-        map((purchases) =>
-          purchases.sort((a, b) => {
-            const dateA = new Date(a?.purchaseDate || 0).getTime();
-            const dateB = new Date(b?.purchaseDate || 0).getTime();
+    return this.http.get<any[]>(this.baseUrl).pipe(
+      map((purchases) =>
+        [...purchases].sort((a, b) => {
+          const dateA = new Date(a?.purchaseDate || 0).getTime();
 
-            return dateB - dateA; // latest first
-          }),
-        ),
-      );
+          const dateB = new Date(b?.purchaseDate || 0).getTime();
+
+          // LATEST FIRST
+
+          return dateB - dateA;
+        }),
+      ),
+    );
   }
 
-  // ================= GET PURCHASE BY ID =================
+  // =====================================================
+  // GET PURCHASE BY ID
+  // =====================================================
+
   getById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${id}`, {
-      headers: this.getHeaders(),
-    });
+    return this.http.get(`${this.baseUrl}/${id}`);
   }
 
-  // ================= UPDATE PURCHASE =================
+  // =====================================================
+  // UPDATE PURCHASE
+  // =====================================================
+
   update(id: number, data: any): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, data, {
-      headers: this.getHeaders(),
-    });
+    return this.http.put(`${this.baseUrl}/${id}`, data);
   }
 
-  // ================= DELETE PURCHASE =================
-  delete(id: number) {
+  // =====================================================
+  // DELETE PURCHASE
+  // =====================================================
+
+  delete(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`, {
-      headers: this.getHeaders(),
-      responseType: 'text',
+      responseType: 'text' as 'json',
     });
   }
 }

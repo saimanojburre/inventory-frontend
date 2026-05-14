@@ -1,3 +1,5 @@
+// register.component.ts
+
 import { Component } from '@angular/core';
 import {
   FormBuilder,
@@ -6,7 +8,10 @@ import {
   ValidationErrors,
   FormGroupDirective,
 } from '@angular/forms';
+
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
+
 import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -24,11 +29,13 @@ export class RegisterComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: UserService,
+    private userService: UserService,
     private router: Router,
   ) {}
 
-  /* ================= FORM ================= */
+  /* =========================================================
+     FORM
+  ========================================================= */
 
   registerForm = this.fb.group(
     {
@@ -51,16 +58,33 @@ export class RegisterComponent {
 
       confirmPassword: ['', Validators.required],
     },
-    { validators: this.passwordMatchValidator },
+    {
+      validators: this.passwordMatchValidator,
+    },
   );
 
-  /* ================= GETTERS ================= */
+  /* =========================================================
+     GETTERS
+  ========================================================= */
 
   get f() {
     return this.registerForm.controls;
   }
 
-  /* ================= ERROR HANDLER ================= */
+  /* =========================================================
+     VALIDATORS
+  ========================================================= */
+
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password')?.value;
+    const confirmPassword = control.get('confirmPassword')?.value;
+
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  /* =========================================================
+     ERROR HANDLING
+  ========================================================= */
 
   showError(controlName: string, error: string): boolean {
     const control = this.registerForm.get(controlName);
@@ -72,49 +96,54 @@ export class RegisterComponent {
     );
   }
 
-  /* ================= PASSWORD MATCH ================= */
+  /* =========================================================
+     REGISTER
+  ========================================================= */
 
-  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-
-    return password === confirmPassword ? null : { passwordMismatch: true };
-  }
-
-  /* ================= REGISTER ================= */
-
-  register(formDirective: FormGroupDirective) {
+  register(formDirective: FormGroupDirective): void {
     this.error = '';
     this.success = '';
 
     if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
       return;
     }
 
     this.loading = true;
 
-    const { confirmPassword, ...payload } = this.registerForm.value;
+    const { confirmPassword, ...payload } = this.registerForm.getRawValue();
 
-    this.authService.createUser(payload).subscribe({
-      next: () => {
-        this.loading = false;
+    this.userService
+      .createUser(payload)
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.success =
+            'Registration submitted successfully. Please wait for owner approval.';
 
-        this.success =
-          'Registration submitted successfully. Please wait for owner approval.';
+          formDirective.resetForm();
 
-        formDirective.resetForm();
-      },
+          this.registerForm.reset();
 
-      error: () => {
-        this.loading = false;
-        this.error = 'Registration failed';
-      },
-    });
+          this.registerForm.markAsPristine();
+          this.registerForm.markAsUntouched();
+        },
+
+        error: () => {
+          this.error = 'Registration failed';
+        },
+      });
   }
 
-  /* ================= NAVIGATION ================= */
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
 
-  goToLogin() {
+  goToLogin(): void {
     this.router.navigate(['/login']);
   }
 }

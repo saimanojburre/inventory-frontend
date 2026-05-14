@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { UsageService } from 'src/app/core/services/usage.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-metrics',
@@ -8,10 +9,10 @@ import { UsageService } from 'src/app/core/services/usage.service';
 })
 export class MetricsComponent {
   loading = true;
+
   fromDate: Date | null = null;
   toDate: Date | null = null;
 
-  // same categories as backend
   categories: string[] = [
     'Raw Materials',
     'Packing Materials',
@@ -27,18 +28,26 @@ export class MetricsComponent {
 
   dataSource: any[] = [];
 
-  constructor(private usageService: UsageService) {}
+  constructor(
+    private usageService: UsageService,
+    private snackBar: MatSnackBar,
+  ) {}
 
   ngOnInit() {
     this.displayedColumns = ['department', ...this.categories, 'total'];
+
     const today = new Date();
 
     this.toDate = today;
+
     this.fromDate = new Date(today.getFullYear(), today.getMonth(), 1);
+
     this.loadReport();
   }
 
-  // ================= LOAD =================
+  // =====================================================
+  // LOAD REPORT
+  // =====================================================
 
   loadReport() {
     this.loading = true;
@@ -50,15 +59,27 @@ export class MetricsComponent {
     this.usageService.getUsageReport(from, to).subscribe({
       next: (res) => {
         this.dataSource = res;
+
         this.loading = false;
       },
+
       error: () => {
         this.loading = false;
+
+        this.snackBar.open('Failed to load report', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+
+          panelClass: ['error-snackbar'],
+        });
       },
     });
   }
 
-  // ================= FORMAT =================
+  // =====================================================
+  // FORMAT
+  // =====================================================
 
   formatCurrency(value: number): string {
     return '₹' + (value || 0).toLocaleString('en-IN');

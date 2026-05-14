@@ -1,180 +1,481 @@
-/* ================= TOOLBAR ================= */
+/* =========================================================
+   TOOLBAR
+========================================================= */
 
-.page-header {
+.toolbar {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
 
     margin-bottom: 20px;
-    gap: 16px;
 }
 
-.right-actions {
+/* LEFT */
+
+.toolbar-left {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.search-field {
-    width: 280px;
-}
+/* RIGHT */
 
-/* ================= LOADING ================= */
-
-.loading {
+.toolbar-right {
     display: flex;
-    justify-content: center;
-    padding: 40px;
+    align-items: center;
+    gap: 12px;
 }
 
-/* ================= EMPTY STATE ================= */
+/* SEARCH */
 
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #64748b;
+.search-field {
+    width: 340px;
 }
 
-.empty-state mat-icon {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #94a3b8;
+/* BUTTONS */
+
+.add-btn,
+.export-btn {
+    height: 44px;
+
+    border-radius: 12px !important;
+
+    font-weight: 600 !important;
 }
 
-.empty-state h3 {
-    margin-bottom: 6px;
-}
-
-/* ================= TABLE CONTAINER ================= */
+/* =========================================================
+   TABLE CONTAINER
+========================================================= */
 
 .items-view {
-    background: white;
-    padding: 24px;
+    background: var(--card-bg);
 
-    border-radius: 14px;
-    border: 1px solid #e5e7eb;
+    border-radius: 22px;
 
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.04),
-        0 10px 24px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--border-light);
+
+    overflow: hidden;
+
+    box-shadow: var(--shadow-md);
 }
 
-/* ================= TABLE ================= */
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
 
 .table-wrapper {
-    max-height: 520px;
     overflow: auto;
+    max-height: 650px;
 }
+
+/* =========================================================
+   TABLE
+========================================================= */
 
 table {
     width: 100%;
 }
 
-
-.inline-input,
-.inline-select {
-    height: 32px;
-    padding: 4px 6px;
-    font-size: 13px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background: #fff;
-}
-
-.inline-input:focus,
-.inline-select:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 1px #2563eb;
-}
-
-.editing-row {
-    background-color: #eff6ff !important;
-}
-
-/* HEADER */
+/* =========================================================
+   HEADER
+========================================================= */
 
 .mat-mdc-header-row {
-    background: #f8fafc;
+    background: var(--surface);
 }
 
 .mat-mdc-header-cell {
     position: sticky;
     top: 0;
-
-    background: #f8fafc;
     z-index: 5;
 
-    font-weight: 600;
-    color: #334155;
+    background: var(--surface);
 
-    padding: 14px 16px;
+    padding: 16px !important;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    color: var(--text-medium);
+
+    border-bottom:
+        1px solid var(--border-light);
 }
 
-/* ROWS */
+/* =========================================================
+   CELLS
+========================================================= */
 
 td.mat-mdc-cell {
-    padding: 12px 16px;
+    padding: 16px !important;
+
+    border-bottom:
+        1px solid #f1f5f9;
 }
 
-/* HOVER */
+/* =========================================================
+   ROWS
+========================================================= */
+
+.mat-mdc-row {
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease;
+}
 
 .mat-mdc-row:hover {
-    background: #f1f5f9;
-    transition: background 0.2s ease;
+    background: #f8fafc;
 }
 
-/* ================= STATUS BADGES ================= */
+/* EDIT MODE */
 
-.badge {
-    padding: 4px 10px;
-    border-radius: 8px;
+.editing-row {
+    background:
+        rgba(59, 130, 246, 0.06) !important;
+}
+
+/* =========================================================
+   PRODUCT CELL
+========================================================= */
+
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    font-weight: 600;
+
+    color: var(--text-dark);
+}
+
+.product-avatar {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 12px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(135deg,
+            #6366f1,
+            #4f46e5);
+
+    color: white;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    flex-shrink: 0;
+}
+
+/* =========================================================
+   CATEGORY CHIP
+========================================================= */
+
+.category-chip {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(79, 70, 229, 0.10);
+
+    color: var(--primary);
 
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
 }
 
-.active {
-    background: #dcfce7;
-    color: #166534;
+/* =========================================================
+   UNIT BADGE
+========================================================= */
+
+.unit-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 54px;
+
+    padding: 6px 10px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(148, 163, 184, 0.12);
+
+    color: #475569;
+
+    font-size: 12px;
+    font-weight: 700;
 }
 
-.inactive {
-    background: #fee2e2;
+/* =========================================================
+   STOCK CHIP
+========================================================= */
+
+.stock-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 48px;
+
+    padding: 6px 10px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(16, 185, 129, 0.10);
+
+    color: #059669;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status-badge.active {
+    background:
+        rgba(16, 185, 129, 0.12);
+
+    color: #047857;
+}
+
+.status-badge.inactive {
+    background:
+        rgba(239, 68, 68, 0.12);
+
     color: #b91c1c;
 }
 
-/* ================= ACTION BUTTONS ================= */
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
 
 .mat-mdc-icon-button {
-    transition: transform 0.2s ease;
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
 }
 
 .mat-mdc-icon-button:hover {
-    transform: scale(1.1);
+    transform: scale(1.06);
+
+    background:
+        rgba(148, 163, 184, 0.08);
 }
 
-/* ================= PAGINATOR ================= */
+/* =========================================================
+   INLINE EDITING
+========================================================= */
+
+.inline-input,
+.inline-select {
+    width: 100%;
+
+    min-height: 38px;
+
+    padding: 8px 10px;
+
+    border-radius: 10px;
+
+    border: 1px solid #d1d5db;
+
+    background: white;
+
+    font-size: 13px;
+
+    transition: all 0.2s ease;
+}
+
+.inline-input:focus,
+.inline-select:focus {
+    outline: none;
+
+    border-color: #6366f1;
+
+    box-shadow:
+        0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+/* =========================================================
+   PAGINATOR
+========================================================= */
 
 mat-paginator {
-    margin-top: 18px;
+    border-top:
+        1px solid var(--border-light);
 }
 
-/* ================= MOBILE ================= */
+/* =========================================================
+   EMPTY STATE
+========================================================= */
 
-@media (max-width: 768px) {
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
+    text-align: center;
+
+    padding: 80px 20px;
+}
+
+.empty-icon {
+    width: 84px;
+    height: 84px;
+
+    margin-bottom: 20px;
+
+    border-radius: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(99, 102, 241, 0.10);
+}
+
+.empty-icon mat-icon {
+    font-size: 42px;
+    color: #6366f1;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px;
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.empty-state p {
+    margin: 0 0 24px;
+
+    color: var(--text-light);
+
+    font-size: 14px;
+}
+
+/* =========================================================
+   SKELETONS
+========================================================= */
+
+.skeleton-row {
+    display: grid;
+
+    grid-template-columns:
+        1.5fr 1fr 0.8fr 0.8fr 1fr 0.8fr;
+
+    gap: 16px;
+
+    padding: 18px 22px;
+
+    border-bottom:
+        1px solid #f1f5f9;
+}
+
+.skeleton-line {
+    height: 16px;
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(90deg,
+            #e5e7eb 25%,
+            #f3f4f6 37%,
+            #e5e7eb 63%);
+
+    background-size: 400% 100%;
+
+    animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-line.short {
+    width: 60%;
+}
+
+.skeleton-line.medium {
+    width: 80%;
+}
+
+.skeleton-line.long {
+    width: 100%;
+}
+
+.skeleton-line.action {
+    width: 40%;
+}
+
+/* =========================================================
+   SHIMMER
+========================================================= */
+
+@keyframes shimmer {
+
+    0% {
+        background-position: 100% 0;
     }
 
-    .right-actions {
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
         width: 100%;
-        flex-wrap: wrap;
+    }
+
+    .toolbar-right {
+        justify-content: space-between;
     }
 
     .search-field {
         width: 100%;
     }
-
 }
