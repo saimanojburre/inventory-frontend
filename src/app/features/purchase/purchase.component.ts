@@ -6,6 +6,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { debounceTime } from 'rxjs/operators';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
   selector: 'app-purchase',
@@ -37,6 +38,7 @@ export class PurchaseComponent {
     private fb: FormBuilder,
     private authService: AuthService,
     private snackBar: MatSnackBar,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   // ================= INIT =================
@@ -66,8 +68,26 @@ export class PurchaseComponent {
   loadPurchases() {
     this.loading = true;
 
+    // USE CACHE FIRST
+    if (this.dashboardCache.dashboardData?.purchases) {
+      this.dataSource.data = this.dashboardCache.dashboardData.purchases;
+
+      this.loading = false;
+
+      return;
+    }
+
+    // API ONLY IF CACHE EMPTY
     this.purchaseService.getAll().subscribe((res) => {
       this.dataSource.data = res;
+
+      // STORE IN CACHE
+      if (!this.dashboardCache.dashboardData) {
+        this.dashboardCache.dashboardData = {};
+      }
+
+      this.dashboardCache.dashboardData.purchases = res;
+
       this.loading = false;
     });
   }

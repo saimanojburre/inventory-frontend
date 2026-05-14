@@ -115,6 +115,9 @@ td.mat-mdc-cell {
     margin-top: 20px;
     display: flex;
     justify-content: flex-end;
+    button{
+        min-width: 9rem;
+    }
 }
 
 /* ================= SCROLLBAR ================= */

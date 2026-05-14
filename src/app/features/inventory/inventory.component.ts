@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { InventoryService } from '../../core/services/inventory.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
   selector: 'app-inventory',
@@ -30,7 +31,10 @@ export class InventoryComponent {
     }
   }
 
-  constructor(private inventoryService: InventoryService) {}
+  constructor(
+    private inventoryService: InventoryService,
+    private dashboardCache: DashboardCacheService,
+  ) {}
 
   // ================= INIT =================
   ngOnInit() {
@@ -41,26 +45,69 @@ export class InventoryComponent {
   loadInventory() {
     this.loading = true;
 
-    this.inventoryService.getInventory().subscribe((res: any[]) => {
-      const sortedData = res.sort((a, b) => {
-        const categoryCompare = (a.category || '').localeCompare(
-          b.category || '',
-        );
+    // ✅ USE CACHE FIRST
+    if (this.dashboardCache.dashboardData?.items) {
+      const sortedData = this.dashboardCache.dashboardData.items.sort(
+        (a: any, b: any) => {
+          const categoryCompare = (a.category || '').localeCompare(
+            b.category || '',
+          );
 
-        if (categoryCompare !== 0) return categoryCompare;
+          if (categoryCompare !== 0) {
+            return categoryCompare;
+          }
 
-        return (a.itemName || '').localeCompare(b.itemName || '');
-      });
+          return (a.itemName || '').localeCompare(b.itemName || '');
+        },
+      );
 
       this.dataSource.data = sortedData;
 
-      // 🔥 total calculation
       this.totalInventoryValue = sortedData.reduce(
-        (sum, item) => sum + (item.total || 0),
+        (sum: number, item: any) => sum + (item.total || 0),
         0,
       );
 
       this.loading = false;
+
+      return;
+    }
+
+    // ✅ API ONLY IF CACHE EMPTY
+    this.inventoryService.getInventory().subscribe({
+      next: (res: any[]) => {
+        const sortedData = res.sort((a, b) => {
+          const categoryCompare = (a.category || '').localeCompare(
+            b.category || '',
+          );
+
+          if (categoryCompare !== 0) {
+            return categoryCompare;
+          }
+
+          return (a.itemName || '').localeCompare(b.itemName || '');
+        });
+
+        this.dataSource.data = sortedData;
+
+        this.totalInventoryValue = sortedData.reduce(
+          (sum, item) => sum + (item.total || 0),
+          0,
+        );
+
+        // ✅ STORE IN CACHE
+        if (!this.dashboardCache.dashboardData) {
+          this.dashboardCache.dashboardData = {};
+        }
+
+        this.dashboardCache.dashboardData.items = sortedData;
+
+        this.loading = false;
+      },
+
+      error: () => {
+        this.loading = false;
+      },
     });
   }
 

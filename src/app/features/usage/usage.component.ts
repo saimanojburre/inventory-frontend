@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
   selector: 'app-usage',
@@ -66,6 +67,7 @@ export class UsageComponent {
     private router: Router,
     private authService: AuthService,
     private snackBar: MatSnackBar,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   // ================= INIT =================
@@ -94,9 +96,39 @@ export class UsageComponent {
   loadUsage() {
     this.loading = true;
 
-    this.usageService.getUsage().subscribe((res) => {
-      this.dataSource.data = res;
+    // USE CACHE FIRST
+    if (this.dashboardCache.dashboardData?.usage) {
+      this.dataSource.data = this.dashboardCache.dashboardData.usage;
+
       this.loading = false;
+
+      return;
+    }
+
+    // API ONLY IF CACHE EMPTY
+    this.usageService.getUsage().subscribe({
+      next: (res) => {
+        this.dataSource.data = res;
+
+        // STORE IN CACHE
+        if (!this.dashboardCache.dashboardData) {
+          this.dashboardCache.dashboardData = {};
+        }
+
+        this.dashboardCache.dashboardData.usage = res;
+
+        this.loading = false;
+      },
+
+      error: () => {
+        this.loading = false;
+
+        this.snackBar.open('Failed to load usage data', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
     });
   }
 
@@ -172,7 +204,6 @@ export class UsageComponent {
           verticalPosition: 'top',
           horizontalPosition: 'right',
         });
-
         this.loadUsage();
       },
       error: () => {
@@ -217,7 +248,6 @@ export class UsageComponent {
 
         this.editingId = null;
         this.backupRow = null;
-
         this.loadUsage();
       },
       error: () => {

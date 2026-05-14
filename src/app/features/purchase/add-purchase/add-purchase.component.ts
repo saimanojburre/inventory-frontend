@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { PurchaseService } from 'src/app/core/services/purchase.service';
 
@@ -14,6 +15,7 @@ import { PurchaseService } from 'src/app/core/services/purchase.service';
 export class AddPurchaseComponent implements OnInit {
   purchaseForm!: FormGroup;
   items: any[] = [];
+  loading = false;
 
   displayedColumns: string[] = [
     'item',
@@ -34,6 +36,7 @@ export class AddPurchaseComponent implements OnInit {
     private inventoryService: InventoryService,
     private router: Router,
     private snackBar: MatSnackBar,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   ngOnInit(): void {
@@ -84,8 +87,30 @@ export class AddPurchaseComponent implements OnInit {
   }
 
   loadItems() {
-    this.inventoryService.getInventory().subscribe((res) => {
-      this.items = res;
+    if (this.dashboardCache.dashboardData?.items) {
+      this.items = this.dashboardCache.dashboardData.items;
+
+      return;
+    }
+
+    this.inventoryService.getInventory().subscribe({
+      next: (res) => {
+        this.items = res;
+
+        if (!this.dashboardCache.dashboardData) {
+          this.dashboardCache.dashboardData = {};
+        }
+
+        this.dashboardCache.dashboardData.items = res;
+      },
+
+      error: () => {
+        this.snackBar.open('Failed to load items', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+        });
+      },
     });
   }
 
@@ -107,6 +132,7 @@ export class AddPurchaseComponent implements OnInit {
   }
 
   saveAll() {
+    this.loading = true;
     if (this.purchaseForm.invalid) {
       this.purchaseForm.markAllAsTouched();
 
@@ -145,7 +171,8 @@ export class AddPurchaseComponent implements OnInit {
           horizontalPosition: 'right',
           panelClass: ['success-snackbar'],
         });
-
+        this.loading = false;
+        this.dashboardCache.clear();
         this.purchases.clear();
         this.addRow();
         this.goBack();
@@ -158,6 +185,7 @@ export class AddPurchaseComponent implements OnInit {
           horizontalPosition: 'right',
           panelClass: ['error-snackbar'],
         });
+        this.loading = false;
       },
     });
   }

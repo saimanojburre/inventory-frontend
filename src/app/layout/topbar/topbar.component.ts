@@ -1,6 +1,7 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { ThemeService } from 'src/app/core/services/theme.service';
 
 @Component({
@@ -20,6 +21,7 @@ export class TopbarComponent {
     private router: Router,
     private authService: AuthService,
     private themeService: ThemeService,
+    private dashboardCache: DashboardCacheService,
   ) {}
   ngOnInit() {
     this.username = this.authService.getUsername();
@@ -60,6 +62,7 @@ export class TopbarComponent {
   logout(event?: Event) {
     event?.stopPropagation();
     localStorage.clear();
+    this.dashboardCache.clear();
     this.router.navigate(['/']);
   }
 }

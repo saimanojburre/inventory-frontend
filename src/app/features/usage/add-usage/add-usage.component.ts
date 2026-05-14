@@ -3,6 +3,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { UsageService } from 'src/app/core/services/usage.service';
 
@@ -49,6 +50,7 @@ export class AddUsageComponent implements OnInit {
     private usageService: UsageService,
     private router: Router,
     private snackBar: MatSnackBar,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   ngOnInit(): void {
@@ -97,8 +99,34 @@ export class AddUsageComponent implements OnInit {
   }
 
   loadItems() {
-    this.inventoryService.getInventory().subscribe((res) => {
-      this.items = res;
+    // USE CACHE FIRST
+    if (this.dashboardCache.dashboardData?.items) {
+      this.items = this.dashboardCache.dashboardData.items;
+
+      return;
+    }
+
+    // API ONLY IF CACHE EMPTY
+    this.inventoryService.getInventory().subscribe({
+      next: (res) => {
+        this.items = res;
+
+        // STORE IN CACHE
+        if (!this.dashboardCache.dashboardData) {
+          this.dashboardCache.dashboardData = {};
+        }
+
+        this.dashboardCache.dashboardData.items = res;
+      },
+
+      error: () => {
+        this.snackBar.open('Failed to load items', 'Close', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'right',
+          panelClass: ['error-snackbar'],
+        });
+      },
     });
   }
 
@@ -157,7 +185,7 @@ export class AddUsageComponent implements OnInit {
           horizontalPosition: 'right',
           panelClass: ['success-snackbar'],
         });
-
+        this.dashboardCache.clear();
         this.usages.clear();
         this.addRow();
         this.goBack();

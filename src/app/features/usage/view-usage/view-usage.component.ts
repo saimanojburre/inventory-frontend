@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
   selector: 'app-view-usage',
@@ -53,6 +54,7 @@ export class ViewUsageComponent {
     private router: Router,
     private authService: AuthService,
     private snackBar: MatSnackBar,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   // ================= INIT =================
@@ -167,7 +169,7 @@ export class ViewUsageComponent {
           verticalPosition: 'top',
           horizontalPosition: 'right',
         });
-
+        this.dashboardCache.clear();
         this.loadUsage();
       },
 
@@ -212,7 +214,7 @@ export class ViewUsageComponent {
 
         this.editingId = null;
         this.backupRow = null;
-
+        this.dashboardCache.clear();
         this.loadUsage();
       },
 

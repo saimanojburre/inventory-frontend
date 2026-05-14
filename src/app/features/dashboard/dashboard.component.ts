@@ -7,6 +7,7 @@ import { PurchaseService } from '../../core/services/purchase.service';
 import { UsageService } from '../../core/services/usage.service';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { Router } from '@angular/router';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,11 +35,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private usageService: UsageService,
     private authService: AuthService,
     private router: Router,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   ngOnInit() {
-    this.loadDashboard();
+    if (this.dashboardCache.loaded) {
+      this.setCachedData();
+    } else {
+      this.loadDashboard();
+    }
     this.setGreeting();
+  }
+  setCachedData() {
+    const data = this.dashboardCache.dashboardData;
+
+    this.stats = data.stats;
+
+    setTimeout(() => {
+      this.createDepartmentChart(data.usage, data.itemMap);
+      this.createCategoryChart(data.usage, data.itemMap);
+      this.createWeeklyTrend(data.usage, data.itemMap);
+    });
+
+    this.loading = false;
   }
 
   ngOnDestroy() {
@@ -79,6 +98,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
             category: i.category || 'Others',
           };
         });
+
+        this.dashboardCache.dashboardData = {
+          stats: this.stats,
+          items,
+          purchases,
+          usage,
+          itemMap,
+        };
+
+        this.dashboardCache.loaded = true;
 
         // ✅ FIX: Delay chart rendering
         setTimeout(() => {

@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { PurchaseService } from 'src/app/core/services/purchase.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
   selector: 'app-view-purchase',
@@ -33,6 +34,7 @@ export class ViewPurchaseComponent {
     private router: Router,
     private authService: AuthService,
     private snackBar: MatSnackBar,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   ngOnInit() {
@@ -103,7 +105,7 @@ export class ViewPurchaseComponent {
           verticalPosition: 'top',
           horizontalPosition: 'right',
         });
-
+        this.dashboardCache.clear();
         this.loadPurchases();
       },
 
@@ -152,7 +154,7 @@ export class ViewPurchaseComponent {
 
         this.editingId = null;
         this.backupRow = null;
-
+        this.dashboardCache.clear();
         this.loadPurchases();
       },
 

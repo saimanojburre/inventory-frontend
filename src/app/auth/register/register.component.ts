@@ -4,9 +4,10 @@ import {
   Validators,
   AbstractControl,
   ValidationErrors,
+  FormGroupDirective,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/core/services/auth.service';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'app-register',
@@ -16,37 +17,28 @@ import { AuthService } from 'src/app/core/services/auth.service';
 export class RegisterComponent {
   hidePassword = true;
   hideConfirmPassword = true;
-  error = '';
-  submitted = false;
 
-  roles = [
-    { label: 'User', value: 'USER' },
-    { label: 'Manager', value: 'MANAGER' },
-    { label: 'Owner', value: 'OWNER' },
-  ];
+  error = '';
+  success = '';
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private authService: UserService,
     private router: Router,
   ) {}
 
-  showError(controlName: string, error: string): boolean {
-    const control = this.registerForm.get(controlName);
-
-    return !!(
-      control &&
-      control.hasError(error) &&
-      (control.touched || this.submitted)
-    );
-  }
   /* ================= FORM ================= */
 
   registerForm = this.fb.group(
     {
+      name: ['', Validators.required],
+
       username: ['', [Validators.required, Validators.minLength(3)]],
+
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
+
       email: ['', [Validators.required, Validators.email]],
-      role: ['', Validators.required],
 
       password: [
         '',
@@ -68,6 +60,18 @@ export class RegisterComponent {
     return this.registerForm.controls;
   }
 
+  /* ================= ERROR HANDLER ================= */
+
+  showError(controlName: string, error: string): boolean {
+    const control = this.registerForm.get(controlName);
+
+    return !!(
+      control &&
+      control.hasError(error) &&
+      (control.touched || control.dirty)
+    );
+  }
+
   /* ================= PASSWORD MATCH ================= */
 
   passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
@@ -79,22 +83,36 @@ export class RegisterComponent {
 
   /* ================= REGISTER ================= */
 
-  register() {
-    this.submitted = true;
+  register(formDirective: FormGroupDirective) {
+    this.error = '';
+    this.success = '';
 
     if (this.registerForm.invalid) {
-      this.registerForm.markAllAsTouched();
       return;
     }
 
-    this.authService.register(this.registerForm.value).subscribe({
+    this.loading = true;
+
+    const { confirmPassword, ...payload } = this.registerForm.value;
+
+    this.authService.createUser(payload).subscribe({
       next: () => {
-        alert('Registered Successfully');
-        this.goToLogin();
+        this.loading = false;
+
+        this.success =
+          'Registration submitted successfully. Please wait for owner approval.';
+
+        formDirective.resetForm();
       },
-      error: () => (this.error = 'Registration failed'),
+
+      error: () => {
+        this.loading = false;
+        this.error = 'Registration failed';
+      },
     });
   }
+
+  /* ================= NAVIGATION ================= */
 
   goToLogin() {
     this.router.navigate(['/login']);
