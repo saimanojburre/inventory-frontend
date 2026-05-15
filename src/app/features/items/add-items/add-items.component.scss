@@ -14,22 +14,208 @@
     flex-wrap: wrap;
 }
 
-/* ACTION GROUP */
+/* =========================================================
+   LOADER OVERLAY
+========================================================= */
+
+.loader-overlay {
+    position: absolute;
+    inset: 0;
+
+    z-index: 20;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 18px;
+
+    background:
+        rgba(255, 255, 255, 0.72);
+
+    backdrop-filter: blur(4px);
+
+    animation: fadeOverlay 0.2s ease;
+}
+
+.loader-overlay p {
+    margin: 0;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #334155;
+}
+
+@keyframes fadeOverlay {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* =========================================================
+   ACTION GROUP
+========================================================= */
 
 .header-actions {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    flex-wrap: wrap;
 }
 
-/* BUTTONS */
+/* =========================================================
+   COMMON BUTTON STYLE
+========================================================= */
 
 .page-header button {
-    height: 44px;
+    height: 52px;
 
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 
     font-weight: 600 !important;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+/* =========================================================
+   DISABLED BUTTONS
+========================================================= */
+
+.page-header button:disabled,
+.save-btn:disabled {
+    opacity: 0.7;
+
+    cursor: not-allowed !important;
+
+    transform: none !important;
+
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.back-btn {
+    background: white;
+
+    border: 1px solid #e5e7eb !important;
+
+    color: #111827 !important;
+
+    padding: 0 18px !important;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.05);
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+
+    background: #f8fafc;
+
+    box-shadow:
+        0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.back-btn mat-icon {
+    margin-right: 6px;
+}
+
+/* =========================================================
+   ADD ROW BUTTON
+========================================================= */
+
+.add-row-btn {
+    padding: 0 24px !important;
+
+    background: #3f51b5 !important;
+
+    color: white !important;
+
+    border: none;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    box-shadow:
+        0 8px 20px rgba(63, 81, 181, 0.28),
+        0 12px 28px rgba(63, 81, 181, 0.18);
+}
+
+.add-row-btn:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.05);
+
+    box-shadow:
+        0 14px 28px rgba(63, 81, 181, 0.34),
+        0 18px 36px rgba(63, 81, 181, 0.22);
+}
+
+.add-row-btn mat-icon {
+    margin-right: 6px;
+
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+
+    color: white;
+}
+
+/* =========================================================
+   UPLOAD BUTTON
+========================================================= */
+
+.upload-btn {
+    padding: 0 22px !important;
+
+    background:
+        linear-gradient(135deg,
+            #10b981,
+            #059669) !important;
+
+    color: white !important;
+
+    border: none;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    box-shadow:
+        0 8px 20px rgba(16, 185, 129, 0.28),
+        0 12px 28px rgba(5, 150, 105, 0.18);
+}
+
+.upload-btn:hover {
+    transform: translateY(-2px);
+
+    filter: brightness(1.03);
+
+    box-shadow:
+        0 12px 24px rgba(16, 185, 129, 0.34),
+        0 18px 36px rgba(5, 150, 105, 0.22);
+}
+
+.upload-btn mat-icon {
+    margin-right: 6px;
+
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+
+    color: white;
 }
 
 /* =========================================================
@@ -37,6 +223,8 @@
 ========================================================= */
 
 .purchase-container {
+    position: relative;
+
     background: var(--card-bg);
 
     border-radius: 24px;
@@ -45,7 +233,19 @@
 
     overflow: hidden;
 
-    box-shadow: var(--shadow-md);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.04),
+        0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.purchase-container:hover {
+    box-shadow:
+        0 10px 30px rgba(15, 23, 42, 0.08),
+        0 22px 50px rgba(15, 23, 42, 0.08);
 }
 
 /* =========================================================
@@ -54,7 +254,12 @@
 
 .table-wrapper {
     overflow: auto;
+
     max-height: 70vh;
+
+    -webkit-overflow-scrolling: touch;
+
+    scroll-behavior: smooth;
 }
 
 /* =========================================================
@@ -63,6 +268,7 @@
 
 .purchase-table {
     width: 100%;
+
     min-width: 1100px;
 
     background: white;
@@ -77,21 +283,23 @@ th.mat-mdc-header-cell {
     top: 0;
     z-index: 5;
 
-    background: var(--surface);
+    background: #f8fafc;
 
     font-size: 13px;
     font-weight: 700;
 
-    color: var(--text-medium);
+    color: #475569;
+
+    letter-spacing: 0.02em;
 
     padding: 18px 16px !important;
 
     border-bottom:
-        1px solid var(--border-light);
+        1px solid #e5e7eb;
 }
 
 /* =========================================================
-   CELLS
+   TABLE CELLS
 ========================================================= */
 
 td.mat-mdc-cell {
@@ -106,11 +314,15 @@ td.mat-mdc-cell {
 ========================================================= */
 
 .mat-mdc-row {
-    transition: background 0.2s ease;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+
+    animation: fadeRow 0.25s ease;
 }
 
 .mat-mdc-row:hover {
-    background: #f8fafc;
+    background: #f8fbff;
 }
 
 /* =========================================================
@@ -145,34 +357,44 @@ mat-form-field {
     width: 100%;
 }
 
-/* REMOVE EXTRA SPACE */
+/* REMOVE EXTRA MATERIAL SPACE */
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     display: none;
 }
 
-/* INPUT POLISH */
+/* MATERIAL INPUT POLISH */
 
 ::ng-deep .mat-mdc-text-field-wrapper {
     border-radius: 12px !important;
 }
 
 /* =========================================================
-   ACTION BUTTONS
+   ACTION BUTTONS INSIDE ROW
 ========================================================= */
 
 td.mat-column-actions {
     text-align: center;
 }
 
-td.mat-column-actions button {
+.row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+}
+
+.row-actions button {
     transition:
         transform 0.2s ease,
         background 0.2s ease;
 }
 
-td.mat-column-actions button:hover {
+.row-actions button:hover {
     transform: scale(1.08);
+
+    background: #f8fafc;
 }
 
 /* =========================================================
@@ -184,6 +406,8 @@ td.mat-column-actions button:hover {
     justify-content: space-between;
     align-items: center;
 
+    gap: 20px;
+
     padding: 22px 24px;
 
     border-top:
@@ -192,11 +416,14 @@ td.mat-column-actions button:hover {
     background: #fafbff;
 }
 
-/* LEFT INFO */
+/* =========================================================
+   SAVE INFO
+========================================================= */
 
 .save-info {
     display: flex;
     flex-direction: column;
+
     gap: 4px;
 }
 
@@ -205,6 +432,8 @@ td.mat-column-actions button:hover {
 
     font-size: 16px;
     font-weight: 700;
+
+    color: #0f172a;
 }
 
 .save-info p {
@@ -212,14 +441,16 @@ td.mat-column-actions button:hover {
 
     font-size: 13px;
 
-    color: var(--text-light);
+    color: #64748b;
 }
 
-/* SAVE BUTTON */
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
 
 .save-btn {
     min-width: 180px;
-    height: 48px;
+    height: 50px;
 
     border-radius: 14px !important;
 
@@ -230,13 +461,16 @@ td.mat-column-actions button:hover {
         0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
-/* =========================================================
-   EMPTY ROW ANIMATION
-========================================================= */
+.save-btn:hover {
+    transform: translateY(-2px);
 
-.mat-mdc-row {
-    animation: fadeRow 0.25s ease;
+    box-shadow:
+        0 14px 28px rgba(79, 70, 229, 0.32);
 }
+
+/* =========================================================
+   ROW ANIMATION
+========================================================= */
 
 @keyframes fadeRow {
 
@@ -262,6 +496,7 @@ td.mat-column-actions button:hover {
 
 .table-wrapper::-webkit-scrollbar-thumb {
     background: #d1d5db;
+
     border-radius: 999px;
 }
 
@@ -283,7 +518,20 @@ td.mat-column-actions button:hover {
     .header-actions {
         width: 100%;
 
-        justify-content: space-between;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-actions button,
+    .back-btn,
+    .save-btn {
+        width: 100%;
+
+        min-height: 52px;
+    }
+
+    .purchase-container {
+        border-radius: 18px;
     }
 
     .save-section {
@@ -293,7 +541,28 @@ td.mat-column-actions button:hover {
         gap: 18px;
     }
 
-    .save-btn {
-        width: 100%;
+    .save-info {
+        text-align: center;
+    }
+
+    td.mat-mdc-cell,
+    th.mat-mdc-header-cell {
+        padding: 12px !important;
+    }
+
+    .col-item {
+        min-width: 220px;
+    }
+
+    .col-medium {
+        min-width: 160px;
+    }
+
+    .col-small {
+        min-width: 120px;
+    }
+
+    .col-actions {
+        min-width: 100px;
     }
 }

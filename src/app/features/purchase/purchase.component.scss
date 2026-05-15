@@ -41,6 +41,7 @@
 .toolbar-right {
     display: flex;
     align-items: center;
+    gap: 14px;
 }
 
 /* =====================================================
@@ -59,7 +60,8 @@
    BUTTON
 ===================================================== */
 
-.add-btn {
+.add-btn,
+.export-btn {
     height: 52px;
     padding: 0 22px !important;
 
@@ -68,22 +70,22 @@
     font-size: 14px;
     font-weight: 600;
 
-    box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.28);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
 
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease;
 }
 
-.add-btn:hover {
+.add-btn:hover,
+.export-btn:hover {
     transform: translateY(-2px);
 
-    box-shadow:
-        0 12px 24px rgba(79, 70, 229, 0.35);
+    box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
 }
 
-.add-btn mat-icon {
+.add-btn mat-icon,
+.export-btn mat-icon {
     margin-right: 6px;
 }
 
@@ -110,6 +112,7 @@
 
 .table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* =====================================================
@@ -478,11 +481,12 @@ mat-paginator {
         width: 100%;
     }
 
-    .toolbar-field,
-    .search-field,
-    .add-btn {
-        width: 100%;
-    }
+   .toolbar-field,
+   .search-field,
+   .add-btn,
+   .export-btn {
+       width: 100%;
+   }
 
     .purchase-view {
         border-radius: 16px;

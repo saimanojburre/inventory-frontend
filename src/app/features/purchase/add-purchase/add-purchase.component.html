@@ -5,10 +5,53 @@
 </app-page-header>
 
 <div class="page-header">
-  <button mat-stroked-button class="back-btn" (click)="goBack()">
+  <!-- BACK -->
+  <button
+    mat-stroked-button
+    class="back-btn"
+    (click)="goBack()"
+    [disabled]="loading"
+  >
     <mat-icon>arrow_back</mat-icon>
+
     Back
   </button>
+
+  <!-- ACTIONS -->
+  <div class="header-actions">
+    <!-- ADD ROW -->
+    <button
+      mat-raised-button
+      class="add-row-btn"
+      (click)="addRow()"
+      [disabled]="loading"
+    >
+      <mat-icon>add</mat-icon>
+
+      Add Row
+    </button>
+
+    <!-- UPLOAD -->
+    <button
+      mat-raised-button
+      class="upload-btn"
+      (click)="fileInput.click()"
+      [disabled]="loading"
+    >
+      <mat-icon>upload_file</mat-icon>
+
+      Upload XLSX
+    </button>
+  </div>
+
+  <!-- FILE INPUT -->
+  <input
+    type="file"
+    #fileInput
+    hidden
+    accept=".xlsx,.xls"
+    (change)="onFileUpload($event)"
+  />
 </div>
 
 <div class="purchase-container">
