@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 
 import { Router } from '@angular/router';
 
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 
 import { LoginResponse } from '../models/login-response';
 

@@ -6,7 +6,7 @@ import { map, Observable } from 'rxjs';
 
 import { Inventory } from 'src/app/core/models/inventory.model';
 
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
