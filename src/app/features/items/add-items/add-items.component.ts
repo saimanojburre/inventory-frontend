@@ -1,4 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
+
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { MatTable } from '@angular/material/table';
@@ -132,57 +133,106 @@ export class AddItemsComponent {
 
     if (!file) return;
 
+    this.loading = true;
+
     const reader = new FileReader();
 
     reader.onload = (e: any) => {
-      const binaryStr = e.target.result;
+      try {
+        const binaryStr = e.target.result;
 
-      const workbook = XLSX.read(binaryStr, {
-        type: 'binary',
-      });
+        /* =========================================
+             READ WORKBOOK
+        ========================================= */
 
-      const sheetName = workbook.SheetNames[0];
+        const workbook = XLSX.read(binaryStr, {
+          type: 'binary',
+        });
 
-      const sheet = workbook.Sheets[sheetName];
+        /* =========================================
+             GET FIRST SHEET
+        ========================================= */
 
-      const data = XLSX.utils.sheet_to_json(sheet);
+        const sheetName = workbook.SheetNames[0];
 
-      const formattedData = data.map((row: any) => ({
-        name: row['Product'],
-        category: row['Category'],
-        unit: row['Unit'],
-        minStock: row['MinStock'],
-        active: true,
-      }));
+        const sheet = workbook.Sheets[sheetName];
 
-      this.loading = true;
+        /* =========================================
+             CONVERT TO JSON
+        ========================================= */
 
-      this.itemService.bulkSave(formattedData).subscribe({
-        next: () => {
+        const data = XLSX.utils.sheet_to_json(sheet);
+
+        /* =========================================
+             EMPTY FILE CHECK
+        ========================================= */
+
+        if (!data || data.length === 0) {
           this.loading = false;
 
-          this.snackBar.open('Products uploaded successfully', 'Close', {
+          this.snackBar.open('Uploaded file is empty', 'Close', {
             duration: 3000,
           });
 
-          this.router.navigate(['/app/items']);
-        },
+          return;
+        }
 
-        error: () => {
-          this.loading = false;
+        /* =========================================
+             FORMAT DATA
+        ========================================= */
 
-          this.snackBar.open('Upload failed', 'Close', {
-            duration: 3000,
-          });
-        },
-      });
+        const formattedData = data.map((row: any) => ({
+          name: row['Product'] || '',
+          category: row['Category'] || '',
+          unit: row['Unit'] || '',
+          minStock: Number(row['MinStock'] || 0),
+          quantity: Number(row['Quantity'] || 0),
+          active: true,
+        }));
+
+        /* =========================================
+             SAVE DIRECTLY
+        ========================================= */
+
+        this.itemService.bulkSave(formattedData).subscribe({
+          next: (res: any) => {
+            this.loading = false;
+
+            this.snackBar.open(
+              `✔ ${res.savedCount} products uploaded | ⚠ ${res.duplicateCount} duplicates skipped`,
+              'OK',
+              {
+                duration: 4000,
+              },
+            );
+
+            this.router.navigate(['/app/items']);
+          },
+
+          error: () => {
+            this.loading = false;
+
+            this.snackBar.open('Upload failed', 'Close', {
+              duration: 3000,
+            });
+          },
+        });
+      } catch (error) {
+        console.error(error);
+
+        this.loading = false;
+
+        this.snackBar.open('Invalid XLSX format', 'Close', {
+          duration: 3000,
+        });
+      }
     };
 
     reader.readAsBinaryString(file);
   }
 
   /* =====================================================
-       SAVE
+       SAVE MANUAL ITEMS
   ====================================================== */
 
   saveItems(): void {
@@ -199,15 +249,24 @@ export class AddItemsComponent {
       return;
     }
 
+    /* =========================================
+         PREPARE PAYLOAD
+    ========================================= */
+
     const payload = this.itemsFormArray.value.map((r: any) => ({
       name: r.name,
       category: r.category,
       unit: r.unit,
       minStock: Number(r.minStock),
+      quantity: Number(r.quantity || 0),
       active: true,
     }));
 
     this.loading = true;
+
+    /* =========================================
+         SAVE ITEMS
+    ========================================= */
 
     this.itemService.bulkSave(payload).subscribe({
       next: (res: any) => {

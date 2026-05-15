@@ -12,21 +12,6 @@
     <!-- LEFT -->
 
     <div class="toolbar-left">
-      <button
-        *ngIf="!loading && dataSource.data.length > 0"
-        mat-raised-button
-        color="primary"
-        routerLink="/app/usage/add"
-        class="add-btn"
-      >
-        <mat-icon>add</mat-icon>
-        Record Usage
-      </button>
-    </div>
-
-    <!-- RIGHT -->
-
-    <div class="toolbar-right">
       <!-- FROM DATE -->
 
       <mat-form-field appearance="outline" class="toolbar-field">
@@ -74,9 +59,21 @@
 
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
+    </div>
+    <!-- RIGHT -->
+    <div class="toolbar-right" *ngIf="!loading && dataSource.data.length > 0">
+      <!-- ADD BUTTON -->
+      <button
+        mat-raised-button
+        color="primary"
+        routerLink="/app/usage/add"
+        class="add-btn"
+      >
+        <mat-icon>add</mat-icon>
+        Record Usage
+      </button>
 
       <!-- EXPORT -->
-
       <button
         mat-raised-button
         color="accent"

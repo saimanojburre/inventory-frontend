@@ -29,12 +29,13 @@
     flex-wrap: wrap;
 }
 
-.toolbar-left {
+.toolbar-right {
     display: flex;
     align-items: center;
+    gap: 14px;
 }
 
-.toolbar-right {
+.toolbar-left {
     display: flex;
     align-items: center;
     gap: 14px;
@@ -67,6 +68,24 @@
 
     font-size: 14px;
     font-weight: 600;
+
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.add-btn:hover,
+.export-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+}
+
+.add-btn mat-icon,
+.export-btn mat-icon {
+    margin-right: 6px;
 }
 
 /* =====================================================
@@ -92,6 +111,7 @@
 
 .table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* =====================================================

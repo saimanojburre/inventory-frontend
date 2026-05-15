@@ -6,7 +6,7 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
-
+import * as XLSX from 'xlsx';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { PurchaseService } from 'src/app/core/services/purchase.service';
@@ -52,6 +52,125 @@ export class AddPurchaseComponent implements OnInit {
     this.addRow();
 
     this.loadItems();
+  }
+
+  onFileUpload(event: any): void {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    this.loading = true;
+
+    const reader = new FileReader();
+
+    reader.onload = (e: any) => {
+      try {
+        const binaryStr = e.target.result;
+
+        /* =========================================
+           READ WORKBOOK
+      ========================================= */
+
+        const workbook = XLSX.read(binaryStr, {
+          type: 'binary',
+        });
+
+        const sheetName = workbook.SheetNames[0];
+
+        const sheet = workbook.Sheets[sheetName];
+
+        const data = XLSX.utils.sheet_to_json(sheet);
+
+        /* =========================================
+           EMPTY FILE CHECK
+      ========================================= */
+
+        if (!data || data.length === 0) {
+          this.loading = false;
+
+          this.showError('Uploaded file is empty');
+
+          return;
+        }
+
+        /* =========================================
+           FORMAT DATA
+      ========================================= */
+
+        const payload = data.map((row: any) => {
+          /* MATCH ITEM */
+          const matchedItem = this.items.find(
+            (i: any) =>
+              i.name?.toLowerCase().trim() ===
+              row['Item']?.toLowerCase().trim(),
+          );
+
+          return {
+            item: {
+              id: matchedItem?.itemId,
+            },
+
+            quantity: Number(row['Quantity'] || 0),
+
+            price: Number(row['Price'] || 0),
+
+            supplier: row['Supplier'] || '',
+
+            createdAt: new Date().toISOString().slice(0, 19),
+
+            purchaseDate: row['Date']
+              ? new Date(row['Date']).toISOString().slice(0, 19)
+              : new Date().toISOString().slice(0, 19),
+          };
+        });
+
+        /* =========================================
+           INVALID ITEM CHECK
+      ========================================= */
+
+        const invalidItems = payload.filter((p: any) => !p.item.id);
+
+        if (invalidItems.length > 0) {
+          this.loading = false;
+
+          this.showError(`${invalidItems.length} items not found in inventory`);
+
+          return;
+        }
+
+        /* =========================================
+           SAVE DIRECTLY
+      ========================================= */
+
+        this.purchaseService.bulkPurchase(payload).subscribe({
+          next: () => {
+            this.loading = false;
+
+            this.dashboardCache.clear();
+
+            this.showSuccess(
+              `${payload.length} purchases uploaded successfully`,
+            );
+
+            this.goBack();
+          },
+
+          error: () => {
+            this.loading = false;
+
+            this.showError('Failed to upload purchases');
+          },
+        });
+      } catch (error) {
+        console.error(error);
+
+        this.loading = false;
+
+        this.showError('Invalid XLSX format');
+      }
+    };
+
+    reader.readAsBinaryString(file);
   }
 
   initializeForm(): void {

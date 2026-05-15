@@ -1,34 +1,162 @@
-/* =====================================================
+/* =========================================================
    PAGE HEADER
-====================================================== */
+========================================================= */
 
 .page-header {
-    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+
+    flex-wrap: wrap;
 }
+
+/* =========================================================
+   HEADER ACTIONS
+========================================================= */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+}
+
+/* =========================================================
+   COMMON BUTTON STYLE
+========================================================= */
+
+.page-header button {
+    height: 52px;
+
+    border-radius: 14px !important;
+
+    font-weight: 600 !important;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+/* =========================================================
+   DISABLED BUTTONS
+========================================================= */
+
+.page-header button:disabled,
+.save-btn:disabled {
+    opacity: 0.7;
+
+    cursor: not-allowed !important;
+
+    transform: none !important;
+
+    box-shadow: none !important;
+}
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
 
 .back-btn {
-    border-radius: 10px;
+    background: white;
+
+    border: 1px solid #e5e7eb !important;
+
+    color: #111827 !important;
+
+    padding: 0 18px !important;
+
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
-/* =====================================================
+.back-btn:hover {
+    transform: translateY(-2px);
+
+    background: #f8fafc;
+
+    box-shadow:
+        0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.back-btn mat-icon {
+    margin-right: 6px;
+}
+
+/* =========================================================
+   ADD ROW BUTTON
+========================================================= */
+
+.add-row-btn {
+    padding: 0 24px !important;
+
+    background: #3f51b5 !important;
+
+    color: white !important;
+
+    border: none;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    box-shadow:
+        0 8px 20px rgba(63, 81, 181, 0.28),
+        0 12px 28px rgba(63, 81, 181, 0.18);
+}
+
+.add-row-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(63, 81, 181, 0.34),
+        0 18px 36px rgba(63, 81, 181, 0.22);
+}
+
+.add-row-btn mat-icon {
+    margin-right: 6px;
+}
+
+/* =========================================================
    MAIN CONTAINER
-====================================================== */
+========================================================= */
 
 .usage-container {
+    position: relative;
+
     background: #ffffff;
 
     border-radius: 20px;
 
     padding: 24px;
 
+    border: 1px solid #e2e8f0;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+
     box-shadow:
         0 4px 12px rgba(15, 23, 42, 0.04),
-        0 10px 24px rgba(15, 23, 42, 0.06);
+        0 18px 40px rgba(15, 23, 42, 0.06);
 }
 
-/* =====================================================
+.usage-container:hover {
+    box-shadow:
+        0 10px 30px rgba(15, 23, 42, 0.08),
+        0 22px 50px rgba(15, 23, 42, 0.08);
+}
+
+/* =========================================================
    TABLE WRAPPER
-====================================================== */
+========================================================= */
 
 .table-wrapper {
     border: 1px solid #e2e8f0;
@@ -36,26 +164,37 @@
     border-radius: 18px;
 
     overflow: hidden;
+
+    background: white;
 }
 
 .premium-table {
     max-height: 72vh;
+
     overflow: auto;
+
+    -webkit-overflow-scrolling: touch;
+
+    scroll-behavior: smooth;
 }
 
-/* =====================================================
+/* =========================================================
    TABLE
-====================================================== */
+========================================================= */
 
 .usage-table {
     width: 100%;
+
     min-width: 1250px;
+
     table-layout: fixed;
+
+    background: white;
 }
 
-/* =====================================================
+/* =========================================================
    HEADER
-====================================================== */
+========================================================= */
 
 th.mat-mdc-header-cell {
     position: sticky;
@@ -64,29 +203,35 @@ th.mat-mdc-header-cell {
 
     background: #f8fafc;
 
+    font-size: 13px;
     font-weight: 700;
 
     color: #475569;
 
+    letter-spacing: 0.02em;
+
     border-bottom: 1px solid #e2e8f0;
 }
 
-/* =====================================================
+/* =========================================================
    CELLS
-====================================================== */
+========================================================= */
 
 td.mat-mdc-cell,
 th.mat-mdc-header-cell {
     padding: 14px 14px;
+
     vertical-align: middle;
 }
 
-/* =====================================================
+/* =========================================================
    ROWS
-====================================================== */
+========================================================= */
 
 .mat-mdc-row {
-    transition: background 0.2s ease;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
 }
 
 .mat-mdc-row:hover {
@@ -97,9 +242,9 @@ th.mat-mdc-header-cell {
     background: #fff5f5 !important;
 }
 
-/* =====================================================
+/* =========================================================
    COLUMN WIDTHS
-====================================================== */
+========================================================= */
 
 .col-item {
     width: 24%;
@@ -108,36 +253,44 @@ th.mat-mdc-header-cell {
 
 .col-small {
     width: 10%;
+    min-width: 120px;
 }
 
 .col-medium {
     width: 14%;
+    min-width: 180px;
 }
 
 .col-actions {
     width: 8%;
+    min-width: 120px;
+
     text-align: center;
 }
 
-/* =====================================================
+/* =========================================================
    FORM FIELD
-====================================================== */
+========================================================= */
 
 mat-form-field {
     width: 100%;
 }
 
+/* REMOVE MATERIAL EXTRA SPACE */
+
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     display: none;
 }
+
+/* MATERIAL FIELD POLISH */
 
 ::ng-deep .mat-mdc-text-field-wrapper {
     border-radius: 12px !important;
 }
 
-/* =====================================================
+/* =========================================================
    AVAILABLE STOCK
-====================================================== */
+========================================================= */
 
 .available-badge {
     display: inline-flex;
@@ -158,9 +311,9 @@ mat-form-field {
     font-weight: 700;
 }
 
-/* =====================================================
+/* =========================================================
    VALIDATION
-====================================================== */
+========================================================= */
 
 .error-text {
     margin-top: 4px;
@@ -172,19 +325,30 @@ mat-form-field {
     font-weight: 500;
 }
 
-/* =====================================================
-   ACTIONS
-====================================================== */
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
 
 .action-buttons {
     display: flex;
     justify-content: center;
+
     gap: 10px;
 }
 
-/* =====================================================
+.action-buttons button {
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.action-buttons button:hover {
+    transform: scale(1.08);
+}
+
+/* =========================================================
    FOOTER
-====================================================== */
+========================================================= */
 
 .footer-section {
     margin-top: 24px;
@@ -198,6 +362,10 @@ mat-form-field {
     flex-wrap: wrap;
 }
 
+/* =========================================================
+   SUMMARY CARD
+========================================================= */
+
 .usage-summary {
     background: #f8fafc;
 
@@ -209,36 +377,56 @@ mat-form-field {
 
     display: flex;
     flex-direction: column;
+
     gap: 4px;
 }
 
 .usage-summary span {
     color: #64748b;
+
     font-size: 14px;
 }
 
 .usage-summary strong {
     font-size: 30px;
+
     color: #0f172a;
 }
 
-/* =====================================================
+/* =========================================================
    SAVE BUTTON
-====================================================== */
+========================================================= */
 
 .save-btn {
     min-width: 220px;
+
     height: 52px;
 
-    border-radius: 12px;
+    border-radius: 14px !important;
 
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    box-shadow:
+        0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
-/* =====================================================
+.save-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(79, 70, 229, 0.32);
+}
+
+/* =========================================================
    SCROLLBAR
-====================================================== */
+========================================================= */
 
 .premium-table::-webkit-scrollbar {
     width: 10px;
@@ -247,6 +435,7 @@ mat-form-field {
 
 .premium-table::-webkit-scrollbar-thumb {
     background: #cbd5e1;
+
     border-radius: 10px;
 }
 
@@ -254,23 +443,61 @@ mat-form-field {
     background: #f8fafc;
 }
 
-/* =====================================================
+/* =========================================================
    MOBILE
-====================================================== */
+========================================================= */
 
 @media (max-width: 992px) {
 
-    .usage-container {
-        padding: 18px;
-    }
-
-    .footer-section {
+    .page-header {
         flex-direction: column;
         align-items: stretch;
     }
 
+    .header-actions {
+        width: 100%;
+
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-actions button,
+    .back-btn,
     .save-btn,
     .usage-summary {
         width: 100%;
+    }
+
+    .usage-container {
+        padding: 18px;
+
+        border-radius: 18px;
+    }
+
+    .footer-section {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    td.mat-mdc-cell,
+    th.mat-mdc-header-cell {
+        padding: 12px !important;
+    }
+
+    .col-item {
+        min-width: 220px;
+    }
+
+    .col-medium {
+        min-width: 160px;
+    }
+
+    .col-small {
+        min-width: 120px;
+    }
+
+    .col-actions {
+        min-width: 110px;
     }
 }

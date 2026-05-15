@@ -6,6 +6,8 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { debounceTime } from 'rxjs/operators';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 @Component({
@@ -115,6 +117,39 @@ export class PurchaseComponent {
 
     // 🔥 reset paginator after filter
     this.dataSource.paginator?.firstPage();
+  }
+
+  exportToExcel(): void {
+    const exportData = this.dataSource.filteredData.map((r: any) => ({
+      Item: r.item?.name,
+      Quantity: r.quantity,
+      Price: r.price,
+      Total: r.totalAmount,
+      Supplier: r.supplier?.name,
+      PurchasedBy: r.purchasedBy,
+      Date: new Date(r.createdAt).toLocaleString(),
+    }));
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+
+    const workbook: XLSX.WorkBook = {
+      Sheets: {
+        Purchase: worksheet,
+      },
+
+      SheetNames: ['Purchase'],
+    };
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
+
+    saveAs(blob, `Purchase_Report_${Date.now()}.xlsx`);
   }
 
   // ================= DELETE =================

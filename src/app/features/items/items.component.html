@@ -22,19 +22,7 @@
   </div>
 
   <!-- RIGHT -->
-  <div class="toolbar-right">
-    <!-- EXPORT -->
-    <button
-      *ngIf="!loading && dataSource.data.length > 0"
-      mat-stroked-button
-      class="export-btn"
-      (click)="exportToExcel()"
-    >
-      <mat-icon>download</mat-icon>
-
-      Export
-    </button>
-
+  <div class="toolbar-right" *ngIf="!loading && dataSource.data.length > 0">
     <!-- ADD -->
     <button
       *ngIf="authService.isManagerOrOwner()"
@@ -46,6 +34,17 @@
       <mat-icon>add</mat-icon>
 
       Add Product
+    </button>
+
+    <!-- EXPORT -->
+    <button
+      mat-raised-button
+      color="accent"
+      class="export-btn"
+      (click)="exportToExcel()"
+    >
+      <mat-icon>download</mat-icon>
+      Export
     </button>
   </div>
 </div>
