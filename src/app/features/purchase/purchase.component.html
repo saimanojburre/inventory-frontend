@@ -13,6 +13,7 @@
     <!-- LEFT : FILTERS -->
     <div class="toolbar-left">
       <!-- FROM DATE -->
+
       <mat-form-field appearance="outline" class="toolbar-field">
         <mat-label>From Date</mat-label>
 
@@ -20,6 +21,7 @@
           matInput
           [matDatepicker]="fromPicker"
           formControlName="fromDate"
+          [max]="filterForm.get('toDate')?.value || today"
           (dateChange)="applyFilter()"
         />
 
@@ -32,6 +34,7 @@
       </mat-form-field>
 
       <!-- TO DATE -->
+
       <mat-form-field appearance="outline" class="toolbar-field">
         <mat-label>To Date</mat-label>
 
@@ -39,6 +42,8 @@
           matInput
           [matDatepicker]="toPicker"
           formControlName="toDate"
+          [min]="filterForm.get('fromDate')?.value"
+          [max]="today"
           (dateChange)="applyFilter()"
         />
 
@@ -65,13 +70,14 @@
     </div>
 
     <!-- RIGHT : BUTTON -->
-    <div class="toolbar-right" *ngIf="!loading && dataSource.data.length > 0">
+    <div class="toolbar-right">
       <!-- ADD BUTTON -->
       <button
         mat-raised-button
         color="primary"
         class="add-btn"
         routerLink="/app/purchase/add"
+        *ngIf="!loading && dataSource.data.length > 0"
       >
         <mat-icon>add</mat-icon>
 

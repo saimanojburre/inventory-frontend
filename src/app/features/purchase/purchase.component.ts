@@ -16,14 +16,14 @@ import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.ser
   styleUrls: ['./purchase.component.scss'],
 })
 export class PurchaseComponent {
-  displayedColumns = this.authService.isManagerOrOwner()
+  displayedColumns = this.authService.isOwner()
     ? ['item', 'quantity', 'price', 'total', 'supplier', 'date', 'actions']
     : ['item', 'quantity', 'price', 'total', 'supplier', 'date'];
 
   dataSource = new MatTableDataSource<any>([]);
   loading = true;
   filterForm!: FormGroup;
-
+  today = new Date();
   editingId: number | null = null;
   backupRow: any = null;
 

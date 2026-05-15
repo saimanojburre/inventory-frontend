@@ -142,30 +142,30 @@ export class AddItemsComponent {
         const binaryStr = e.target.result;
 
         /* =========================================
-             READ WORKBOOK
-        ========================================= */
+         READ WORKBOOK
+      ========================================= */
 
         const workbook = XLSX.read(binaryStr, {
           type: 'binary',
         });
 
         /* =========================================
-             GET FIRST SHEET
-        ========================================= */
+         GET FIRST SHEET
+      ========================================= */
 
         const sheetName = workbook.SheetNames[0];
 
         const sheet = workbook.Sheets[sheetName];
 
         /* =========================================
-             CONVERT TO JSON
-        ========================================= */
+         CONVERT TO JSON
+      ========================================= */
 
         const data = XLSX.utils.sheet_to_json(sheet);
 
         /* =========================================
-             EMPTY FILE CHECK
-        ========================================= */
+         EMPTY FILE CHECK
+      ========================================= */
 
         if (!data || data.length === 0) {
           this.loading = false;
@@ -178,45 +178,48 @@ export class AddItemsComponent {
         }
 
         /* =========================================
-             FORMAT DATA
-        ========================================= */
+         CLEAR EXISTING ROWS
+      ========================================= */
 
-        const formattedData = data.map((row: any) => ({
-          name: row['Product'] || '',
-          category: row['Category'] || '',
-          unit: row['Unit'] || '',
-          minStock: Number(row['MinStock'] || 0),
-          quantity: Number(row['Quantity'] || 0),
-          active: true,
-        }));
+        this.itemsFormArray.clear();
 
         /* =========================================
-             SAVE DIRECTLY
-        ========================================= */
+         ADD ROWS TO UI
+      ========================================= */
 
-        this.itemService.bulkSave(formattedData).subscribe({
-          next: (res: any) => {
-            this.loading = false;
+        data.forEach((row: any) => {
+          const formRow = this.fb.group({
+            name: [row['Product'] || '', Validators.required],
 
-            this.snackBar.open(
-              `✔ ${res.savedCount} products uploaded | ⚠ ${res.duplicateCount} duplicates skipped`,
-              'OK',
-              {
-                duration: 4000,
-              },
-            );
+            category: [row['Category'] || '', Validators.required],
 
-            this.router.navigate(['/app/items']);
-          },
+            unit: [row['Unit'] || '', Validators.required],
 
-          error: () => {
-            this.loading = false;
+            minStock: [Number(row['MinStock'] || 0), Validators.required],
 
-            this.snackBar.open('Upload failed', 'Close', {
-              duration: 3000,
-            });
-          },
+            quantity: [Number(row['Quantity'] || 0)],
+          });
+
+          this.itemsFormArray.push(formRow);
         });
+
+        /* =========================================
+         RENDER TABLE
+      ========================================= */
+
+        setTimeout(() => {
+          this.table?.renderRows();
+        });
+
+        this.loading = false;
+
+        this.snackBar.open(
+          `${data.length} rows loaded successfully. Verify before saving.`,
+          'Close',
+          {
+            duration: 4000,
+          },
+        );
       } catch (error) {
         console.error(error);
 
@@ -230,7 +233,6 @@ export class AddItemsComponent {
 
     reader.readAsBinaryString(file);
   }
-
   /* =====================================================
        SAVE MANUAL ITEMS
   ====================================================== */

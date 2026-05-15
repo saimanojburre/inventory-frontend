@@ -5,10 +5,46 @@
 
 <div class="profile-page">
   <!-- =====================================================
+       SKELETON LOADER
+  ====================================================== -->
+
+  <div class="profile-card skeleton-card" *ngIf="pageLoading">
+    <!-- HEADER -->
+
+    <div class="skeleton-header">
+      <div class="skeleton-avatar"></div>
+
+      <div class="skeleton-info">
+        <div class="skeleton-line large"></div>
+
+        <div class="skeleton-line medium"></div>
+      </div>
+    </div>
+
+    <!-- FORM -->
+
+    <div class="skeleton-grid">
+      <div class="skeleton-field" *ngFor="let item of [1, 2, 3, 4, 5, 6]">
+        <div class="skeleton-line small"></div>
+
+        <div class="skeleton-input"></div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+
+    <div class="skeleton-actions">
+      <div class="skeleton-btn"></div>
+
+      <div class="skeleton-btn light"></div>
+    </div>
+  </div>
+
+  <!-- =====================================================
        PROFILE CARD
   ====================================================== -->
 
-  <div class="profile-card">
+  <div class="profile-card" *ngIf="!pageLoading">
     <!-- =====================================================
          TOP HEADER
     ====================================================== -->
@@ -18,20 +54,20 @@
 
       <div class="profile-user">
         <div class="avatar">
-          {{ profileForm.value.name?.charAt(0) || "U" }}
+          {{ originalData.name?.charAt(0) }}
         </div>
 
         <div class="profile-info">
           <h2>
-            {{ profileForm.value.name || "User" }}
+            {{ originalData.name }}
           </h2>
 
           <div class="profile-meta">
             <span class="role-badge">
-              {{ profileForm.value.role }}
+              {{ originalData.role }}
             </span>
 
-            <span class="username"> @{{ profileForm.value.username }} </span>
+            <span class="username"> @{{ originalData.username }} </span>
           </div>
         </div>
       </div>
@@ -96,7 +132,7 @@
             Email is required
           </mat-error>
 
-          <mat-error *ngIf="profileForm.get('email')?.hasError('email')">
+          <mat-error *ngIf="profileForm.get('email')?.hasError('pattern')">
             Enter valid email
           </mat-error>
         </mat-form-field>
@@ -106,9 +142,19 @@
         <mat-form-field appearance="outline">
           <mat-label>Phone Number</mat-label>
 
-          <input matInput formControlName="phone" [readonly]="!editMode" />
+          <input
+            matInput
+            formControlName="phone"
+            [readonly]="!editMode"
+            maxlength="10"
+            (input)="limitPhoneLength($event)"
+          />
 
           <mat-icon matSuffix>call</mat-icon>
+
+          <mat-error *ngIf="profileForm.get('phone')?.hasError('pattern')">
+            Enter valid 10 digit phone number
+          </mat-error>
         </mat-form-field>
 
         <!-- ROLE -->
@@ -146,7 +192,7 @@
       </div>
 
       <!-- =====================================================
-           ACTION BUTTONS
+           ACTIONS
       ====================================================== -->
 
       <div class="form-actions" *ngIf="editMode">
@@ -155,12 +201,12 @@
           color="primary"
           class="save-btn"
           type="button"
-          [disabled]="loading"
+          [disabled]="loading || profileForm.invalid"
           (click)="save()"
         >
           <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
 
-          <span *ngIf="!loading"> Save Changes </span>
+          <span *ngIf="!loading">Save Changes</span>
         </button>
 
         <button

@@ -17,6 +17,7 @@
         color="primary"
         routerLink="/app/user/add"
         class="add-btn"
+        *ngIf="authService.isOwner()"
       >
         <mat-icon>add</mat-icon>
         Add User

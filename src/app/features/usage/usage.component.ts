@@ -28,7 +28,7 @@ import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.ser
   styleUrls: ['./usage.component.scss'],
 })
 export class UsageComponent {
-  displayedColumns = this.authService.isManagerOrOwner()
+  displayedColumns = this.authService.isOwner()
     ? [
         'item',
         'quantity',
@@ -45,7 +45,7 @@ export class UsageComponent {
   filterForm!: FormGroup;
 
   loading = true;
-
+  today = new Date();
   editingId: number | null = null;
 
   backupRow: any = null;

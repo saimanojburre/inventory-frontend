@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { UserService } from 'src/app/core/services/user.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 
 @Component({
   selector: 'app-user',
@@ -20,7 +21,9 @@ import { UserService } from 'src/app/core/services/user.service';
   styleUrls: ['./user.component.scss'],
 })
 export class UserComponent {
-  displayedColumns = ['username', 'name', 'phone', 'role', 'active', 'actions'];
+  displayedColumns = this.authService.isOwner()
+    ? ['username', 'name', 'phone', 'role', 'active', 'actions']
+    : ['username', 'name', 'phone', 'role', 'active'];
 
   roles = ['OWNER', 'MANAGER', 'USER'];
 
@@ -57,6 +60,7 @@ export class UserComponent {
     private fb: FormBuilder,
     private router: Router,
     private snackBar: MatSnackBar,
+    public authService: AuthService,
   ) {}
 
   // =====================================================

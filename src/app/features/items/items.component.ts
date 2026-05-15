@@ -17,7 +17,7 @@ import { AuthService } from 'src/app/core/services/auth.service';
   styleUrls: ['./items.component.scss'],
 })
 export class ItemsComponent {
-  displayedColumns = this.authService.isManagerOrOwner()
+  displayedColumns = this.authService.isOwner()
     ? ['name', 'category', 'unit', 'minStock', 'active', 'actions']
     : ['name', 'category', 'unit', 'minStock', 'active'];
 

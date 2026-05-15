@@ -1,6 +1,6 @@
 <app-page-header
-  title="Usage Report"
-  subtitle="Department-wise inventory usage analytics"
+  title="Inventory Analytics Dashboard"
+  subtitle="Monitor inventory consumption trends and department-wise operational costs"
 ></app-page-header>
 
 <!-- =====================================================
@@ -12,10 +12,19 @@
     <!-- LEFT -->
 
     <div class="toolbar-left">
+      <!-- FROM DATE -->
+
+      <!-- FROM DATE -->
+
       <mat-form-field appearance="outline" class="toolbar-field">
         <mat-label>From Date</mat-label>
 
-        <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate" />
+        <input
+          matInput
+          [matDatepicker]="fromPicker"
+          [(ngModel)]="fromDate"
+          [max]="toDate || today"
+        />
 
         <mat-datepicker-toggle
           matSuffix
@@ -25,10 +34,18 @@
         <mat-datepicker #fromPicker></mat-datepicker>
       </mat-form-field>
 
+      <!-- TO DATE -->
+
       <mat-form-field appearance="outline" class="toolbar-field">
         <mat-label>To Date</mat-label>
 
-        <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate" />
+        <input
+          matInput
+          [matDatepicker]="toPicker"
+          [(ngModel)]="toDate"
+          [min]="fromDate"
+          [max]="today"
+        />
 
         <mat-datepicker-toggle
           matSuffix
@@ -42,6 +59,7 @@
     <!-- RIGHT -->
 
     <div class="toolbar-right">
+      <!-- APPLY -->
       <button
         mat-raised-button
         color="primary"
@@ -52,6 +70,92 @@
 
         Apply Filters
       </button>
+
+      <!-- RESET -->
+
+      <button mat-stroked-button class="reset-btn" (click)="resetFilters()">
+        <mat-icon>restart_alt</mat-icon>
+
+        Reset
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================
+     TOP SUMMARY
+====================================================== -->
+
+<div class="summary-grid" *ngIf="!loading && dataSource.length > 0">
+  <!-- INVENTORY CONSUMPTION -->
+
+  <div class="summary-card blue">
+    <div class="summary-icon">
+      <mat-icon>payments</mat-icon>
+    </div>
+
+    <div class="summary-content">
+      <span>Inventory Consumption</span>
+
+      <strong>
+        {{ formatCurrency(totalConsumption) }}
+      </strong>
+
+      <small> Total inventory cost for selected period </small>
+    </div>
+  </div>
+
+  <!-- TOP SPENDING DEPARTMENT -->
+
+  <div class="summary-card purple">
+    <div class="summary-icon">
+      <mat-icon>apartment</mat-icon>
+    </div>
+
+    <div class="summary-content">
+      <span>Top Spending Department</span>
+
+      <strong>
+        {{ topDepartment }}
+      </strong>
+
+      <small> Department with highest consumption </small>
+    </div>
+  </div>
+
+  <!-- HIGHEST COST CATEGORY -->
+
+  <div class="summary-card orange">
+    <div class="summary-icon">
+      <mat-icon>inventory_2</mat-icon>
+    </div>
+
+    <div class="summary-content">
+      <span>Highest Cost Category</span>
+
+      <strong>
+        {{ highestCategory }}
+      </strong>
+
+      <small> Most expensive inventory category </small>
+    </div>
+  </div>
+
+  <!-- AVERAGE DAILY USAGE -->
+
+  <div class="summary-card green">
+    <div class="summary-icon">
+      <mat-icon>analytics</mat-icon>
+    </div>
+
+    <div class="summary-content">
+      <span>Average Daily Usage</span>
+
+      <strong>
+        {{ formatCurrency(averageDailyUsage) }}
+      </strong>
+
+      <small> Average operational inventory usage per day </small>
     </div>
   </div>
 </div>
@@ -60,13 +164,11 @@
      LOADING
 ====================================================== -->
 
-<div *ngIf="loading" class="report-card">
+<div *ngIf="loading" class="loading-card">
   <div class="skeleton-row" *ngFor="let i of [1, 2, 3, 4, 5, 6]">
-    <div class="skeleton-line long"></div>
+    <div class="skeleton-box long"></div>
 
-    <div class="skeleton-line short" *ngFor="let c of categories"></div>
-
-    <div class="skeleton-line medium"></div>
+    <div class="skeleton-box" *ngFor="let c of [1, 2, 3, 4, 5, 6]"></div>
   </div>
 </div>
 
@@ -85,84 +187,71 @@
 </div>
 
 <!-- =====================================================
-     REPORT TABLE
+     ANALYTICS TABLE
 ====================================================== -->
 
-<div *ngIf="!loading && dataSource.length > 0" class="report-card">
+<div *ngIf="!loading && dataSource.length > 0" class="table-card">
   <div class="table-wrapper">
-    <table mat-table [dataSource]="dataSource" class="report-table">
-      <!-- DEPARTMENT -->
+    <table class="analytics-table">
+      <!-- HEADER -->
 
-      <ng-container matColumnDef="department">
-        <th mat-header-cell *matHeaderCellDef class="left sticky-col">
-          Department
-        </th>
+      <thead>
+        <tr>
+          <th class="sticky-col left">Department</th>
 
-        <td
-          mat-cell
-          *matCellDef="let r"
-          class="left sticky-col"
-          [class.total-cell-left]="r.department === 'Total'"
+          <th *ngFor="let col of categories">
+            {{ col }}
+          </th>
+
+          <th class="total-header">Total</th>
+        </tr>
+      </thead>
+
+      <!-- BODY -->
+
+      <tbody>
+        <tr
+          *ngFor="let row of dataSource"
+          [class.total-row]="row.department === 'Total'"
         >
-          <div class="department-cell">
+          <!-- DEPARTMENT -->
+
+          <td class="sticky-col left department-cell">
             <div
               class="department-avatar"
-              [class.total-avatar]="r.department === 'Total'"
+              [class.total-avatar]="row.department === 'Total'"
             >
-              {{ r.department?.charAt(0) }}
+              {{ row.department?.charAt(0) }}
             </div>
 
             <span>
-              {{ r.department }}
+              {{ row.department }}
             </span>
-          </div>
-        </td>
-      </ng-container>
+          </td>
 
-      <!-- CATEGORY COLUMNS -->
+          <!-- CATEGORY VALUES -->
 
-      <ng-container *ngFor="let col of categories" [matColumnDef]="col">
-        <th mat-header-cell *matHeaderCellDef class="right">
-          {{ col }}
-        </th>
+          <td *ngFor="let col of categories">
+            <div
+              class="heat-chip"
+              [class.zero]="row[col] === 0"
+              [class.low]="row[col] > 0 && row[col] < 1000"
+              [class.medium]="row[col] >= 1000 && row[col] < 5000"
+              [class.high]="row[col] >= 5000"
+            >
+              {{ formatCurrency(row[col]) }}
+            </div>
+          </td>
 
-        <td
-          mat-cell
-          *matCellDef="let r"
-          class="right"
-          [class.total-row-text]="r.department === 'Total'"
-        >
-          <div class="amount-chip">
-            {{ formatCurrency(r[col]) }}
-          </div>
-        </td>
-      </ng-container>
+          <!-- TOTAL -->
 
-      <!-- TOTAL -->
-
-      <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef class="right total-header">
-          Grand Total
-        </th>
-
-        <td mat-cell *matCellDef="let r" class="right total-cell">
-          <div class="grand-total-chip">
-            {{ formatCurrency(r.total) }}
-          </div>
-        </td>
-      </ng-container>
-
-      <!-- HEADER -->
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-
-      <!-- ROW -->
-
-      <tr
-        mat-row
-        *matRowDef="let row; columns: displayedColumns"
-        [class.total-row]="row.department === 'Total'"
-      ></tr>
+          <td>
+            <div class="total-chip">
+              {{ formatCurrency(row.total) }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </div>

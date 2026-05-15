@@ -25,7 +25,7 @@
   <div class="toolbar-right" *ngIf="!loading && dataSource.data.length > 0">
     <!-- ADD -->
     <button
-      *ngIf="authService.isManagerOrOwner()"
+      *ngIf="authService.isOwner()"
       mat-raised-button
       color="primary"
       class="add-btn"
@@ -105,16 +105,9 @@
             <div class="product-avatar">
               {{ r.name?.charAt(0) }}
             </div>
-
-            <ng-container *ngIf="editingId === r.id; else nameView">
-              <input class="inline-input" [(ngModel)]="r.name" />
-            </ng-container>
-
-            <ng-template #nameView>
-              <span>
-                {{ r.name }}
-              </span>
-            </ng-template>
+            <span>
+              {{ r.name }}
+            </span>
           </div>
         </td>
       </ng-container>

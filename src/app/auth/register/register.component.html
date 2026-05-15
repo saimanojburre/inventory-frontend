@@ -59,7 +59,7 @@
 
         <mat-icon matPrefix> call </mat-icon>
 
-        <input matInput type="tel" formControlName="phone" />
+        <input matInput type="tel" formControlName="phone" maxlength="10" />
 
         <mat-error *ngIf="showError('phone', 'required')">
           Phone number is required

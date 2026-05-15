@@ -45,7 +45,10 @@ export class RegisterComponent {
 
       phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
 
-      email: ['', [Validators.required, Validators.email]],
+      email: [
+        '',
+        [Validators.required, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)],
+      ],
 
       password: [
         '',

@@ -15,7 +15,10 @@ export class EditUserComponent {
   profileForm!: FormGroup;
 
   editMode = false;
+
   loading = false;
+
+  pageLoading = true;
 
   hidePassword = true;
 
@@ -40,13 +43,16 @@ export class EditUserComponent {
 
       name: ['', Validators.required],
 
-      email: ['', [Validators.required, Validators.email]],
+      email: [
+        '',
+        [Validators.required, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)],
+      ],
 
-      phone: [''],
+      phone: ['', [Validators.pattern(/^[0-9]{10}$/)]],
 
       role: [''],
 
-      password: [''],
+      password: ['', Validators.required],
     });
 
     this.userId = this.authService.getUserId();
@@ -58,26 +64,38 @@ export class EditUserComponent {
   // LOAD PROFILE
   // =====================================================
 
-  loadProfile() {
+  loadProfile(): void {
+    this.pageLoading = true;
+
     this.userService.getUserById(this.userId).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.profileForm.patchValue({
           username: res.username,
+
           name: res.name,
+
           email: res.email,
+
           phone: res.phone,
+
           role: res.role?.name,
         });
 
         this.originalData = {
           ...this.profileForm.value,
         };
+
+        this.pageLoading = false;
       },
 
       error: () => {
+        this.pageLoading = false;
+
         this.snackBar.open('Failed to load profile', 'Close', {
           duration: 3000,
+
           verticalPosition: 'top',
+
           horizontalPosition: 'right',
 
           panelClass: ['error-snackbar'],
@@ -90,7 +108,7 @@ export class EditUserComponent {
   // ENABLE EDIT
   // =====================================================
 
-  enableEdit() {
+  enableEdit(): void {
     this.editMode = true;
   }
 
@@ -98,7 +116,7 @@ export class EditUserComponent {
   // CANCEL
   // =====================================================
 
-  cancel() {
+  cancel(): void {
     this.profileForm.patchValue(this.originalData);
 
     this.profileForm.patchValue({
@@ -109,10 +127,22 @@ export class EditUserComponent {
   }
 
   // =====================================================
+  // LIMIT PHONE LENGTH
+  // =====================================================
+
+  limitPhoneLength(event: any): void {
+    const input = event.target;
+
+    input.value = input.value.replace(/\D/g, '').slice(0, 10);
+
+    this.profileForm.get('phone')?.setValue(input.value);
+  }
+
+  // =====================================================
   // SAVE
   // =====================================================
 
-  save() {
+  save(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
 
@@ -121,17 +151,21 @@ export class EditUserComponent {
 
     this.loading = true;
 
-    const payload = {
+    const payload: any = {
       name: this.profileForm.value.name,
 
       email: this.profileForm.value.email,
 
       phone: this.profileForm.value.phone,
 
-      password: this.profileForm.value.password,
-
-      role: this.profileForm.value.role,
+      role: this.originalData.role,
     };
+
+    /* OPTIONAL PASSWORD */
+
+    if (this.profileForm.value.password) {
+      payload.password = this.profileForm.value.password;
+    }
 
     this.userService.updateUser(this.userId, payload).subscribe({
       next: () => {
@@ -139,7 +173,9 @@ export class EditUserComponent {
 
         this.snackBar.open('Profile updated successfully', 'Close', {
           duration: 3000,
+
           verticalPosition: 'top',
+
           horizontalPosition: 'right',
 
           panelClass: ['success-snackbar'],
@@ -155,7 +191,9 @@ export class EditUserComponent {
 
         this.snackBar.open('Failed to update profile', 'Close', {
           duration: 3000,
+
           verticalPosition: 'top',
+
           horizontalPosition: 'right',
 
           panelClass: ['error-snackbar'],

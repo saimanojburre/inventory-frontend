@@ -21,6 +21,7 @@
           matInput
           [matDatepicker]="fromPicker"
           formControlName="fromDate"
+          [max]="filterForm.get('toDate')?.value || today"
         />
 
         <mat-datepicker-toggle
@@ -36,7 +37,13 @@
       <mat-form-field appearance="outline" class="toolbar-field">
         <mat-label>To Date</mat-label>
 
-        <input matInput [matDatepicker]="toPicker" formControlName="toDate" />
+        <input
+          matInput
+          [matDatepicker]="toPicker"
+          formControlName="toDate"
+          [min]="filterForm.get('fromDate')?.value"
+          [max]="today"
+        />
 
         <mat-datepicker-toggle
           matSuffix
@@ -61,13 +68,14 @@
       </mat-form-field>
     </div>
     <!-- RIGHT -->
-    <div class="toolbar-right" *ngIf="!loading && dataSource.data.length > 0">
+    <div class="toolbar-right">
       <!-- ADD BUTTON -->
       <button
         mat-raised-button
         color="primary"
         routerLink="/app/usage/add"
         class="add-btn"
+        *ngIf="!loading && dataSource.data.length > 0"
       >
         <mat-icon>add</mat-icon>
         Record Usage

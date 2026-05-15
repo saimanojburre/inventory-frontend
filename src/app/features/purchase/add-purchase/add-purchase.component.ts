@@ -67,10 +67,6 @@ export class AddPurchaseComponent implements OnInit {
       try {
         const binaryStr = e.target.result;
 
-        /* =========================================
-           READ WORKBOOK
-      ========================================= */
-
         const workbook = XLSX.read(binaryStr, {
           type: 'binary',
         });
@@ -82,7 +78,7 @@ export class AddPurchaseComponent implements OnInit {
         const data = XLSX.utils.sheet_to_json(sheet);
 
         /* =========================================
-           EMPTY FILE CHECK
+         EMPTY FILE CHECK
       ========================================= */
 
         if (!data || data.length === 0) {
@@ -94,73 +90,62 @@ export class AddPurchaseComponent implements OnInit {
         }
 
         /* =========================================
-           FORMAT DATA
+         CLEAR EXISTING ROWS
       ========================================= */
 
-        const payload = data.map((row: any) => {
-          /* MATCH ITEM */
+        this.purchases.clear();
+
+        /* =========================================
+         MAP XLSX TO FORM ROWS
+      ========================================= */
+
+        data.forEach((row: any) => {
           const matchedItem = this.items.find(
             (i: any) =>
-              i.name?.toLowerCase().trim() ===
+              i.itemName?.toLowerCase().trim() ===
               row['Item']?.toLowerCase().trim(),
           );
 
-          return {
-            item: {
-              id: matchedItem?.itemId,
-            },
+          const formRow = this.fb.group({
+            item: [matchedItem || null, Validators.required],
 
-            quantity: Number(row['Quantity'] || 0),
+            units: [
+              {
+                value: matchedItem?.units || '',
+                disabled: true,
+              },
+            ],
 
-            price: Number(row['Price'] || 0),
+            quantity: [
+              Number(row['Quantity'] || 1),
+              [Validators.required, Validators.min(1)],
+            ],
 
-            supplier: row['Supplier'] || '',
+            price: [
+              Number(row['Price'] || 0),
+              [Validators.required, Validators.min(1)],
+            ],
 
-            createdAt: new Date().toISOString().slice(0, 19),
+            supplier: [row['Supplier'] || '', Validators.required],
 
-            purchaseDate: row['Date']
-              ? new Date(row['Date']).toISOString().slice(0, 19)
-              : new Date().toISOString().slice(0, 19),
-          };
+            date: [
+              row['Date'] ? new Date(row['Date']) : new Date(),
+              Validators.required,
+            ],
+          });
+
+          this.purchases.push(formRow);
         });
 
-        /* =========================================
-           INVALID ITEM CHECK
-      ========================================= */
-
-        const invalidItems = payload.filter((p: any) => !p.item.id);
-
-        if (invalidItems.length > 0) {
-          this.loading = false;
-
-          this.showError(`${invalidItems.length} items not found in inventory`);
-
-          return;
-        }
-
-        /* =========================================
-           SAVE DIRECTLY
-      ========================================= */
-
-        this.purchaseService.bulkPurchase(payload).subscribe({
-          next: () => {
-            this.loading = false;
-
-            this.dashboardCache.clear();
-
-            this.showSuccess(
-              `${payload.length} purchases uploaded successfully`,
-            );
-
-            this.goBack();
-          },
-
-          error: () => {
-            this.loading = false;
-
-            this.showError('Failed to upload purchases');
-          },
+        setTimeout(() => {
+          this.table?.renderRows();
         });
+
+        this.loading = false;
+
+        this.showSuccess(
+          `${data.length} rows loaded successfully. Please verify before saving.`,
+        );
       } catch (error) {
         console.error(error);
 
