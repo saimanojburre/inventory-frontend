@@ -117,13 +117,13 @@ export class AddPurchaseComponent implements OnInit {
             ],
 
             quantity: [
-              Number(row['Quantity'] || 1),
-              [Validators.required, Validators.min(1)],
+              Number(row['Quantity'] ?? 0),
+              [Validators.required, Validators.min(0)],
             ],
 
             price: [
-              Number(row['Price'] || 0),
-              [Validators.required, Validators.min(1)],
+              Number(row['Price'] ?? 0),
+              [Validators.required, Validators.min(0)],
             ],
 
             supplier: [row['Supplier'] || '', Validators.required],
@@ -174,9 +174,9 @@ export class AddPurchaseComponent implements OnInit {
 
       units: [{ value: '', disabled: true }],
 
-      quantity: [1, [Validators.required, Validators.min(1)]],
+      quantity: [0, [Validators.required, Validators.min(0)]],
 
-      price: [null, [Validators.required, Validators.min(1)]],
+      price: [0, [Validators.required, Validators.min(0)]],
 
       supplier: ['', Validators.required],
 

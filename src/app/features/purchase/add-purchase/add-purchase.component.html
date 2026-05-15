@@ -110,7 +110,7 @@
 
               <input
                 type="number"
-                min="1"
+                min="0"
                 matInput
                 [formControl]="row.get('quantity')"
               />
@@ -120,7 +120,7 @@
               </mat-error>
 
               <mat-error *ngIf="row.get('quantity')?.hasError('min')">
-                Must be greater than 0
+                Value cannot be negative
               </mat-error>
             </mat-form-field>
           </td>
@@ -137,7 +137,7 @@
 
               <input
                 type="number"
-                min="1"
+                min="0"
                 matInput
                 [formControl]="row.get('price')"
               />
@@ -147,7 +147,7 @@
               </mat-error>
 
               <mat-error *ngIf="row.get('price')?.hasError('min')">
-                Must be greater than 0
+                Value cannot be negative
               </mat-error>
             </mat-form-field>
           </td>
