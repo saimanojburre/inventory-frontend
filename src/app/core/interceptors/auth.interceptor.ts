@@ -60,7 +60,7 @@ export class AuthInterceptor implements HttpInterceptor {
         // =====================================================
 
         if (
-          error.status === 401 &&
+          (error.status === 401 || error.status === 403) &&
           !this.isRedirecting &&
           !req.url.includes('/auth/login')
         ) {
