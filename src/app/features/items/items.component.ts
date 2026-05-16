@@ -4,12 +4,13 @@ import { ItemService } from 'src/app/core/services/item.service';
 import { Item } from 'src/app/core/models/item.model';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from 'src/app/core/services/auth.service';
+import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
+import { ToastService } from 'src/app/core/services/toast.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-items',
@@ -45,8 +46,11 @@ export class ItemsComponent {
   dataSource = new MatTableDataSource<Item>([]);
   searchControl = new FormControl('');
   loading = true;
+  savingRowId: number | null = null;
+  deletingRowId: number | null = null;
+  private destroy$ = new Subject<void>();
 
-  // 🔥 FIX: Use setter instead of normal ViewChild
+  // FIX: Use setter instead of normal ViewChild
   @ViewChild(MatPaginator)
   set matPaginator(mp: MatPaginator) {
     if (mp) {
@@ -66,9 +70,9 @@ export class ItemsComponent {
 
   constructor(
     private itemService: ItemService,
-    private router: Router,
-    private snackBar: MatSnackBar,
+    private toast: ToastService,
     public authService: AuthService,
+    private dashboardCache: DashboardCacheService,
   ) {}
 
   // ================= INIT =================
@@ -76,20 +80,21 @@ export class ItemsComponent {
   ngOnInit() {
     this.loadItems();
 
-    this.searchControl.valueChanges.subscribe((value) => {
-      const search = value?.toLowerCase();
+    this.searchControl.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        const search = value?.toLowerCase();
 
-      this.dataSource.filterPredicate = (data: Item) =>
-        !search ||
-        data.name?.toLowerCase().includes(search) ||
-        data.category?.toLowerCase().includes(search) ||
-        data.unit?.toLowerCase().includes(search);
+        this.dataSource.filterPredicate = (data: Item) =>
+          !search ||
+          data.name?.toLowerCase().includes(search) ||
+          data.category?.toLowerCase().includes(search) ||
+          data.unit?.toLowerCase().includes(search);
 
-      this.dataSource.filter = Math.random().toString();
+        this.dataSource.filter = Math.random().toString();
 
-      // 🔥 reset paginator after search
-      this.dataSource.paginator?.firstPage();
-    });
+        this.dataSource.paginator?.firstPage();
+      });
   }
 
   // ================= LOAD =================
@@ -146,7 +151,12 @@ export class ItemsComponent {
     this.backupRow = null;
   }
 
+  // SAVE EDIT
+
   saveEdit(row: Item) {
+    if (this.savingRowId) return;
+
+    this.savingRowId = row.id!;
     const payload = {
       name: row.name,
       category: row.category,
@@ -157,19 +167,27 @@ export class ItemsComponent {
 
     this.itemService.updateItem(row.id!, payload).subscribe({
       next: () => {
-        this.snackBar.open('Product updated successfully', 'Close', {
-          duration: 3000,
-        });
+        this.dashboardCache.refreshInventory();
+        this.toast.success('Product updated successfully');
 
         this.editingId = null;
         this.backupRow = null;
 
-        this.loadItems();
+        this.savingRowId = null;
+        const updatedData = [...this.dataSource.data];
+
+        const index = updatedData.findIndex((i) => i.id === row.id);
+
+        if (index !== -1) {
+          updatedData[index] = { ...row };
+        }
+
+        this.dataSource.data = updatedData;
       },
+
       error: () => {
-        this.snackBar.open('Failed to update product', 'Close', {
-          duration: 3000,
-        });
+        this.savingRowId = null;
+        this.toast.error('Failed to update product');
       },
     });
   }
@@ -178,19 +196,28 @@ export class ItemsComponent {
 
   delete(row: Item) {
     const confirmed = confirm(`Delete "${row.name}" ?`);
+
     if (!confirmed) return;
 
-    this.itemService.deleteItem(row.id!).subscribe(() => {
-      this.snackBar.open('Product deleted', 'Close', {
-        duration: 3000,
-      });
+    this.deletingRowId = row.id!;
 
-      this.dataSource.data = this.dataSource.data.filter(
-        (i) => i.id !== row.id,
-      );
+    this.itemService.deleteItem(row.id!).subscribe({
+      next: () => {
+        this.toast.success('Product deleted');
+        this.dataSource.data = this.dataSource.data.filter(
+          (i) => i.id !== row.id,
+        );
+        this.dashboardCache.refreshInventory();
+        this.deletingRowId = null;
 
-      // 🔥 reset page if needed
-      this.dataSource.paginator?.firstPage();
+        this.dataSource.paginator?.firstPage();
+      },
+
+      error: () => {
+        this.deletingRowId = null;
+
+        this.toast.error('Failed to delete product');
+      },
     });
   }
 }

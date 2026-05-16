@@ -3,6 +3,11 @@
 ========================================================= */
 
 .toolbar {
+    position: sticky;
+    top: 0;
+
+    z-index: 10;
+
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -10,9 +15,14 @@
     gap: 16px;
 
     margin-bottom: 20px;
+    padding-bottom: 12px;
+
+    background: var(--app-bg);
 }
 
-/* LEFT */
+/* =========================================================
+   LEFT
+========================================================= */
 
 .toolbar-left {
     display: flex;
@@ -20,7 +30,9 @@
     gap: 12px;
 }
 
-/* RIGHT */
+/* =========================================================
+   RIGHT
+========================================================= */
 
 .toolbar-right {
     display: flex;
@@ -28,27 +40,35 @@
     gap: 12px;
 }
 
-/* SEARCH */
+/* =========================================================
+   SEARCH
+========================================================= */
 
 .search-field {
     width: 340px;
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+        border-radius: 14px;
+    }
 }
 
-/* =====================================================
-   BUTTON
-===================================================== */
+/* =========================================================
+   BUTTONS
+========================================================= */
 
 .add-btn,
 .export-btn {
-    height: 52px;
-    padding: 0 22px !important;
+    height: 48px;
+
+    padding: 0 20px !important;
 
     border-radius: 14px !important;
 
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
 
-    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.28);
+    box-shadow:
+        0 8px 20px rgba(79, 70, 229, 0.22);
 
     transition:
         transform 0.2s ease,
@@ -59,13 +79,15 @@
 .export-btn:hover {
     transform: translateY(-2px);
 
-    box-shadow: 0 12px 24px rgba(79, 70, 229, 0.35);
+    box-shadow:
+        0 12px 24px rgba(79, 70, 229, 0.30);
 }
 
 .add-btn mat-icon,
 .export-btn mat-icon {
     margin-right: 6px;
 }
+
 /* =========================================================
    TABLE CONTAINER
 ========================================================= */
@@ -79,7 +101,9 @@
 
     overflow: hidden;
 
-    box-shadow: var(--shadow-md);
+    box-shadow:
+        0 4px 12px rgba(15, 23, 42, 0.04),
+        0 18px 40px rgba(15, 23, 42, 0.06);
 }
 
 /* =========================================================
@@ -87,8 +111,14 @@
 ========================================================= */
 
 .table-wrapper {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+
     max-height: 650px;
+
+    scroll-behavior: smooth;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 /* =========================================================
@@ -97,6 +127,8 @@
 
 table {
     width: 100%;
+
+    table-layout: fixed;
 }
 
 /* =========================================================
@@ -114,7 +146,7 @@ table {
 
     background: var(--surface);
 
-    padding: 16px !important;
+    padding: 14px 16px !important;
 
     font-size: 13px;
     font-weight: 700;
@@ -123,6 +155,13 @@ table {
 
     border-bottom:
         1px solid var(--border-light);
+
+    box-shadow:
+        0 1px 0 rgba(148, 163, 184, 0.12);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* =========================================================
@@ -130,10 +169,14 @@ table {
 ========================================================= */
 
 td.mat-mdc-cell {
-    padding: 16px !important;
+    padding: 12px 16px !important;
 
     border-bottom:
         1px solid #f1f5f9;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* =========================================================
@@ -144,13 +187,20 @@ td.mat-mdc-cell {
     transition:
         background 0.2s ease,
         transform 0.15s ease;
+
+    animation: fadeRow 0.2s ease;
 }
 
 .mat-mdc-row:hover {
     background: #f8fafc;
+
+    box-shadow:
+        inset 3px 0 0 #6366f1;
 }
 
-/* EDIT MODE */
+/* =========================================================
+   EDIT MODE
+========================================================= */
 
 .editing-row {
     background:
@@ -166,9 +216,17 @@ td.mat-mdc-cell {
     align-items: center;
     gap: 12px;
 
+    min-width: 0;
+
     font-weight: 600;
 
     color: var(--text-dark);
+}
+
+.product-cell span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .product-avatar {
@@ -295,30 +353,6 @@ td.mat-mdc-cell {
 
     color: #b91c1c;
 }
-
-/* =========================================================
-   ACTION BUTTONS
-========================================================= */
-
-.action-buttons {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.mat-mdc-icon-button {
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-.mat-mdc-icon-button:hover {
-    transform: scale(1.06);
-
-    background:
-        rgba(148, 163, 184, 0.08);
-}
-
 /* =========================================================
    INLINE EDITING
 ========================================================= */
@@ -327,7 +361,7 @@ td.mat-mdc-cell {
 .inline-select {
     width: 100%;
 
-    min-height: 38px;
+    height: 40px;
 
     padding: 8px 10px;
 
@@ -476,6 +510,28 @@ mat-paginator {
     }
 }
 
+
+
+::ng-deep .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: currentColor;
+}
+/* =========================================================
+   ROW ENTRY
+========================================================= */
+
+@keyframes fadeRow {
+
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* =========================================================
    MOBILE
 ========================================================= */
@@ -498,5 +554,13 @@ mat-paginator {
 
     .search-field {
         width: 100%;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 900px;
     }
 }

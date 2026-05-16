@@ -2,8 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { MatTable } from '@angular/material/table';
 
 import { Router } from '@angular/router';
@@ -11,6 +9,7 @@ import { Router } from '@angular/router';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
 import { InventoryService } from 'src/app/core/services/inventory.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 
 import { UsageService } from 'src/app/core/services/usage.service';
 
@@ -58,7 +57,7 @@ export class AddUsageComponent implements OnInit {
     private inventoryService: InventoryService,
     private usageService: UsageService,
     private router: Router,
-    private snackBar: MatSnackBar,
+    private toast: ToastService,
     private dashboardCache: DashboardCacheService,
   ) {}
 
@@ -117,52 +116,38 @@ export class AddUsageComponent implements OnInit {
 
   addRow(): void {
     this.usages.push(this.createRow());
-
-    setTimeout(() => {
+    queueMicrotask(() => {
       this.table?.renderRows();
     });
   }
 
   removeRow(index: number): void {
-    if (this.usages.length <= 1) {
+    if (this.usages.length <= 1 || index < 0 || index >= this.usages.length) {
       return;
     }
 
     this.usages.removeAt(index);
-
-    setTimeout(() => {
+    queueMicrotask(() => {
       this.table?.renderRows();
     });
   }
-
   // =====================================================
   // LOAD ITEMS
   // =====================================================
 
   loadItems(): void {
-    // CACHE FIRST
-
-    if (this.dashboardCache.dashboardData?.items) {
-      this.items = this.dashboardCache.dashboardData.items;
-
+    const cached = this.dashboardCache.snapshot;
+    if (cached?.items) {
+      this.items = cached.items;
       return;
     }
-
-    // API
-
     this.inventoryService.getInventory().subscribe({
       next: (res) => {
         this.items = res;
-
-        if (!this.dashboardCache.dashboardData) {
-          this.dashboardCache.dashboardData = {};
-        }
-
-        this.dashboardCache.dashboardData.items = res;
       },
 
       error: () => {
-        this.showError('Failed to load items');
+        this.toast.error('Failed to load items');
       },
     });
   }
@@ -176,10 +161,18 @@ export class AddUsageComponent implements OnInit {
       return;
     }
 
-    this.usages.at(index).patchValue({
+    const row = this.usages.at(index);
+
+    row.patchValue({
       units: item.units,
       available: item.quantity,
     });
+
+    const currentQty = Number(row.get('quantity')?.value) || 0;
+
+    if (currentQty > item.quantity) {
+      row.get('quantity')?.setValue(null);
+    }
   }
 
   // =====================================================
@@ -187,11 +180,27 @@ export class AddUsageComponent implements OnInit {
   // =====================================================
 
   isInvalidQuantity(row: any): boolean {
-    const qty = Number(row.get('quantity')?.value) || 0;
+    const selectedItem = row.get('item')?.value;
+
+    if (!selectedItem) {
+      return false;
+    }
+
+    const itemId = selectedItem.itemId;
 
     const available = Number(row.get('available')?.value) || 0;
 
-    return qty > available;
+    let totalQty = 0;
+
+    this.usages.controls.forEach((r) => {
+      const currentItem = r.get('item')?.value;
+
+      if (currentItem?.itemId === itemId) {
+        totalQty += Number(r.get('quantity')?.value) || 0;
+      }
+    });
+
+    return totalQty > available;
   }
 
   hasInvalidRows(): boolean {
@@ -206,7 +215,7 @@ export class AddUsageComponent implements OnInit {
     if (this.usageForm.invalid || this.hasInvalidRows()) {
       this.usageForm.markAllAsTouched();
 
-      this.showError('Please fill all required fields correctly');
+      this.toast.error('Please fill all required fields correctly');
 
       return;
     }
@@ -234,20 +243,17 @@ export class AddUsageComponent implements OnInit {
     this.usageService.bulkUsage(payload).subscribe({
       next: () => {
         this.loading = false;
-        this.showSuccess('Usage saved successfully');
-
-        this.dashboardCache.clear();
+        this.toast.success('Usage saved successfully');
 
         this.usages.clear();
-
-        this.addRow();
-
+        this.dashboardCache.refreshUsage();
+        this.dashboardCache.refreshInventory();
         this.goBack();
       },
 
       error: () => {
         this.loading = false;
-        this.showError('Failed to save usage');
+        this.toast.error('Failed to save usage');
       },
     });
   }
@@ -258,33 +264,5 @@ export class AddUsageComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/app/usage']);
-  }
-
-  // =====================================================
-  // SNACKBAR
-  // =====================================================
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-
-      verticalPosition: 'top',
-
-      horizontalPosition: 'right',
-
-      panelClass: ['success-snackbar'],
-    });
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-
-      verticalPosition: 'top',
-
-      horizontalPosition: 'right',
-
-      panelClass: ['error-snackbar'],
-    });
   }
 }

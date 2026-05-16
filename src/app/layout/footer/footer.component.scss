@@ -1,0 +1,198 @@
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.app-footer {
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 22px;
+
+    background: rgba(255, 255, 255, 0.78);
+
+    border-top: 1px solid var(--border-light);
+
+    backdrop-filter: blur(14px);
+
+    position: relative;
+
+    z-index: 20;
+}
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.footer-indicator {
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: linear-gradient(135deg,
+            #10b981,
+            #059669);
+
+    box-shadow:
+        0 0 12px rgba(16, 185, 129, 0.45),
+        0 0 24px rgba(16, 185, 129, 0.2);
+}
+
+.footer-brand-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-title {
+    font-size: 14px;
+    font-weight: 700;
+
+    color: var(--text-primary);
+
+    letter-spacing: 0.2px;
+}
+
+.footer-subtitle {
+    font-size: 11px;
+    font-weight: 500;
+
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   CENTER
+========================================================= */
+
+.footer-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-center-card {
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.65);
+
+    border: 1px solid rgba(255, 255, 255, 0.4);
+
+    box-shadow:
+        0 2px 8px rgba(15, 23, 42, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+    backdrop-filter: blur(10px);
+}
+
+/* =========================================================
+   STATUS DOT
+========================================================= */
+
+.footer-status-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #10b981;
+
+    box-shadow:
+        0 0 8px rgba(16, 185, 129, 0.5),
+        0 0 16px rgba(16, 185, 129, 0.2);
+}
+
+/* =========================================================
+   STATUS TEXT
+========================================================= */
+
+.footer-status-text {
+    font-size: 12px;
+    font-weight: 600;
+
+    color: var(--text-primary);
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   VERSION
+========================================================= */
+
+.footer-version {
+    font-size: 11px;
+    font-weight: 700;
+
+    color: #2563eb;
+
+    white-space: nowrap;
+}
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.footer-divider {
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background: var(--text-muted);
+
+    opacity: 0.4;
+}
+
+/* =========================================================
+   RIGHT
+========================================================= */
+
+.footer-right {
+    font-size: 12px;
+    font-weight: 500;
+
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .app-footer {
+        height: auto;
+
+        flex-direction: column;
+        justify-content: center;
+
+        gap: 12px;
+
+        padding: 14px 16px;
+
+        text-align: center;
+    }
+
+    .footer-center {
+        order: 3;
+    }
+
+    .footer-right {
+        font-size: 11px;
+    }
+}

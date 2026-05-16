@@ -82,10 +82,15 @@
 
   <p>Add your first product to start managing inventory.</p>
 
-  <button mat-raised-button color="primary" routerLink="/app/items/add">
+  <button
+    *ngIf="authService.isOwner()"
+    mat-raised-button
+    color="primary"
+    routerLink="/app/items/add"
+  >
     <mat-icon>add</mat-icon>
 
-    Add Product
+    Create First Product
   </button>
 </div>
 
@@ -205,27 +210,16 @@
         <th mat-header-cell *matHeaderCellDef>Actions</th>
 
         <td mat-cell *matCellDef="let r">
-          <div class="action-buttons">
-            <ng-container *ngIf="editingId === r.id; else normalActions">
-              <button mat-icon-button color="primary" (click)="saveEdit(r)">
-                <mat-icon>check</mat-icon>
-              </button>
-
-              <button mat-icon-button color="warn" (click)="cancelEdit(r)">
-                <mat-icon>close</mat-icon>
-              </button>
-            </ng-container>
-
-            <ng-template #normalActions>
-              <button mat-icon-button color="primary" (click)="edit(r)">
-                <mat-icon>edit</mat-icon>
-              </button>
-
-              <button mat-icon-button color="warn" (click)="delete(r)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            </ng-template>
-          </div>
+          <app-table-actions
+            [editing]="editingId === r.id"
+            [saving]="savingRowId === r.id"
+            [deleting]="deletingRowId === r.id"
+            (edit)="edit(r)"
+            (save)="saveEdit(r)"
+            (cancel)="cancelEdit(r)"
+            (delete)="delete(r)"
+          >
+          </app-table-actions>
         </td>
       </ng-container>
 

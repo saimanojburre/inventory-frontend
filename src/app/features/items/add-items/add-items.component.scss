@@ -1,4 +1,27 @@
 /* =========================================================
+   PAGE ENTER
+========================================================= */
+
+.page-enter {
+    position: relative;
+
+    animation: pageFade 0.25s ease;
+}
+
+@keyframes pageFade {
+
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================================
    ACTION HEADER
 ========================================================= */
 
@@ -11,52 +34,12 @@
 
     margin-bottom: 20px;
 
+    padding-bottom: 12px;
+
+    border-bottom:
+        1px solid rgba(148, 163, 184, 0.12);
+
     flex-wrap: wrap;
-}
-
-/* =========================================================
-   LOADER OVERLAY
-========================================================= */
-
-.loader-overlay {
-    position: absolute;
-    inset: 0;
-
-    z-index: 20;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 18px;
-
-    background:
-        rgba(255, 255, 255, 0.72);
-
-    backdrop-filter: blur(4px);
-
-    animation: fadeOverlay 0.2s ease;
-}
-
-.loader-overlay p {
-    margin: 0;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    color: #334155;
-}
-
-@keyframes fadeOverlay {
-
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
 }
 
 /* =========================================================
@@ -72,7 +55,7 @@
 }
 
 /* =========================================================
-   COMMON BUTTON STYLE
+   BUTTONS
 ========================================================= */
 
 .page-header button {
@@ -87,10 +70,6 @@
         box-shadow 0.2s ease,
         background 0.2s ease;
 }
-
-/* =========================================================
-   DISABLED BUTTONS
-========================================================= */
 
 .page-header button:disabled,
 .save-btn:disabled {
@@ -129,49 +108,26 @@
         0 10px 20px rgba(15, 23, 42, 0.08);
 }
 
-.back-btn mat-icon {
-    margin-right: 6px;
-}
-
 /* =========================================================
-   ADD ROW BUTTON
+   ADD BUTTON
 ========================================================= */
 
 .add-row-btn {
     padding: 0 24px !important;
 
-    background: #3f51b5 !important;
+    background: #4f46e5 !important;
 
     color: white !important;
 
-    border: none;
-
-    font-size: 14px;
-    font-weight: 700;
-
     box-shadow:
-        0 8px 20px rgba(63, 81, 181, 0.28),
-        0 12px 28px rgba(63, 81, 181, 0.18);
+        0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
 .add-row-btn:hover {
     transform: translateY(-2px);
 
-    filter: brightness(1.05);
-
     box-shadow:
-        0 14px 28px rgba(63, 81, 181, 0.34),
-        0 18px 36px rgba(63, 81, 181, 0.22);
-}
-
-.add-row-btn mat-icon {
-    margin-right: 6px;
-
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-
-    color: white;
+        0 14px 28px rgba(79, 70, 229, 0.32);
 }
 
 /* =========================================================
@@ -188,34 +144,15 @@
 
     color: white !important;
 
-    border: none;
-
-    font-size: 14px;
-    font-weight: 700;
-
     box-shadow:
-        0 8px 20px rgba(16, 185, 129, 0.28),
-        0 12px 28px rgba(5, 150, 105, 0.18);
+        0 8px 20px rgba(16, 185, 129, 0.25);
 }
 
 .upload-btn:hover {
     transform: translateY(-2px);
 
-    filter: brightness(1.03);
-
     box-shadow:
-        0 12px 24px rgba(16, 185, 129, 0.34),
-        0 18px 36px rgba(5, 150, 105, 0.22);
-}
-
-.upload-btn mat-icon {
-    margin-right: 6px;
-
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-
-    color: white;
+        0 14px 28px rgba(16, 185, 129, 0.32);
 }
 
 /* =========================================================
@@ -233,13 +170,13 @@
 
     overflow: hidden;
 
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-
     box-shadow:
         0 4px 12px rgba(15, 23, 42, 0.04),
         0 18px 40px rgba(15, 23, 42, 0.06);
+
+    transition:
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
 }
 
 .purchase-container:hover {
@@ -253,13 +190,58 @@
 ========================================================= */
 
 .table-wrapper {
-    overflow: auto;
+overflow: auto;
 
     max-height: 70vh;
 
-    -webkit-overflow-scrolling: touch;
-
     scroll-behavior: smooth;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 14px;
+
+    padding: 80px 24px;
+
+    text-align: center;
+}
+
+.empty-state mat-icon {
+    width: 56px;
+    height: 56px;
+
+    font-size: 56px;
+
+    color: #94a3b8;
+}
+
+.empty-state h3 {
+    margin: 0;
+
+    font-size: 18px;
+    font-weight: 700;
+
+    color: #0f172a;
+}
+
+.empty-state p {
+    max-width: 420px;
+
+    margin: 0;
+
+    color: #64748b;
+
+    line-height: 1.6;
 }
 
 /* =========================================================
@@ -269,7 +251,7 @@
 .purchase-table {
     width: 100%;
 
-    min-width: 1100px;
+    table-layout: fixed;
 
     background: white;
 }
@@ -290,16 +272,17 @@ th.mat-mdc-header-cell {
 
     color: #475569;
 
-    letter-spacing: 0.02em;
-
     padding: 18px 16px !important;
 
     border-bottom:
         1px solid #e5e7eb;
+
+    box-shadow:
+        0 1px 0 rgba(148, 163, 184, 0.12);
 }
 
 /* =========================================================
-   TABLE CELLS
+   CELLS
 ========================================================= */
 
 td.mat-mdc-cell {
@@ -323,6 +306,9 @@ td.mat-mdc-cell {
 
 .mat-mdc-row:hover {
     background: #f8fbff;
+
+    box-shadow:
+        inset 4px 0 0 #6366f1;
 }
 
 /* =========================================================
@@ -330,23 +316,26 @@ td.mat-mdc-cell {
 ========================================================= */
 
 .col-item {
-    width: 28%;
-    min-width: 260px;
+    width: 30%;
 }
 
 .col-medium {
-    width: 18%;
-    min-width: 180px;
+    width: 22%;
 }
 
 .col-small {
-    width: 12%;
-    min-width: 120px;
+    width: 16%;
 }
 
 .col-actions {
-    width: 10%;
-    min-width: 120px;
+    width: 80px;
+}
+
+td.mat-mdc-cell,
+th.mat-mdc-header-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* =========================================================
@@ -355,67 +344,36 @@ td.mat-mdc-cell {
 
 mat-form-field {
     width: 100%;
+        min-width: 0;
 }
-
-/* REMOVE EXTRA MATERIAL SPACE */
-
-::ng-deep .mat-mdc-form-field-subscript-wrapper {
-    display: none;
-}
-
-/* MATERIAL INPUT POLISH */
-
-::ng-deep .mat-mdc-text-field-wrapper {
-    border-radius: 12px !important;
-}
-
-/* =========================================================
-   ACTION BUTTONS INSIDE ROW
-========================================================= */
-
-td.mat-column-actions {
-    text-align: center;
-}
-
-.row-actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 4px;
-}
-
-.row-actions button {
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-.row-actions button:hover {
-    transform: scale(1.08);
-
-    background: #f8fafc;
-}
-
 /* =========================================================
    SAVE SECTION
 ========================================================= */
 
 .save-section {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
 
     gap: 20px;
 
-    padding: 22px 24px;
+    padding: 20px 24px;
 
     border-top:
         1px solid var(--border-light);
 
-    background: #fafbff;
-}
+    background:
+        rgba(255, 255, 255, 0.92);
 
+    backdrop-filter: blur(12px);
+
+    box-shadow:
+        0 -4px 20px rgba(15, 23, 42, 0.04);
+}
 /* =========================================================
    SAVE INFO
 ========================================================= */
@@ -424,7 +382,7 @@ td.mat-column-actions {
     display: flex;
     flex-direction: column;
 
-    gap: 4px;
+    gap: 8px;
 }
 
 .save-info h3 {
@@ -436,12 +394,44 @@ td.mat-column-actions {
     color: #0f172a;
 }
 
-.save-info p {
-    margin: 0;
+/* =========================================================
+   ROW BADGE
+========================================================= */
+
+.row-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    width: fit-content;
+
+    padding: 8px 14px;
+
+    border-radius: 999px;
+
+    background: #eef2ff;
+
+    color: #4338ca;
 
     font-size: 13px;
+    font-weight: 700;
+}
 
-    color: #64748b;
+.row-count-badge span {
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #4f46e5;
+
+    color: white;
+
+    font-size: 12px;
 }
 
 /* =========================================================
@@ -449,8 +439,13 @@ td.mat-column-actions {
 ========================================================= */
 
 .save-btn {
-    min-width: 180px;
-    height: 50px;
+    min-width: 200px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 
     border-radius: 14px !important;
 
@@ -459,6 +454,10 @@ td.mat-column-actions {
 
     box-shadow:
         0 8px 20px rgba(79, 70, 229, 0.25);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .save-btn:hover {
@@ -507,7 +506,6 @@ td.mat-column-actions {
 /* =========================================================
    MOBILE
 ========================================================= */
-
 @media (max-width: 900px) {
 
     .page-header {
@@ -526,43 +524,27 @@ td.mat-column-actions {
     .back-btn,
     .save-btn {
         width: 100%;
+    }
 
-        min-height: 52px;
+    .save-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .save-info {
+        text-align: center;
+        align-items: center;
     }
 
     .purchase-container {
         border-radius: 18px;
     }
 
-    .save-section {
-        flex-direction: column;
-        align-items: stretch;
-
-        gap: 18px;
+    .table-wrapper {
+        overflow-x: auto;
     }
 
-    .save-info {
-        text-align: center;
-    }
-
-    td.mat-mdc-cell,
-    th.mat-mdc-header-cell {
-        padding: 12px !important;
-    }
-
-    .col-item {
-        min-width: 220px;
-    }
-
-    .col-medium {
-        min-width: 160px;
-    }
-
-    .col-small {
-        min-width: 120px;
-    }
-
-    .col-actions {
-        min-width: 100px;
+    .purchase-table {
+        min-width: 760px;
     }
 }

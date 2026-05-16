@@ -42,65 +42,22 @@ export class InventoryComponent {
   }
 
   // ================= LOAD =================
-  loadInventory() {
+  loadInventory(): void {
     this.loading = true;
 
-    // ✅ USE CACHE FIRST
-    if (this.dashboardCache.dashboardData?.items) {
-      const sortedData = this.dashboardCache.dashboardData.items.sort(
-        (a: any, b: any) => {
-          const categoryCompare = (a.category || '').localeCompare(
-            b.category || '',
-          );
+    const cached = this.dashboardCache.snapshot;
 
-          if (categoryCompare !== 0) {
-            return categoryCompare;
-          }
-
-          return (a.itemName || '').localeCompare(b.itemName || '');
-        },
-      );
-
-      this.dataSource.data = sortedData;
-
-      this.totalInventoryValue = sortedData.reduce(
-        (sum: number, item: any) => sum + (item.total || 0),
-        0,
-      );
+    if (cached?.items) {
+      this.setInventoryData(cached.items);
 
       this.loading = false;
 
       return;
     }
 
-    // ✅ API ONLY IF CACHE EMPTY
     this.inventoryService.getInventory().subscribe({
       next: (res: any[]) => {
-        const sortedData = res.sort((a, b) => {
-          const categoryCompare = (a.category || '').localeCompare(
-            b.category || '',
-          );
-
-          if (categoryCompare !== 0) {
-            return categoryCompare;
-          }
-
-          return (a.itemName || '').localeCompare(b.itemName || '');
-        });
-
-        this.dataSource.data = sortedData;
-
-        this.totalInventoryValue = sortedData.reduce(
-          (sum, item) => sum + (item.total || 0),
-          0,
-        );
-
-        // ✅ STORE IN CACHE
-        if (!this.dashboardCache.dashboardData) {
-          this.dashboardCache.dashboardData = {};
-        }
-
-        this.dashboardCache.dashboardData.items = sortedData;
+        this.setInventoryData(res);
 
         this.loading = false;
       },
@@ -109,6 +66,26 @@ export class InventoryComponent {
         this.loading = false;
       },
     });
+  }
+  private setInventoryData(data: any[]): void {
+    const sortedData = [...data].sort((a, b) => {
+      const categoryCompare = (a.category || '').localeCompare(
+        b.category || '',
+      );
+
+      if (categoryCompare !== 0) {
+        return categoryCompare;
+      }
+
+      return (a.itemName || '').localeCompare(b.itemName || '');
+    });
+
+    this.dataSource.data = sortedData;
+
+    this.totalInventoryValue = sortedData.reduce(
+      (sum: number, item: any) => sum + (item.total || 0),
+      0,
+    );
   }
 
   // ================= SEARCH =================

@@ -1,0 +1,32 @@
+.row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+}
+
+.row-actions button {
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.row-actions button:hover:not(:disabled) {
+    transform: scale(1.08);
+
+    background: #f8fafc;
+}
+
+.row-actions button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+.row-actions .mat-icon {
+    font-size: 22px;
+
+    width: 22px;
+    height: 22px;
+}

@@ -3,7 +3,12 @@
   subtitle="Record stock usage and reduce inventory"
 >
 </app-page-header>
-
+<app-page-loader
+  *ngIf="loading"
+  title="Saving Usage"
+  subtitle="Please wait while usage entries are being saved..."
+>
+</app-page-loader>
 <!-- =====================================================
      BACK BUTTON
 ====================================================== -->
@@ -53,22 +58,24 @@
           <th mat-header-cell *matHeaderCellDef class="col-item">Item</th>
 
           <td mat-cell *matCellDef="let row; let i = index" class="col-item">
-            <mat-form-field appearance="outline">
-              <mat-label>Select Item</mat-label>
+            <app-search-select
+              [items]="items"
+              label="Select Item"
+              bindLabel="itemName"
+              [control]="$any(row.get('item'))"
+              (selectionChange)="onItemChange($event, i)"
+            >
+            </app-search-select>
 
-              <mat-select
-                [formControl]="row.get('item')"
-                (selectionChange)="onItemChange($event.value, i)"
-              >
-                <mat-option *ngFor="let item of items" [value]="item">
-                  {{ item.itemName }}
-                </mat-option>
-              </mat-select>
-
-              <mat-error *ngIf="row.get('item')?.hasError('required')">
-                Item is required
-              </mat-error>
-            </mat-form-field>
+            <div
+              class="error-text"
+              *ngIf="
+                row.get('item')?.hasError('required') &&
+                row.get('item')?.touched
+              "
+            >
+              Item is required
+            </div>
           </td>
         </ng-container>
 
@@ -209,26 +216,13 @@
           <th mat-header-cell *matHeaderCellDef class="col-actions">Actions</th>
 
           <td mat-cell *matCellDef="let row; let i = index" class="col-actions">
-            <div class="action-buttons">
-              <button
-                mat-mini-fab
-                color="primary"
-                type="button"
-                (click)="addRow()"
-              >
-                <mat-icon>add</mat-icon>
-              </button>
-
-              <button
-                mat-mini-fab
-                color="warn"
-                type="button"
-                *ngIf="usages.length > 1"
-                (click)="removeRow(i)"
-              >
-                <mat-icon>remove</mat-icon>
-              </button>
-            </div>
+            <app-row-actions
+              [disabled]="loading"
+              [showRemove]="usages.length > 1"
+              (add)="addRow()"
+              (remove)="removeRow(i)"
+            >
+            </app-row-actions>
           </td>
         </ng-container>
 
@@ -267,13 +261,7 @@
       (click)="saveUsage()"
       [disabled]="hasInvalidRows() || loading"
     >
-      <mat-progress-spinner
-        *ngIf="loading"
-        diameter="22"
-        mode="indeterminate"
-      ></mat-progress-spinner>
-
-      <span *ngIf="!loading"> Save Usage </span>
+      <span>Save Usage</span>
     </button>
   </div>
 </div>

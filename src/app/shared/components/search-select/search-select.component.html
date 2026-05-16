@@ -1,0 +1,25 @@
+<mat-form-field appearance="outline">
+  <mat-label>{{ label }}</mat-label>
+
+  <mat-select
+    [formControl]="control"
+    (selectionChange)="onSelection($event.value)"
+  >
+    <!-- SEARCH -->
+
+    <mat-option>
+      <ngx-mat-select-search
+        [formControl]="searchCtrl"
+        placeholderLabel="Search..."
+        noEntriesFoundLabel="No matching records"
+      >
+      </ngx-mat-select-search>
+    </mat-option>
+
+    <!-- OPTIONS -->
+
+    <mat-option *ngFor="let item of filteredItems" [value]="item">
+      {{ item[bindLabel] }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>

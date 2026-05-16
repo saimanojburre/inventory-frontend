@@ -189,39 +189,6 @@
         0 10px 30px rgba(15, 23, 42, 0.08),
         0 22px 50px rgba(15, 23, 42, 0.08);
 }
-
-/* =========================================================
-   LOADER OVERLAY
-========================================================= */
-
-.loader-overlay {
-    position: absolute;
-    inset: 0;
-
-    z-index: 20;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 18px;
-
-    background:
-        rgba(255, 255, 255, 0.75);
-
-    backdrop-filter: blur(4px);
-}
-
-.loader-overlay p {
-    margin: 0;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    color: #334155;
-}
-
 /* =========================================================
    TABLE WRAPPER
 ========================================================= */
@@ -363,28 +330,6 @@ mat-form-field {
 
     font-size: 15px;
 }
-
-/* =========================================================
-   ACTION BUTTONS
-========================================================= */
-
-.action-buttons {
-    display: flex;
-    justify-content: center;
-
-    gap: 10px;
-}
-
-.action-buttons button {
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-.action-buttons button:hover {
-    transform: scale(1.08);
-}
-
 /* =========================================================
    FOOTER
 ========================================================= */

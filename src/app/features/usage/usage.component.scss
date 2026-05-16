@@ -241,28 +241,6 @@ td.mat-mdc-cell {
     font-size: 13px;
     font-weight: 500;
 }
-
-/* =====================================================
-   ACTIONS
-===================================================== */
-
-.action-buttons {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.action-buttons .mat-mdc-icon-button {
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-.action-buttons .mat-mdc-icon-button:hover {
-    transform: scale(1.08);
-    background: #f8fafc;
-}
-
 /* =====================================================
    INLINE INPUTS
 ===================================================== */

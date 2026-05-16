@@ -1,0 +1,18 @@
+.table-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 4px;
+}
+
+button {
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+    transform: scale(1.06);
+
+    background: rgba(148, 163, 184, 0.08);
+}

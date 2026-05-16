@@ -8,19 +8,17 @@ import { MatPaginator } from '@angular/material/paginator';
 
 import { MatTableDataSource } from '@angular/material/table';
 
-import { Router } from '@angular/router';
-
 import { AuthService } from 'src/app/core/services/auth.service';
 
 import { UsageService } from 'src/app/core/services/usage.service';
-
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 import * as XLSX from 'xlsx';
 
 import { saveAs } from 'file-saver';
 
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
+import { ToastService } from 'src/app/core/services/toast.service';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-usage',
@@ -43,20 +41,29 @@ export class UsageComponent {
   dataSource = new MatTableDataSource<any>([]);
 
   filterForm!: FormGroup;
-
+  private destroy$ = new Subject<void>();
   loading = true;
   today = new Date();
   editingId: number | null = null;
+  savingRowId: number | null = null;
+
+  deletingRowId: number | null = null;
 
   backupRow: any = null;
 
-  departments = [
-    'Tiffin',
-    'North Indian',
-    'Chinese',
+  departments: string[] = [
+    'Tiffins',
+    'Staff Food',
+    'Reception',
+    'Line Parcel',
+    'Hot Drinks',
     'Service',
-    'Meals',
+    'Chinese',
+    'North Indian',
+    'South Indian',
     'Cleaning',
+    'Finger Foods',
+    'Meals',
   ];
 
   // =====================================================
@@ -80,9 +87,8 @@ export class UsageComponent {
   constructor(
     private usageService: UsageService,
     private fb: FormBuilder,
-    private router: Router,
     private authService: AuthService,
-    private snackBar: MatSnackBar,
+    private toast: ToastService,
     private dashboardCache: DashboardCacheService,
   ) {}
 
@@ -95,9 +101,11 @@ export class UsageComponent {
 
     this.loadUsage();
 
-    this.filterForm.valueChanges.subscribe(() => {
-      this.applyFilter();
-    });
+    this.filterForm.valueChanges
+      .pipe(debounceTime(300), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.applyFilter();
+      });
   }
 
   // =====================================================
@@ -112,34 +120,23 @@ export class UsageComponent {
     });
   }
 
-  // =====================================================
   // LOAD
-  // =====================================================
 
   loadUsage(): void {
     this.loading = true;
 
-    // CACHE FIRST
+    const cached = this.dashboardCache.snapshot;
 
-    if (this.dashboardCache.dashboardData?.usage) {
-      this.dataSource.data = this.dashboardCache.dashboardData.usage;
+    if (cached?.usage) {
+      this.dataSource.data = cached.usage;
 
       this.loading = false;
 
       return;
     }
-
-    // API
-
     this.usageService.getUsage().subscribe({
       next: (res) => {
         this.dataSource.data = res;
-
-        if (!this.dashboardCache.dashboardData) {
-          this.dashboardCache.dashboardData = {};
-        }
-
-        this.dashboardCache.dashboardData.usage = res;
 
         this.loading = false;
       },
@@ -147,7 +144,7 @@ export class UsageComponent {
       error: () => {
         this.loading = false;
 
-        this.showError('Failed to load usage records');
+        this.toast.error('Failed to load usage records');
       },
     });
   }
@@ -228,17 +225,26 @@ export class UsageComponent {
       return;
     }
 
+    this.deletingRowId = row.id;
+
     this.usageService.deleteUsage(row.id).subscribe({
       next: () => {
-        this.showSuccess('Usage deleted successfully');
+        this.toast.success('Usage deleted successfully');
 
-        this.dashboardCache.clear();
+        this.dashboardCache.refreshUsage();
+        this.dashboardCache.refreshInventory();
 
-        this.loadUsage();
+        this.dataSource.data = this.dataSource.data.filter(
+          (u: any) => u.id !== row.id,
+        );
+
+        this.deletingRowId = null;
       },
 
       error: () => {
-        this.showError('Failed to delete usage');
+        this.deletingRowId = null;
+
+        this.toast.error('Failed to delete usage');
       },
     });
   }
@@ -262,6 +268,8 @@ export class UsageComponent {
   }
 
   saveEdit(row: any): void {
+    this.savingRowId = row.id;
+
     const payload = {
       quantity: row.quantity,
       department: row.department,
@@ -272,48 +280,32 @@ export class UsageComponent {
 
     this.usageService.updateUsage(row.id, payload).subscribe({
       next: () => {
-        this.showSuccess('Usage updated successfully');
+        this.toast.success('Usage updated successfully');
 
         this.editingId = null;
-
         this.backupRow = null;
 
-        this.dashboardCache.clear();
+        this.dashboardCache.refreshUsage();
+        this.dashboardCache.refreshInventory();
 
-        this.loadUsage();
+        const updated = [...this.dataSource.data];
+
+        const index = updated.findIndex((u: any) => u.id === row.id);
+
+        if (index !== -1) {
+          updated[index] = { ...row };
+        }
+
+        this.dataSource.data = updated;
+
+        this.savingRowId = null;
       },
 
       error: () => {
-        this.showError('Failed to update usage');
+        this.savingRowId = null;
+
+        this.toast.error('Failed to update usage');
       },
-    });
-  }
-
-  // =====================================================
-  // HELPERS
-  // =====================================================
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-
-      verticalPosition: 'top',
-
-      horizontalPosition: 'right',
-
-      panelClass: ['success-snackbar'],
-    });
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-
-      verticalPosition: 'top',
-
-      horizontalPosition: 'right',
-
-      panelClass: ['error-snackbar'],
     });
   }
 }

@@ -1,0 +1,26 @@
+<div class="row-actions">
+  <!-- ADD -->
+
+  <button
+    mat-icon-button
+    color="primary"
+    type="button"
+    [disabled]="disabled"
+    (click)="onAdd()"
+  >
+    <mat-icon>add_circle</mat-icon>
+  </button>
+
+  <!-- REMOVE -->
+
+  <button
+    *ngIf="showRemove"
+    mat-icon-button
+    color="warn"
+    type="button"
+    [disabled]="disabled"
+    (click)="onRemove()"
+  >
+    <mat-icon>remove_circle</mat-icon>
+  </button>
+</div>

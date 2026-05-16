@@ -1,0 +1,49 @@
+<div class="table-actions">
+  <!-- EDIT MODE -->
+
+  <ng-container *ngIf="editing; else normalMode">
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="save.emit()"
+      [disabled]="saving"
+    >
+      <mat-spinner *ngIf="saving" diameter="18"></mat-spinner>
+
+      <mat-icon *ngIf="!saving">check</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      color="warn"
+      (click)="cancel.emit()"
+      [disabled]="saving"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </ng-container>
+
+  <!-- NORMAL MODE -->
+
+  <ng-template #normalMode>
+    <button
+      mat-icon-button
+      color="primary"
+      (click)="edit.emit()"
+      [disabled]="disableEdit || deleting"
+    >
+      <mat-icon>edit</mat-icon>
+    </button>
+
+    <button
+      mat-icon-button
+      color="warn"
+      (click)="delete.emit()"
+      [disabled]="disableDelete || deleting"
+    >
+      <mat-spinner *ngIf="deleting" diameter="18"></mat-spinner>
+
+      <mat-icon *ngIf="!deleting">delete</mat-icon>
+    </button>
+  </ng-template>
+</div>

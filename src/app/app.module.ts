@@ -49,6 +49,12 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LogsComponent } from './features/logs/logs.component';
 import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.component';
+import { FooterComponent } from './layout/footer/footer.component';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { PageLoaderComponent } from './shared/components/page-loader/page-loader.component';
+import { RowActionsComponent } from './shared/components/buttons/row-actions/row-actions.component';
+import { TableActionsComponent } from './shared/components/table-actions/table-actions.component';
+import { SearchSelectComponent } from './shared/components/search-select/search-select.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -75,6 +81,11 @@ import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.componen
     UserComponent,
     LogsComponent,
     UnauthorizedComponent,
+    FooterComponent,
+    PageLoaderComponent,
+    RowActionsComponent,
+    TableActionsComponent,
+    SearchSelectComponent,
   ],
   imports: [
     BrowserModule,
@@ -109,6 +120,7 @@ import { UnauthorizedComponent } from './auth/unauthorized/unauthorized.componen
     MatSnackBarModule,
     MatSlideToggleModule,
     NgxSkeletonLoaderModule,
+    NgxMatSelectSearchModule,
   ],
   providers: [
     {

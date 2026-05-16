@@ -147,11 +147,10 @@
         0 4px 12px rgba(15, 23, 42, 0.04),
         0 18px 40px rgba(15, 23, 42, 0.06);
 }
-
-.usage-container:hover {
+.usage-container {
     box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08),
-        0 22px 50px rgba(15, 23, 42, 0.08);
+        0 4px 12px rgba(15, 23, 42, 0.04),
+        0 18px 40px rgba(15, 23, 42, 0.06);
 }
 
 /* =========================================================
@@ -324,28 +323,6 @@ mat-form-field {
 
     font-weight: 500;
 }
-
-/* =========================================================
-   ACTION BUTTONS
-========================================================= */
-
-.action-buttons {
-    display: flex;
-    justify-content: center;
-
-    gap: 10px;
-}
-
-.action-buttons button {
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-.action-buttons button:hover {
-    transform: scale(1.08);
-}
-
 /* =========================================================
    FOOTER
 ========================================================= */

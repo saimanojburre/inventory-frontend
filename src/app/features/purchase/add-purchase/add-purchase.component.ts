@@ -2,14 +2,13 @@
 
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
 import * as XLSX from 'xlsx';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { PurchaseService } from 'src/app/core/services/purchase.service';
+import { ToastService } from 'src/app/core/services/toast.service';
 
 @Component({
   selector: 'app-add-purchase',
@@ -42,7 +41,7 @@ export class AddPurchaseComponent implements OnInit {
     private purchaseService: PurchaseService,
     private inventoryService: InventoryService,
     private router: Router,
-    private snackBar: MatSnackBar,
+    private toast: ToastService,
     private dashboardCache: DashboardCacheService,
   ) {}
 
@@ -84,16 +83,17 @@ export class AddPurchaseComponent implements OnInit {
         if (!data || data.length === 0) {
           this.loading = false;
 
-          this.showError('Uploaded file is empty');
+          this.toast.error('Uploaded file is empty');
 
           return;
         }
 
         /* =========================================
-         CLEAR EXISTING ROWS
+         Refresh EXISTING ROWS
       ========================================= */
 
-        this.purchases.clear();
+        this.dashboardCache.refreshPurchases();
+        this.dashboardCache.refreshInventory();
 
         /* =========================================
          MAP XLSX TO FORM ROWS
@@ -143,7 +143,7 @@ export class AddPurchaseComponent implements OnInit {
 
         this.loading = false;
 
-        this.showSuccess(
+        this.toast.success(
           `${data.length} rows loaded successfully. Please verify before saving.`,
         );
       } catch (error) {
@@ -151,7 +151,7 @@ export class AddPurchaseComponent implements OnInit {
 
         this.loading = false;
 
-        this.showError('Invalid XLSX format');
+        this.toast.error('Invalid XLSX format');
       }
     };
 
@@ -193,20 +193,24 @@ export class AddPurchaseComponent implements OnInit {
   }
 
   removeRow(index: number): void {
-    if (this.purchases.length <= 1) {
+    if (
+      this.purchases.length <= 1 ||
+      index < 0 ||
+      index >= this.purchases.length
+    ) {
       return;
     }
 
     this.purchases.removeAt(index);
 
-    setTimeout(() => {
-      this.table?.renderRows();
-    });
+    this.table?.renderRows();
   }
 
   loadItems(): void {
-    if (this.dashboardCache.dashboardData?.items) {
-      this.items = this.dashboardCache.dashboardData.items;
+    const cached = this.dashboardCache.snapshot;
+
+    if (cached?.items) {
+      this.items = cached.items;
 
       return;
     }
@@ -214,16 +218,10 @@ export class AddPurchaseComponent implements OnInit {
     this.inventoryService.getInventory().subscribe({
       next: (res: any) => {
         this.items = res;
-
-        if (!this.dashboardCache.dashboardData) {
-          this.dashboardCache.dashboardData = {};
-        }
-
-        this.dashboardCache.dashboardData.items = res;
       },
 
       error: () => {
-        this.showError('Failed to load items');
+        this.toast.error('Failed to load items');
       },
     });
   }
@@ -252,7 +250,7 @@ export class AddPurchaseComponent implements OnInit {
     if (this.purchaseForm.invalid) {
       this.purchaseForm.markAllAsTouched();
 
-      this.showError('Please fill all required fields correctly');
+      this.toast.error('Please fill all required fields correctly');
 
       return;
     }
@@ -288,11 +286,9 @@ export class AddPurchaseComponent implements OnInit {
     this.purchaseService.bulkPurchase(payload).subscribe({
       next: () => {
         this.loading = false;
-
-        this.dashboardCache.clear();
-
-        this.showSuccess('Purchases saved successfully');
-
+        this.dashboardCache.refreshPurchases();
+        this.dashboardCache.refreshInventory();
+        this.toast.success('Purchases saved successfully');
         this.purchases.clear();
 
         this.addRow();
@@ -303,30 +299,12 @@ export class AddPurchaseComponent implements OnInit {
       error: () => {
         this.loading = false;
 
-        this.showError('Failed to save purchases');
+        this.toast.error('Failed to save purchases');
       },
     });
   }
 
   goBack(): void {
     this.router.navigate(['/app/purchase']);
-  }
-
-  private showSuccess(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      verticalPosition: 'top',
-      horizontalPosition: 'right',
-      panelClass: ['success-snackbar'],
-    });
-  }
-
-  private showError(message: string): void {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-      verticalPosition: 'top',
-      horizontalPosition: 'right',
-      panelClass: ['error-snackbar'],
-    });
   }
 }
