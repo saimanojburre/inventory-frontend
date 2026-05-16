@@ -47,6 +47,27 @@
 
 .brand {
     display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* LOGO */
+
+.brand-logo {
+    width: 42px;
+    height: 42px;
+
+    object-fit: contain;
+
+    border-radius: 10px;
+
+    flex-shrink: 0;
+}
+
+/* TEXT */
+
+.brand-text {
+    display: flex;
     flex-direction: column;
 }
 
