@@ -35,6 +35,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   greetingMessage = '';
   loading = true;
+  items: any[] = [];
+  lowStockItems: any[] = [];
 
   /* =========================================================
      CONSTRUCTOR
@@ -58,7 +60,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.dashboardCache.dashboard$.subscribe((data) => {
       if (!data) return;
       this.stats = data.stats;
+
+      this.items = data.items || [];
+
+      this.lowStockItems = this.items.filter((item: any) => {
+        return item.quantity <= item.minStock;
+      });
       setTimeout(() => {
+        this.destroyCharts();
         this.createDepartmentChart(data.usage, data.itemMap);
 
         this.createCategoryChart(data.usage, data.itemMap);
@@ -118,7 +127,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   goToAddUsage(): void {
     this.router.navigate(['/app/usage/add']);
   }
-
+  getLowStockItems(): any[] {
+    return this.items.filter((item: any) => {
+      return item.quantity <= item.minStock;
+    });
+  }
+  goToLowStock(): void {
+    this.router.navigate(['/app/inventory'], {
+      queryParams: {
+        lowStock: true,
+      },
+    });
+  }
   /* =========================================================
      CHART OPTIONS
   ========================================================= */

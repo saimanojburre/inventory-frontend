@@ -21,6 +21,41 @@
 
     <mat-icon matSuffix> search </mat-icon>
   </mat-form-field>
+  <!-- CATEGORY FILTER -->
+
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Category</mat-label>
+
+    <mat-select
+      [(value)]="selectedCategory"
+      (selectionChange)="applyAdvancedFilter()"
+    >
+      <mat-option value="">All</mat-option>
+
+      <mat-option *ngFor="let category of getCategories()" [value]="category">
+        {{ category }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- STATUS FILTER -->
+
+  <mat-form-field appearance="outline" class="filter-field">
+    <mat-label>Status</mat-label>
+
+    <mat-select
+      [(value)]="selectedStatus"
+      (selectionChange)="applyAdvancedFilter()"
+    >
+      <mat-option value="">All</mat-option>
+
+      <mat-option value="instock">In Stock</mat-option>
+
+      <mat-option value="lowstock">Low Stock</mat-option>
+
+      <mat-option value="outofstock">Out of Stock</mat-option>
+    </mat-select>
+  </mat-form-field>
 
   <!-- SUMMARY -->
   <div class="summary-card">
@@ -38,6 +73,18 @@
       </h2>
     </div>
   </div>
+</div>
+
+<div class="low-stock-banner" *ngIf="showingLowStock">
+  <div class="banner-left">
+    <mat-icon>warning</mat-icon>
+
+    <span> Showing Low Stock Items </span>
+  </div>
+
+  <button mat-stroked-button color="warn" (click)="clearLowStockFilter()">
+    Show All
+  </button>
 </div>
 
 <!-- =====================================================
@@ -124,6 +171,22 @@
           >
             {{ row.quantity }}
           </span>
+        </td>
+      </ng-container>
+      <!-- STATUS -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>Status</th>
+
+        <td mat-cell *matCellDef="let item">
+          <div class="stock-badge" [ngClass]="getStockStatus(item)">
+            {{
+              getStockStatus(item) === "outofstock"
+                ? "Out of Stock"
+                : getStockStatus(item) === "lowstock"
+                  ? "Low Stock"
+                  : "In Stock"
+            }}
+          </div>
         </td>
       </ng-container>
 
