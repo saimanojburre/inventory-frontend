@@ -118,12 +118,12 @@ export class AddPurchaseComponent implements OnInit {
 
             quantity: [
               Number(row['Quantity'] ?? 0),
-              [Validators.required, Validators.min(0)],
+              [Validators.required, Validators.min(0.1)],
             ],
 
             price: [
               Number(row['Price'] ?? 0),
-              [Validators.required, Validators.min(0)],
+              [Validators.required, Validators.min(0.1)],
             ],
 
             supplier: [row['Supplier'] || '', Validators.required],

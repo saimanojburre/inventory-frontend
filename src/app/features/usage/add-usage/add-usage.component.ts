@@ -100,7 +100,7 @@ export class AddUsageComponent implements OnInit {
 
       available: [0],
 
-      quantity: [null, [Validators.required, Validators.min(1)]],
+      quantity: [null, [Validators.required, Validators.min(0.1)]],
 
       department: ['', Validators.required],
 

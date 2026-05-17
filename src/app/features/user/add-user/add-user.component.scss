@@ -15,8 +15,6 @@
     grid-template-columns: 2fr 1fr;
 
     gap: 24px;
-
-    align-items: start;
 }
 
 /* =====================================================
@@ -105,6 +103,36 @@
 
 mat-form-field {
     width: 100%;
+}
+
+
+/* =====================================================
+   MATCH BOTH CARD HEIGHTS
+===================================================== */
+
+.user-layout {
+    display: grid;
+
+    grid-template-columns: 2fr 1fr;
+
+    gap: 24px;
+
+    align-items: stretch;
+}
+
+.user-left,
+.user-right {
+    display: flex;
+}
+
+.form-card,
+.info-card {
+    width: 100%;
+}
+
+/* make right card full height */
+.info-card {
+    height: 100%;
 }
 
 /* =====================================================

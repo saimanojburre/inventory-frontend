@@ -34,6 +34,8 @@ export class UserComponent {
   loading = true;
 
   editingId: number | null = null;
+  savingRowId: number | null = null;
+  deletingRowId: number | null = null;
 
   backupRow: any = null;
 
@@ -135,6 +137,7 @@ export class UserComponent {
   // =====================================================
 
   delete(row: any): void {
+    this.deletingRowId = row.id;
     const confirmDelete = confirm('Delete this user?');
 
     if (!confirmDelete) {
@@ -146,9 +149,11 @@ export class UserComponent {
         this.showSuccess('User deleted successfully');
 
         this.loadUsers();
+        this.deletingRowId = row.id;
       },
 
       error: () => {
+        this.deletingRowId = row.id;
         this.showError('Failed to delete user');
       },
     });
@@ -173,6 +178,7 @@ export class UserComponent {
   }
 
   saveEdit(row: any): void {
+    this.savingRowId = row.id;
     const payload = {
       name: row.name,
 
@@ -194,9 +200,11 @@ export class UserComponent {
         this.backupRow = null;
 
         this.loadUsers();
+        this.savingRowId = row.id;
       },
 
       error: () => {
+        this.savingRowId = row.id;
         this.showError('Failed to update user');
       },
     });
