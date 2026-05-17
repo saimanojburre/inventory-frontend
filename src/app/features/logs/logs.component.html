@@ -8,7 +8,7 @@
      FILTERS
 ===================================================== -->
 
-<div class="filters-card">
+<div class="filters-card" *ngIf="!loading">
   <mat-form-field appearance="outline">
     <mat-label>Search</mat-label>
 
@@ -44,12 +44,40 @@
     </mat-select>
   </mat-form-field>
 </div>
+<!-- =====================================================
+     SKELETON LOADING
+===================================================== -->
 
+<div class="skeleton-wrapper" *ngIf="loading">
+  <!-- FILTER SKELETON -->
+
+  <div class="skeleton-filter"></div>
+
+  <!-- TABLE -->
+
+  <div class="skeleton-table">
+    <div class="skeleton-header"></div>
+
+    <div class="skeleton-row" *ngFor="let item of [1, 2, 3, 4, 5, 6, 7, 8]">
+      <div class="skeleton-cell short"></div>
+
+      <div class="skeleton-cell badge"></div>
+
+      <div class="skeleton-cell badge"></div>
+
+      <div class="skeleton-cell long"></div>
+
+      <div class="skeleton-cell badge"></div>
+
+      <div class="skeleton-cell medium"></div>
+    </div>
+  </div>
+</div>
 <!-- =====================================================
      TABLE
 ===================================================== -->
 
-<div class="logs-table-card">
+<div class="logs-table-card" *ngIf="!loading">
   <table mat-table [dataSource]="dataSource">
     <!-- USER -->
 
