@@ -14,7 +14,7 @@ export class LoginComponent {
   hidePassword = true;
   loading = false;
   loginError = false;
-
+  errmsg = '';
   loginForm = this.fb.group({
     username: ['', Validators.required],
     password: ['', Validators.required],
@@ -71,7 +71,8 @@ export class LoginComponent {
           this.router.navigate(['/app/dashboard']);
         },
 
-        error: () => {
+        error: (err: any) => {
+          this.errmsg = err.error.message || 'Invalid username or password';
           this.loginError = true;
         },
       });

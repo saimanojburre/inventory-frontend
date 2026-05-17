@@ -1,17 +1,13 @@
 <header class="topbar">
   <!-- LEFT -->
   <div class="topbar-left">
-    <!-- MENU BUTTON -->
     <button mat-icon-button class="menu-btn" (click)="menuClick()">
       <mat-icon>menu</mat-icon>
     </button>
 
-    <!-- BRAND -->
     <div class="brand">
-      <!-- LOGO -->
       <img src="assets/9.png" alt="Airawat Logo" class="brand-logo" />
 
-      <!-- TITLE -->
       <div class="brand-text">
         <span routerLink="/app/dashboard" class="title">
           The Airawat Kitchen
@@ -24,25 +20,92 @@
 
   <!-- RIGHT -->
   <div class="topbar-right">
-    <!-- THEME TOGGLE -->
+    <!-- THEME -->
     <button mat-icon-button class="icon-btn" (click)="toggleTheme()">
       <mat-icon>
         {{ isDark ? "light_mode" : "dark_mode" }}
       </mat-icon>
     </button>
 
-    <!-- NOTIFICATION -->
-    <button
-      mat-icon-button
-      class="icon-btn notification-btn"
-      (click)="openNotifications()"
-    >
-      <mat-icon>notifications</mat-icon>
+    <!-- NOTIFICATIONS -->
+    <div class="notification-wrapper">
+      <button
+        mat-icon-button
+        class="icon-btn notification-btn"
+        (click)="openNotifications($event)"
+      >
+        <mat-icon>notifications</mat-icon>
 
-      <span class="badge" *ngIf="notificationCount > 0">
-        {{ notificationCount }}
-      </span>
-    </button>
+        <span class="badge" *ngIf="notificationCount > 0">
+          {{ notificationCount }}
+        </span>
+      </button>
+
+      <!-- DROPDOWN -->
+      <div
+        class="notification-dropdown"
+        *ngIf="showNotifications"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- HEADER -->
+        <div class="notification-header">
+          <span>Notifications</span>
+
+          <button
+            class="clear-all-btn"
+            *ngIf="notifications.length > 0"
+            (click)="clearAllNotifications($event)"
+          >
+            Clear All
+          </button>
+        </div>
+
+        <!-- EMPTY -->
+        <div class="empty-notification" *ngIf="notifications.length === 0">
+          <mat-icon>notifications_none</mat-icon>
+
+          <span>No notifications</span>
+        </div>
+
+        <!-- LIST -->
+        <div
+          class="notification-item"
+          *ngFor="let notification of notifications"
+          [class.unread]="!notification.readStatus"
+          (click)="markAsRead(notification)"
+        >
+          <!-- ICON -->
+          <div class="notification-icon">
+            <mat-icon *ngIf="notification.type === 'USER_APPROVAL'">
+              person_add
+            </mat-icon>
+
+            <mat-icon *ngIf="notification.type === 'LOW_STOCK'">
+              warning
+            </mat-icon>
+          </div>
+
+          <!-- CONTENT -->
+          <div class="notification-content">
+            <div class="notification-title">
+              {{ notification.title }}
+            </div>
+
+            <div class="notification-message">
+              {{ notification.message }}
+            </div>
+          </div>
+
+          <!-- DELETE -->
+          <button
+            class="delete-notification-btn"
+            (click)="deleteNotification(notification, $event)"
+          >
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
 
     <!-- PROFILE -->
     <div class="profile-wrapper" (click)="toggleProfileMenu($event)">
@@ -57,7 +120,7 @@
           </span>
         </div>
 
-        <mat-icon class="dropdown-icon"> expand_more </mat-icon>
+        <mat-icon class="dropdown-icon">expand_more</mat-icon>
       </div>
 
       <!-- DROPDOWN -->

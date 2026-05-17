@@ -50,7 +50,7 @@ export class UserService {
   // DELETE USER
   // =====================================================
 
-  deleteUser(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+  deleteUser(id: number) {
+    return this.http.delete(`${this.baseUrl}/${id}`, { responseType: 'text' });
   }
 }

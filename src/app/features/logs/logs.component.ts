@@ -48,8 +48,15 @@ export class LogsComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<ActivityLog>([]);
 
   @ViewChild(MatPaginator)
-  paginator!: MatPaginator;
+  set matPaginator(paginator: MatPaginator) {
+    if (paginator) {
+      this.paginator = paginator;
 
+      this.dataSource.paginator = paginator;
+    }
+  }
+
+  paginator!: MatPaginator;
   // =====================================================
   // LOADING
   // =====================================================
@@ -85,7 +92,9 @@ export class LogsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.paginator = this.paginator;
+    setTimeout(() => {
+      this.dataSource.paginator = this.paginator;
+    });
   }
 
   // =====================================================
@@ -98,6 +107,8 @@ export class LogsComponent implements OnInit, AfterViewInit {
     this.activityLogService.getAllLogs().subscribe({
       next: (response) => {
         this.dataSource.data = response;
+
+        this.dataSource.paginator = this.paginator;
 
         this.loading = false;
       },

@@ -132,28 +132,33 @@ export class UserComponent {
     this.dataSource.paginator?.firstPage();
   }
 
-  // =====================================================
   // DELETE
-  // =====================================================
 
   delete(row: any): void {
-    this.deletingRowId = row.id;
     const confirmDelete = confirm('Delete this user?');
 
-    if (!confirmDelete) {
-      return;
-    }
+    if (!confirmDelete) return;
+
+    this.deletingRowId = row.id;
 
     this.userService.deleteUser(row.id).subscribe({
       next: () => {
-        this.showSuccess('User deleted successfully');
+        this.deletingRowId = null;
 
-        this.loadUsers();
-        this.deletingRowId = row.id;
+        // remove instantly from table
+
+        this.dataSource.data = this.dataSource.data.filter(
+          (user) => user.id !== row.id,
+        );
+
+        this.showSuccess('User deleted successfully');
       },
 
-      error: () => {
-        this.deletingRowId = row.id;
+      error: (err) => {
+        console.error(err);
+
+        this.deletingRowId = null;
+
         this.showError('Failed to delete user');
       },
     });
