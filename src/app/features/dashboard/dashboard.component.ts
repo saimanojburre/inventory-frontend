@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Chart } from 'chart.js/auto';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-dashboard',
@@ -54,11 +55,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.setGreeting();
-
+    Chart.register(ChartDataLabels);
     this.dashboardCache.loadIfNeeded();
 
     this.dashboardCache.dashboard$.subscribe((data) => {
-      if (!data) return;
+      if (!data) {
+        return;
+      }
+
       this.stats = data.stats;
 
       this.items = data.items || [];
@@ -73,7 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         this.createCategoryChart(data.usage, data.itemMap);
 
         this.createWeeklyTrend(data.usage, data.itemMap);
-      });
+      }, 100);
 
       this.loading = false;
     });
@@ -84,9 +88,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ========================================================= */
 
   ngOnDestroy(): void {
-    this.departmentChart?.destroy();
-    this.categoryChart?.destroy();
-    this.weeklyChart?.destroy();
+    this.destroyCharts();
   }
 
   /* =========================================================
@@ -154,6 +156,28 @@ export class DashboardComponent implements OnInit, OnDestroy {
           padding: 18,
         },
       },
+
+      datalabels: {
+        color: '#111827',
+
+        anchor: 'end',
+        align: 'top',
+
+        font: {
+          weight: '600',
+          size: 11,
+        },
+
+        formatter: (value: number) => {
+          return (
+            '₹' +
+            Number(value).toLocaleString('en-IN', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
+          );
+        },
+      },
     },
   };
 
@@ -162,6 +186,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ========================================================= */
 
   createDepartmentChart(usage: any[], itemMap: any): void {
+    const canvas = document.getElementById(
+      'departmentChart',
+    ) as HTMLCanvasElement;
+
+    if (!canvas) {
+      return;
+    }
+
     const map: any = {};
 
     usage.forEach((usageItem: any) => {
@@ -182,7 +214,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.departmentChart?.destroy();
 
-    this.departmentChart = new Chart('departmentChart', {
+    this.departmentChart = new Chart(canvas, {
       type: 'doughnut',
 
       data: {
@@ -191,6 +223,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
         datasets: [
           {
             data: Object.values(map),
+
+            datalabels: {
+              color: '#000000',
+
+              formatter: (value: number) => {
+                return (
+                  '₹' +
+                  Number(value).toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })
+                );
+              },
+            },
           },
         ],
       },
@@ -204,6 +250,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ========================================================= */
 
   createCategoryChart(usage: any[], itemMap: any): void {
+    const canvas = document.getElementById(
+      'categoryChart',
+    ) as HTMLCanvasElement;
+
+    if (!canvas) {
+      return;
+    }
+
     const map: any = {};
 
     usage.forEach((usageItem: any) => {
@@ -226,7 +280,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.categoryChart?.destroy();
 
-    this.categoryChart = new Chart('categoryChart', {
+    this.categoryChart = new Chart(canvas, {
       type: 'bar',
 
       data: {
@@ -251,6 +305,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ========================================================= */
 
   createWeeklyTrend(usage: any[], itemMap: any): void {
+    const canvas = document.getElementById('weeklyChart') as HTMLCanvasElement;
+
+    if (!canvas) {
+      return;
+    }
+
     const weekly: any = {
       'Week 1': 0,
       'Week 2': 0,
@@ -278,7 +338,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     this.weeklyChart?.destroy();
 
-    this.weeklyChart = new Chart('weeklyChart', {
+    this.weeklyChart = new Chart(canvas, {
       type: 'line',
 
       data: {
@@ -291,6 +351,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
             tension: 0.4,
             fill: true,
+
+            datalabels: {
+              align: 'top',
+              anchor: 'end',
+            },
           },
         ],
       },

@@ -23,7 +23,9 @@ export class EditUserComponent {
   hidePassword = true;
 
   originalData: any;
-
+  get f() {
+    return this.profileForm.controls;
+  }
   userId!: number;
 
   constructor(
@@ -48,11 +50,18 @@ export class EditUserComponent {
         [Validators.required, Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)],
       ],
 
-      phone: ['', [Validators.pattern(/^[0-9]{10}$/)]],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9]{10}$/)]],
 
       role: [''],
 
-      password: ['', Validators.required],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(6),
+          Validators.pattern(/^$|^(?=.*[A-Z])(?=.*\d).+$/),
+        ],
+      ],
     });
 
     this.userId = this.authService.getUserId();

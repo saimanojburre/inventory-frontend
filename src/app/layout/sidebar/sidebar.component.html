@@ -11,7 +11,12 @@
   <!-- MENU -->
   <nav class="menu">
     <!-- DASHBOARD -->
-    <a routerLink="/app/dashboard" routerLinkActive="active">
+    <a
+      routerLink="/app/dashboard"
+      routerLinkActive="active"
+      [matTooltip]="collapsed ? 'Dashboard' : ''"
+      matTooltipPosition="right"
+    >
       <mat-icon>dashboard</mat-icon>
 
       <span *ngIf="!collapsed"> Dashboard </span>
@@ -20,13 +25,24 @@
     <!-- INVENTORY -->
     <div *ngIf="!collapsed" class="menu-group">Inventory</div>
 
-    <a *ngIf="isAdmin" routerLink="/app/items" routerLinkActive="active">
+    <a
+      *ngIf="isAdmin"
+      routerLink="/app/items"
+      routerLinkActive="active"
+      [matTooltip]="collapsed ? 'Products' : ''"
+      matTooltipPosition="right"
+    >
       <mat-icon>inventory_2</mat-icon>
 
       <span *ngIf="!collapsed"> Products </span>
     </a>
 
-    <a routerLink="/app/inventory" routerLinkActive="active">
+    <a
+      routerLink="/app/inventory"
+      routerLinkActive="active"
+      [matTooltip]="collapsed ? 'Current Stock' : ''"
+      matTooltipPosition="right"
+    >
       <mat-icon>warehouse</mat-icon>
 
       <span *ngIf="!collapsed"> Current Stock </span>
@@ -35,13 +51,23 @@
     <!-- TRANSACTIONS -->
     <div *ngIf="!collapsed" class="menu-group">Transactions</div>
 
-    <a routerLink="/app/purchase" routerLinkActive="active">
+    <a
+      routerLink="/app/purchase"
+      routerLinkActive="active"
+      [matTooltip]="collapsed ? 'Purchases' : ''"
+      matTooltipPosition="right"
+    >
       <mat-icon>shopping_cart</mat-icon>
 
       <span *ngIf="!collapsed"> Purchases </span>
     </a>
 
-    <a routerLink="/app/usage" routerLinkActive="active">
+    <a
+      routerLink="/app/usage"
+      routerLinkActive="active"
+      [matTooltip]="collapsed ? 'Usage' : ''"
+      matTooltipPosition="right"
+    >
       <mat-icon>analytics</mat-icon>
 
       <span *ngIf="!collapsed"> Usage </span>
@@ -51,7 +77,12 @@
     <ng-container *ngIf="isAdmin">
       <div *ngIf="!collapsed" class="menu-group">Administration</div>
 
-      <a routerLink="/app/user" routerLinkActive="active">
+      <a
+        routerLink="/app/user"
+        routerLinkActive="active"
+        [matTooltip]="collapsed ? 'Users' : ''"
+        matTooltipPosition="right"
+      >
         <mat-icon>group</mat-icon>
 
         <span *ngIf="!collapsed"> Users </span>
@@ -60,13 +91,23 @@
       <!-- REPORTS -->
       <div *ngIf="!collapsed" class="menu-group">Reports</div>
 
-      <a routerLink="/app/metrics" routerLinkActive="active">
+      <a
+        routerLink="/app/metrics"
+        routerLinkActive="active"
+        [matTooltip]="collapsed ? 'Metrics' : ''"
+        matTooltipPosition="right"
+      >
         <mat-icon>bar_chart</mat-icon>
 
         <span *ngIf="!collapsed"> Metrics </span>
       </a>
 
-      <a routerLink="/app/logs" routerLinkActive="active">
+      <a
+        routerLink="/app/logs"
+        routerLinkActive="active"
+        [matTooltip]="collapsed ? 'Logs' : ''"
+        matTooltipPosition="right"
+      >
         <mat-icon>history</mat-icon>
 
         <span *ngIf="!collapsed"> Logs </span>

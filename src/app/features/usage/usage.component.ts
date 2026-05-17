@@ -98,9 +98,14 @@ export class UsageComponent {
 
   ngOnInit(): void {
     this.createForm();
-
     this.loadUsage();
-
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.filterForm.patchValue({
+      fromDate: firstDay,
+      toDate: today,
+    });
+    this.applyFilter();
     this.filterForm.valueChanges
       .pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => {
@@ -159,9 +164,20 @@ export class UsageComponent {
     this.dataSource.filterPredicate = (data: any) => {
       const usageDate = new Date(data.usedDateTime);
 
-      const matchFrom = !fromDate || usageDate >= new Date(fromDate);
+      // FROM DATE
+      const from = fromDate ? new Date(fromDate) : null;
 
-      const matchTo = !toDate || usageDate <= new Date(toDate);
+      // TO DATE
+      const to = toDate ? new Date(toDate) : null;
+
+      // INCLUDE FULL DAY
+      if (to) {
+        to.setHours(23, 59, 59, 999);
+      }
+
+      const matchFrom = !from || usageDate >= from;
+
+      const matchTo = !to || usageDate <= to;
 
       const matchSearch =
         !search ||
@@ -174,6 +190,18 @@ export class UsageComponent {
     this.dataSource.filter = Math.random().toString();
 
     this.dataSource.paginator?.firstPage();
+  }
+
+  resetFilters(): void {
+    const today = new Date();
+
+    this.filterForm.patchValue({
+      fromDate: new Date(today.getFullYear(), today.getMonth(), 1),
+      toDate: today,
+      search: '',
+    });
+
+    this.applyFilter();
   }
 
   // =====================================================

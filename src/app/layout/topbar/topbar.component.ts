@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/services/auth.service';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
@@ -16,6 +16,11 @@ export class TopbarComponent {
   notificationCount = 3; // demo
   username = '';
   isDark = false;
+  elementRef: any;
+  @HostListener('document:click')
+  closeProfileMenu(): void {
+    this.showProfileMenu = false;
+  }
 
   constructor(
     private router: Router,
@@ -34,7 +39,8 @@ export class TopbarComponent {
     this.toggle.emit();
   }
 
-  toggleProfileMenu() {
+  toggleProfileMenu(event: Event): void {
+    event.stopPropagation();
     this.showProfileMenu = !this.showProfileMenu;
   }
   toggleTheme() {

@@ -66,7 +66,7 @@
             <mat-form-field appearance="outline">
               <mat-label>Phone Number</mat-label>
 
-              <input matInput formControlName="phone" />
+              <input matInput formControlName="phone" maxlength="10" />
 
               <mat-icon matSuffix>call</mat-icon>
 
@@ -81,30 +81,53 @@
 
             <!-- PASSWORD -->
 
-            <mat-form-field appearance="outline">
-              <mat-label>Password</mat-label>
+            <div class="password-section">
+              <mat-form-field appearance="outline">
+                <mat-label>New Password</mat-label>
 
-              <input
-                matInput
-                [type]="hidePassword ? 'password' : 'text'"
-                formControlName="password"
-              />
+                <input
+                  matInput
+                  [type]="hidePassword ? 'password' : 'text'"
+                  formControlName="password"
+                  (focus)="isPasswordFocused = true"
+                  (blur)="isPasswordFocused = false"
+                />
 
-              <button
-                type="button"
-                mat-icon-button
-                matSuffix
-                (click)="hidePassword = !hidePassword"
+                <button
+                  mat-icon-button
+                  matSuffix
+                  type="button"
+                  (click)="hidePassword = !hidePassword"
+                >
+                  <mat-icon>
+                    {{ hidePassword ? "visibility_off" : "visibility" }}
+                  </mat-icon>
+                </button>
+              </mat-form-field>
+
+              <!-- FLOATING HINT -->
+
+              <div
+                class="password-popover"
+                *ngIf="isPasswordFocused && f['password'].value"
               >
-                <mat-icon>
-                  {{ hidePassword ? "visibility_off" : "visibility" }}
-                </mat-icon>
-              </button>
+                <div [class.valid]="(f['password'].value || '').length >= 6">
+                  ✓ Minimum 6 characters
+                </div>
 
-              <mat-error *ngIf="userForm.get('password')?.hasError('required')">
-                Password is required
-              </mat-error>
-            </mat-form-field>
+                <div
+                  [class.valid]="(f['password'].value || '').match('.*[A-Z].*')"
+                >
+                  ✓ One uppercase letter
+                </div>
+
+                <div
+                  [class.valid]="(f['password'].value || '').match('.*[0-9].*')"
+                >
+                  ✓ One number
+                </div>
+              </div>
+            </div>
 
             <!-- ROLE -->
 
@@ -149,7 +172,7 @@
               color="primary"
               type="submit"
               class="save-btn"
-              [disabled]="loading"
+              [disabled]="loading || userForm.invalid"
             >
               <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
 

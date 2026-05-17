@@ -30,7 +30,7 @@ export class PurchaseComponent {
   savingRowId: number | null = null;
   deletingRowId: number | null = null;
   private destroy$ = new Subject<void>();
-  // 🔥 FIX: setter-based paginator
+  //  FIX: setter-based paginator
   @ViewChild(MatPaginator)
   set matPaginator(mp: MatPaginator) {
     if (mp) {
@@ -51,7 +51,15 @@ export class PurchaseComponent {
   ngOnInit() {
     this.createForm();
     this.loadPurchases();
+    const today = new Date();
 
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    this.filterForm.patchValue({
+      fromDate: firstDay,
+      toDate: today,
+    });
+    this.applyFilter();
     this.filterForm
       .get('search')
       ?.valueChanges.pipe(debounceTime(300), takeUntil(this.destroy$))
@@ -96,21 +104,40 @@ export class PurchaseComponent {
     this.dataSource.filterPredicate = (data: any) => {
       const purchaseDate = new Date(data.purchaseDate);
 
-      const matchFrom = !fromDate || purchaseDate >= new Date(fromDate);
-      const matchTo = !toDate || purchaseDate <= new Date(toDate);
+      // FROM DATE
+      const from = fromDate ? new Date(fromDate) : null;
 
+      // TO DATE FIX
+      const to = toDate ? new Date(toDate) : null;
+
+      if (to) {
+        to.setHours(23, 59, 59, 999);
+      }
+
+      const matchFrom = !from || purchaseDate >= from;
+      const matchTo = !to || purchaseDate <= to;
       const matchSearch =
         !search ||
-        data.item?.name?.toLowerCase().includes(search.toLowerCase()) ||
+        data.itemName?.toLowerCase().includes(search.toLowerCase()) ||
         data.supplier?.toLowerCase().includes(search.toLowerCase());
-
       return matchFrom && matchTo && matchSearch;
     };
 
     this.dataSource.filter = Math.random().toString();
 
-    // 🔥 reset paginator after filter
     this.dataSource.paginator?.firstPage();
+  }
+
+  resetFilters(): void {
+    const today = new Date();
+
+    this.filterForm.patchValue({
+      fromDate: new Date(today.getFullYear(), today.getMonth(), 1),
+      toDate: today,
+      search: '',
+    });
+
+    this.applyFilter();
   }
 
   exportToExcel(): void {

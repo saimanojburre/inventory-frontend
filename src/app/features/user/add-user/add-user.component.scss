@@ -245,6 +245,78 @@ mat-form-field {
 }
 
 /* =====================================================
+   PASSWORD SECTION
+===================================================== */
+
+.password-section {
+    position: relative;
+}
+
+/* =====================================================
+   FLOATING PASSWORD VALIDATOR
+===================================================== */
+
+.password-popover {
+    position: absolute;
+
+    top: 60px;
+    left: 0;
+
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border-radius: 14px;
+
+    background: white;
+
+    border: 1px solid #e2e8f0;
+
+    box-shadow:
+        0 10px 30px rgba(15, 23, 42, 0.08);
+
+    z-index: 20;
+
+    animation: fadeSlide 0.2s ease;
+}
+
+.password-popover div {
+    font-size: 13px;
+
+    color: #64748b;
+
+    margin-bottom: 8px;
+
+    transition: 0.2s ease;
+}
+
+.password-popover div:last-child {
+    margin-bottom: 0;
+}
+
+.password-popover div.valid {
+    color: #16a34a;
+
+    font-weight: 600;
+}
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =====================================================
    ROLE LIST
 ===================================================== */
 

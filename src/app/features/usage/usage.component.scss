@@ -59,6 +59,28 @@
    BUTTONS
 ===================================================== */
 
+.reset-btn {
+    height: 52px !important;
+
+    padding: 0 22px !important;
+
+    border-radius: 14px !important;
+
+    font-weight: 700;
+
+    border: 1px solid #cbd5e1 !important;
+
+    color: #475569 !important;
+
+    background: white;
+
+    transition:
+        all 0.2s ease;
+}
+
+.reset-btn:hover {
+    background: #f8fafc;
+}
 .add-btn,
 .export-btn {
     height: 52px;

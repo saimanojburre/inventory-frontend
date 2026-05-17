@@ -169,26 +169,44 @@
 
         <!-- PASSWORD -->
 
-        <mat-form-field appearance="outline" *ngIf="editMode">
-          <mat-label>New Password</mat-label>
+        <div class="password-section" *ngIf="editMode">
+          <mat-form-field appearance="outline">
+            <mat-label>New Password</mat-label>
 
-          <input
-            matInput
-            [type]="hidePassword ? 'password' : 'text'"
-            formControlName="password"
-          />
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+            />
 
-          <button
-            mat-icon-button
-            matSuffix
-            type="button"
-            (click)="hidePassword = !hidePassword"
-          >
-            <mat-icon>
-              {{ hidePassword ? "visibility_off" : "visibility" }}
-            </mat-icon>
-          </button>
-        </mat-form-field>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hidePassword = !hidePassword"
+            >
+              <mat-icon>
+                {{ hidePassword ? "visibility_off" : "visibility" }}
+              </mat-icon>
+            </button>
+          </mat-form-field>
+
+          <!-- FLOATING HINT -->
+
+          <div class="password-popover" *ngIf="f['password'].value">
+            <div [class.valid]="(f['password'].value || '').length >= 6">
+              ✓ Minimum 6 characters
+            </div>
+
+            <div [class.valid]="(f['password'].value || '').match('.*[A-Z].*')">
+              ✓ One uppercase letter
+            </div>
+
+            <div [class.valid]="(f['password'].value || '').match('.*[0-9].*')">
+              ✓ One number
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- =====================================================

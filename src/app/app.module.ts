@@ -55,6 +55,7 @@ import { PageLoaderComponent } from './shared/components/page-loader/page-loader
 import { RowActionsComponent } from './shared/components/buttons/row-actions/row-actions.component';
 import { TableActionsComponent } from './shared/components/table-actions/table-actions.component';
 import { SearchSelectComponent } from './shared/components/search-select/search-select.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 @NgModule({
   declarations: [
     AppComponent,
@@ -121,6 +122,7 @@ import { SearchSelectComponent } from './shared/components/search-select/search-
     MatSlideToggleModule,
     NgxSkeletonLoaderModule,
     NgxMatSelectSearchModule,
+    MatTooltipModule,
   ],
   providers: [
     {

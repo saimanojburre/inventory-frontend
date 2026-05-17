@@ -248,3 +248,11 @@
             0 0 30px rgba(0, 0, 0, 0.35);
     }
 }
+
+::ng-deep .mat-mdc-tooltip {
+    font-size: 12px !important;
+
+    border-radius: 8px !important;
+
+    padding: 6px 10px !important;
+}
