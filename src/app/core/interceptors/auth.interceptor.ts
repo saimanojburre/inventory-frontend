@@ -41,13 +41,21 @@ export class AuthInterceptor implements HttpInterceptor {
     // ATTACH TOKEN
     // =====================================================
 
+    const sessionId = localStorage.getItem('sessionId');
+
+    const headers: any = {};
+
     if (token) {
-      authReq = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      headers['Authorization'] = `Bearer ${token}`;
     }
+
+    if (sessionId) {
+      headers['X-Session-Id'] = sessionId;
+    }
+
+    authReq = req.clone({
+      setHeaders: headers,
+    });
 
     // =====================================================
     // HANDLE RESPONSE

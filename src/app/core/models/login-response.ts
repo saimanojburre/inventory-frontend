@@ -4,4 +4,5 @@ export interface LoginResponse {
   email: string;
   role: string;
   id: any;
+  sessionId: string;
 }

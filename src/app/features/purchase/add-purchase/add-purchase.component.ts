@@ -95,6 +95,9 @@ export class AddPurchaseComponent implements OnInit {
         this.dashboardCache.refreshPurchases();
         this.dashboardCache.refreshInventory();
 
+        // CLEAR OLD ROWS
+        this.purchases.clear();
+
         /* =========================================
          MAP XLSX TO FORM ROWS
       ========================================= */
@@ -186,8 +189,7 @@ export class AddPurchaseComponent implements OnInit {
 
   addRow(): void {
     this.purchases.push(this.createRow());
-
-    setTimeout(() => {
+    queueMicrotask(() => {
       this.table?.renderRows();
     });
   }
@@ -203,7 +205,9 @@ export class AddPurchaseComponent implements OnInit {
 
     this.purchases.removeAt(index);
 
-    this.table?.renderRows();
+    queueMicrotask(() => {
+      this.table?.renderRows();
+    });
   }
 
   loadItems(): void {
@@ -263,25 +267,29 @@ export class AddPurchaseComponent implements OnInit {
       .toISOString()
       .slice(0, 19);
 
-    const payload = this.purchases.value.map((row: any) => ({
-      item: {
-        id: row.item?.itemId,
-      },
+    const payload = this.purchases.value.map((row: any) => {
+      const purchaseDate = new Date(row.date);
 
-      quantity: Number(row.quantity),
+      return {
+        item: {
+          id: row.item?.itemId,
+        },
 
-      price: Number(row.price),
+        quantity: Number(row.quantity),
 
-      supplier: row.supplier,
+        price: Number(row.price),
 
-      createdAt: now,
+        supplier: row.supplier,
 
-      purchaseDate: new Date(
-        row.date.getTime() - row.date.getTimezoneOffset() * 60000,
-      )
-        .toISOString()
-        .slice(0, 19),
-    }));
+        createdAt: now,
+
+        purchaseDate: new Date(
+          purchaseDate.getTime() - purchaseDate.getTimezoneOffset() * 60000,
+        )
+          .toISOString()
+          .slice(0, 19),
+      };
+    });
 
     this.purchaseService.bulkPurchase(payload).subscribe({
       next: () => {

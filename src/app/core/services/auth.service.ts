@@ -54,6 +54,8 @@ export class AuthService {
     };
 
     localStorage.setItem('user', JSON.stringify(user));
+
+    localStorage.setItem('sessionId', res.sessionId);
   }
 
   // =====================================================
