@@ -1,105 +1,173 @@
 <div class="login-page">
-  <!-- BACKGROUND GLOW -->
-  <div class="bg-glow"></div>
+  <!-- NOISE -->
+  <div class="noise"></div>
 
-  <!-- LOGIN CARD -->
-  <div class="login-card" [class.shake]="loginError">
-    <!-- BRAND -->
-    <div class="brand">
-      <div class="logo">
-        <mat-icon>inventory_2</mat-icon>
+  <!-- LEFT SECTION -->
+  <div class="login-section">
+    <div class="login-wrapper">
+      <!-- BRAND -->
+      <div class="brand-logo">
+        <div class="logo-box">
+          <mat-icon>inventory_2</mat-icon>
+        </div>
+
+        <span>Inventory Portal</span>
       </div>
 
-      <h1>Inventory Portal</h1>
+      <!-- HEADING -->
+      <div class="heading-section">
+        <div class="welcome-badge">Enterprise Inventory Platform</div>
 
-      <p>Smart Inventory Management System</p>
-    </div>
+        <h1>Welcome back</h1>
 
-    <!-- FORM -->
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
-      <!-- USERNAME -->
-      <mat-form-field appearance="outline" class="input-field">
-        <mat-label>Username</mat-label>
-
-        <input matInput formControlName="username" autocomplete="username" />
-
-        <mat-icon matPrefix> person </mat-icon>
-
-        <mat-error
-          *ngIf="
-            loginForm.get('username')?.touched &&
-            loginForm.get('username')?.invalid
-          "
-        >
-          Username is required
-        </mat-error>
-      </mat-form-field>
-
-      <!-- PASSWORD -->
-      <mat-form-field appearance="outline" class="input-field">
-        <mat-label>Password</mat-label>
-
-        <input
-          matInput
-          [type]="hidePassword ? 'password' : 'text'"
-          formControlName="password"
-          autocomplete="current-password"
-        />
-
-        <mat-icon matPrefix> lock </mat-icon>
-
-        <button
-          mat-icon-button
-          matSuffix
-          type="button"
-          (click)="hidePassword = !hidePassword"
-        >
-          <mat-icon>
-            {{ hidePassword ? "visibility_off" : "visibility" }}
-          </mat-icon>
-        </button>
-
-        <mat-error
-          *ngIf="
-            loginForm.get('password')?.touched &&
-            loginForm.get('password')?.invalid
-          "
-        >
-          Password is required
-        </mat-error>
-      </mat-form-field>
-
-      <!-- ERROR -->
-      <div class="error-message" *ngIf="loginError">
-        {{ errmsg }}
+        <p>
+          Manage inventory, suppliers, purchases and operational analytics
+          seamlessly in one unified platform.
+        </p>
       </div>
 
-      <!-- ACTION BUTTONS -->
-      <div class="action-buttons">
+      <!-- LOGIN FORM -->
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
+        <!-- USERNAME -->
+        <div class="field-group">
+          <label>Username</label>
+
+          <mat-form-field appearance="outline" class="input-field">
+            <input
+              matInput
+              formControlName="username"
+              autocomplete="username"
+              placeholder="Enter your username"
+            />
+
+            <mat-icon matPrefix>person</mat-icon>
+
+            <mat-error
+              *ngIf="
+                loginForm.get('username')?.touched &&
+                loginForm.get('username')?.hasError('required')
+              "
+            >
+              Username is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="field-group">
+          <label>Password</label>
+
+          <mat-form-field appearance="outline" class="input-field">
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              autocomplete="current-password"
+              placeholder="Enter your password"
+            />
+
+            <mat-icon matPrefix>lock</mat-icon>
+
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hidePassword = !hidePassword"
+            >
+              <mat-icon>
+                {{ hidePassword ? "visibility_off" : "visibility" }}
+              </mat-icon>
+            </button>
+
+            <mat-error
+              *ngIf="
+                loginForm.get('password')?.touched &&
+                loginForm.get('password')?.hasError('required')
+              "
+            >
+              Password is required
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <!-- OPTIONS -->
+        <div class="form-options">
+          <button mat-button type="button" class="forgot-btn">
+            Forgot Password?
+          </button>
+        </div>
+
+        <!-- ERROR -->
+        <div class="error-message" *ngIf="loginError">
+          <mat-icon>error</mat-icon>
+
+          <span>
+            {{ errmsg }}
+          </span>
+        </div>
+
         <!-- LOGIN -->
         <button
           mat-raised-button
-          color="primary"
           class="login-btn"
           type="submit"
           [disabled]="loading || loginForm.invalid"
         >
-          <mat-spinner *ngIf="loading" diameter="20"> </mat-spinner>
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
 
-          <span *ngIf="!loading"> Login </span>
+          <span *ngIf="!loading">
+            Login
+            <mat-icon>arrow_forward</mat-icon>
+          </span>
         </button>
 
-        <!-- REGISTER -->
-        <button
-          mat-stroked-button
-          color="primary"
-          type="button"
-          class="signup-btn"
-          (click)="goToRegister()"
-        >
-          Sign Up
-        </button>
+        <!-- SIGNUP -->
+        <div class="signup-section">
+          Don’t have an account?
+
+          <button
+            mat-button
+            type="button"
+            class="signup-btn"
+            (click)="goToRegister()"
+          >
+            Sign Up
+          </button>
+        </div>
+
+        <!-- VERSION -->
+        <div class="version-text">Version 1.0.0</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- RIGHT SECTION -->
+  <div class="preview-section">
+    <!-- GRID -->
+    <div class="grid-overlay"></div>
+
+    <!-- LIGHT -->
+    <div class="light-overlay"></div>
+
+    <!-- GLOWS -->
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+
+    <!-- DASHBOARD -->
+    <div class="preview-card real-dashboard">
+      <img src="assets/dashboard.png" alt="Inventory Dashboard" />
+
+      <!-- OVERLAY -->
+      <div class="dashboard-overlay">
+        <div class="overlay-badge">Real-Time Analytics Dashboard</div>
+
+        <h2>Smart Inventory Management</h2>
+
+        <p>
+          Real-time inventory tracking, supplier management and operational
+          insights designed for modern businesses.
+        </p>
       </div>
-    </form>
+    </div>
   </div>
 </div>
