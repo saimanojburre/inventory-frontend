@@ -17,12 +17,13 @@
   <!-- MAIN AREA -->
   <div class="main" [class.expanded]="sidebarCollapsed">
     <!-- TOPBAR -->
-    <app-topbar (toggle)="toggleSidebar()"> </app-topbar>
+    <app-topbar (toggle)="toggleSidebar()"></app-topbar>
 
     <!-- CONTENT -->
     <div class="content">
       <router-outlet></router-outlet>
     </div>
+
     <!-- FOOTER -->
     <app-footer></app-footer>
   </div>

@@ -1,16 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
 import { MatTable } from '@angular/material/table';
-
 import { Router } from '@angular/router';
 
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
-
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { ToastService } from 'src/app/core/services/toast.service';
-
 import { UsageService } from 'src/app/core/services/usage.service';
 
 @Component({
@@ -61,21 +56,11 @@ export class AddUsageComponent implements OnInit {
     private dashboardCache: DashboardCacheService,
   ) {}
 
-  // =====================================================
-  // INIT
-  // =====================================================
-
   ngOnInit(): void {
     this.initializeForm();
-
     this.addRow();
-
     this.loadItems();
   }
-
-  // =====================================================
-  // FORM
-  // =====================================================
 
   initializeForm(): void {
     this.usageForm = this.fb.group({
@@ -90,35 +75,18 @@ export class AddUsageComponent implements OnInit {
   createRow(): FormGroup {
     return this.fb.group({
       item: [null, Validators.required],
-
-      units: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-
+      units: [{ value: '', disabled: true }],
       available: [0],
-
       quantity: [null, [Validators.required, Validators.min(0.1)]],
-
       department: ['', Validators.required],
-
       takenBy: ['', Validators.required],
-
       givenBy: ['', Validators.required],
     });
   }
 
-  // =====================================================
-  // ROWS
-  // =====================================================
-
   addRow(): void {
     this.usages.push(this.createRow());
-    queueMicrotask(() => {
-      this.table?.renderRows();
-    });
+    this.renderRows();
   }
 
   removeRow(index: number): void {
@@ -127,20 +95,17 @@ export class AddUsageComponent implements OnInit {
     }
 
     this.usages.removeAt(index);
-    queueMicrotask(() => {
-      this.table?.renderRows();
-    });
+    this.renderRows();
   }
-  // =====================================================
-  // LOAD ITEMS
-  // =====================================================
 
   loadItems(): void {
     const cached = this.dashboardCache.snapshot;
+
     if (cached?.items) {
       this.items = cached.items;
       return;
     }
+
     this.inventoryService.getInventory().subscribe({
       next: (res) => {
         this.items = res;
@@ -151,10 +116,6 @@ export class AddUsageComponent implements OnInit {
       },
     });
   }
-
-  // =====================================================
-  // ITEM CHANGE
-  // =====================================================
 
   onItemChange(item: any, index: number): void {
     if (!item) {
@@ -175,10 +136,6 @@ export class AddUsageComponent implements OnInit {
     }
   }
 
-  // =====================================================
-  // VALIDATION
-  // =====================================================
-
   isInvalidQuantity(row: any): boolean {
     const selectedItem = row.get('item')?.value;
 
@@ -187,16 +144,15 @@ export class AddUsageComponent implements OnInit {
     }
 
     const itemId = selectedItem.itemId;
-
     const available = Number(row.get('available')?.value) || 0;
 
     let totalQty = 0;
 
-    this.usages.controls.forEach((r) => {
-      const currentItem = r.get('item')?.value;
+    this.usages.controls.forEach((usageRow) => {
+      const currentItem = usageRow.get('item')?.value;
 
       if (currentItem?.itemId === itemId) {
-        totalQty += Number(r.get('quantity')?.value) || 0;
+        totalQty += Number(usageRow.get('quantity')?.value) || 0;
       }
     });
 
@@ -207,42 +163,36 @@ export class AddUsageComponent implements OnInit {
     return this.usages.controls.some((row) => this.isInvalidQuantity(row));
   }
 
-  // =====================================================
-  // SAVE
-  // =====================================================
-
   saveUsage(): void {
     if (this.usageForm.invalid || this.hasInvalidRows()) {
       this.usageForm.markAllAsTouched();
-
       this.toast.error('Please fill all required fields correctly');
-
       return;
     }
+
     this.loading = true;
+
+    const usedDateTime = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+    )
+      .toISOString()
+      .slice(0, 19);
+
     const payload = this.usages.value.map((row: any) => ({
       item: {
         id: row.item?.itemId,
       },
-
       quantity: Number(row.quantity),
-
       department: row.department,
-
       takenBy: row.takenBy,
-
       givenBy: row.givenBy,
-
-      usedDateTime: new Date(
-        new Date().getTime() - new Date().getTimezoneOffset() * 60000,
-      )
-        .toISOString()
-        .slice(0, 19),
+      usedDateTime,
     }));
 
     this.usageService.bulkUsage(payload).subscribe({
       next: () => {
         this.loading = false;
+
         this.toast.success('Usage saved successfully');
 
         this.usages.clear();
@@ -258,11 +208,13 @@ export class AddUsageComponent implements OnInit {
     });
   }
 
-  // =====================================================
-  // NAVIGATION
-  // =====================================================
-
   goBack(): void {
     this.router.navigate(['/app/usage']);
+  }
+
+  private renderRows(): void {
+    queueMicrotask(() => {
+      this.table?.renderRows();
+    });
   }
 }

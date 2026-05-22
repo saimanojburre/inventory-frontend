@@ -1,14 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
 import { MatTable } from '@angular/material/table';
-
 import { Router } from '@angular/router';
 
-import { ItemService } from 'src/app/core/services/item.service';
-
 import * as XLSX from 'xlsx';
+
+import { ItemService } from 'src/app/core/services/item.service';
 import { ToastService } from 'src/app/core/services/toast.service';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 
@@ -65,13 +62,8 @@ export class AddItemsComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
-
     this.addRow();
   }
-
-  // =====================================================
-  // FORM INIT
-  // =====================================================
 
   initializeForm(): void {
     this.itemForm = this.fb.group({
@@ -80,37 +72,24 @@ export class AddItemsComponent implements OnInit {
   }
 
   get itemsFormArray(): FormArray<FormGroup> {
-    return this.itemForm.get('items') as FormArray;
+    return this.itemForm.get('items') as FormArray<FormGroup>;
   }
-
-  // =====================================================
-  // CREATE ROW
-  // =====================================================
 
   private createRow(data?: any): FormGroup {
     return this.fb.group({
       name: [data?.name || '', Validators.required],
-
       category: [data?.category || '', Validators.required],
-
       unit: [data?.unit || '', Validators.required],
-
       minStock: [
         Number(data?.minStock || 0),
         [Validators.required, Validators.min(0)],
       ],
-
       quantity: [Number(data?.quantity || 0), [Validators.min(0)]],
     });
   }
 
-  // =====================================================
-  // ROWS
-  // =====================================================
-
   addRow(data?: any): void {
     this.itemsFormArray.push(this.createRow(data));
-
     this.renderTable();
   }
 
@@ -120,7 +99,6 @@ export class AddItemsComponent implements OnInit {
     }
 
     this.itemsFormArray.removeAt(index);
-
     this.renderTable();
   }
 
@@ -130,12 +108,9 @@ export class AddItemsComponent implements OnInit {
     });
   }
 
-  // =====================================================
-  // XLSX UPLOAD
-  // =====================================================
-
-  onFileUpload(event: any): void {
-    const file = event.target.files?.[0];
+  onFileUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
 
     if (!file) return;
 
@@ -143,21 +118,18 @@ export class AddItemsComponent implements OnInit {
 
     const reader = new FileReader();
 
-    reader.onload = (e: any) => {
+    reader.onload = (e: ProgressEvent<FileReader>) => {
       try {
-        const workbook = XLSX.read(e.target.result, {
+        const workbook = XLSX.read(e.target?.result, {
           type: 'binary',
         });
 
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
-
         const data = XLSX.utils.sheet_to_json(sheet);
 
         if (!data.length) {
           this.loading = false;
-
           this.showError('Uploaded file is empty');
-
           return;
         }
 
@@ -178,33 +150,25 @@ export class AddItemsComponent implements OnInit {
         this.renderTable();
 
         this.loading = false;
-
         this.showSuccess(`${data.length} products loaded successfully`);
       } catch (error) {
         console.error(error);
 
         this.loading = false;
-
         this.showError('Invalid XLSX format');
       }
     };
 
     reader.readAsBinaryString(file);
-    event.target.value = '';
+    input.value = '';
   }
-
-  // =====================================================
-  // SAVE
-  // =====================================================
 
   saveItems(): void {
     if (this.loading) return;
 
     if (this.itemForm.invalid) {
       this.itemForm.markAllAsTouched();
-
       this.showError('Please fill all required fields');
-
       return;
     }
 
@@ -225,7 +189,9 @@ export class AddItemsComponent implements OnInit {
 
         const saved = res?.saved ?? 0;
         const duplicates = res?.duplicates?.length ?? 0;
+
         this.showSuccess(`Saved: ${saved} | Duplicates: ${duplicates}`);
+
         this.itemForm.reset();
         this.itemsFormArray.clear();
         this.dashboardCache.refreshInventory();
@@ -234,23 +200,14 @@ export class AddItemsComponent implements OnInit {
 
       error: () => {
         this.loading = false;
-
         this.showError('Failed to save products');
       },
     });
   }
 
-  // =====================================================
-  // NAVIGATION
-  // =====================================================
-
   goBack(): void {
     this.router.navigate(['/app/items']);
   }
-
-  // =====================================================
-  // SNACKBAR
-  // =====================================================
 
   private showSuccess(message: string): void {
     this.toastService.success(message);

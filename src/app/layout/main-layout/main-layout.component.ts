@@ -8,15 +8,15 @@ import { Component, HostListener } from '@angular/core';
 export class MainLayoutComponent {
   sidebarCollapsed = false;
   mobileSidebarOpen = false;
-
   isMobile = window.innerWidth < 992;
 
   toggleSidebar(): void {
     if (this.isMobile) {
       this.mobileSidebarOpen = !this.mobileSidebarOpen;
-    } else {
-      this.sidebarCollapsed = !this.sidebarCollapsed;
+      return;
     }
+
+    this.sidebarCollapsed = !this.sidebarCollapsed;
   }
 
   closeMobileSidebar(): void {

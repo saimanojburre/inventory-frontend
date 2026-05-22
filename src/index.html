@@ -10,6 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <meta name="theme-color" content="#4f46e5" />
+    <meta name="color-scheme" content="light dark" />
+
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>"
@@ -33,6 +35,19 @@
   </head>
 
   <body class="mat-typography">
+    <script>
+      (function () {
+        var savedTheme = localStorage.getItem("inventory-theme");
+        var prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+
+        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+          document.body.classList.add("dark-theme");
+        }
+      })();
+    </script>
+
     <app-root></app-root>
   </body>
 </html>

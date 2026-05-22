@@ -1,10 +1,10 @@
 import {
-  Component,
-  Input,
-  ContentChildren,
-  QueryList,
-  ElementRef,
   AfterContentInit,
+  Component,
+  ContentChildren,
+  ElementRef,
+  Input,
+  QueryList,
 } from '@angular/core';
 
 @Component({

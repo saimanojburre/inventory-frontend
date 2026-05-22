@@ -7,6 +7,5 @@ import { Component, Input } from '@angular/core';
 })
 export class PageLoaderComponent {
   @Input() title = 'Loading...';
-
   @Input() subtitle = 'Please wait';
 }

@@ -3,14 +3,15 @@
   subtitle="Record supplier purchases and update stock"
 >
 </app-page-header>
+
 <app-page-loader
   *ngIf="loading"
   title="Saving Purchases"
   subtitle="Please wait while purchases are being processed..."
 >
 </app-page-loader>
+
 <div class="page-header">
-  <!-- BACK -->
   <button
     mat-stroked-button
     class="back-btn"
@@ -18,25 +19,21 @@
     [disabled]="loading"
   >
     <mat-icon>arrow_back</mat-icon>
-
     Back
   </button>
 
-  <!-- ACTIONS -->
   <div class="header-actions">
-    <!-- ADD ROW -->
     <button
       mat-raised-button
+      color="primary"
       class="add-row-btn"
       (click)="addRow()"
       [disabled]="loading"
     >
       <mat-icon>add</mat-icon>
-
       Add Row
     </button>
 
-    <!-- UPLOAD -->
     <button
       mat-raised-button
       class="upload-btn"
@@ -44,12 +41,10 @@
       [disabled]="loading"
     >
       <mat-icon>upload_file</mat-icon>
-
       Upload XLSX
     </button>
   </div>
 
-  <!-- FILE INPUT -->
   <input
     type="file"
     #fileInput
@@ -60,13 +55,9 @@
 </div>
 
 <div class="purchase-container">
-  <!-- FORM -->
-
   <form [formGroup]="purchaseForm">
     <div class="table-wrapper premium-table">
       <table mat-table [dataSource]="purchases.controls" class="purchase-table">
-        <!-- ITEM -->
-
         <ng-container matColumnDef="item">
           <th mat-header-cell *matHeaderCellDef class="col-item">Item</th>
 
@@ -92,26 +83,21 @@
           </td>
         </ng-container>
 
-        <!-- UNIT -->
-
         <ng-container matColumnDef="units">
-          <th mat-header-cell *matHeaderCellDef class="col-small">Unit</th>
+          <th mat-header-cell *matHeaderCellDef class="col-unit">Unit</th>
 
-          <td mat-cell *matCellDef="let row" class="col-small">
+          <td mat-cell *matCellDef="let row" class="col-unit">
             <mat-form-field appearance="outline">
               <mat-label>Unit</mat-label>
-
               <input matInput readonly [formControl]="row.get('units')" />
             </mat-form-field>
           </td>
         </ng-container>
 
-        <!-- QUANTITY -->
-
         <ng-container matColumnDef="quantity">
-          <th mat-header-cell *matHeaderCellDef class="col-small">Qty</th>
+          <th mat-header-cell *matHeaderCellDef class="col-number">Qty</th>
 
-          <td mat-cell *matCellDef="let row" class="col-small">
+          <td mat-cell *matCellDef="let row" class="col-number">
             <mat-form-field appearance="outline">
               <mat-label>Quantity</mat-label>
 
@@ -133,12 +119,10 @@
           </td>
         </ng-container>
 
-        <!-- PRICE -->
-
         <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef class="col-small">Price</th>
+          <th mat-header-cell *matHeaderCellDef class="col-number">Price</th>
 
-          <td mat-cell *matCellDef="let row" class="col-small">
+          <td mat-cell *matCellDef="let row" class="col-number">
             <mat-form-field appearance="outline">
               <mat-label>Price</mat-label>
 
@@ -160,8 +144,6 @@
           </td>
         </ng-container>
 
-        <!-- TOTAL -->
-
         <ng-container matColumnDef="total">
           <th mat-header-cell *matHeaderCellDef class="col-total">Total</th>
 
@@ -176,15 +158,14 @@
           </td>
         </ng-container>
 
-        <!-- SUPPLIER -->
-
         <ng-container matColumnDef="supplier">
-          <th mat-header-cell *matHeaderCellDef class="col-medium">Supplier</th>
+          <th mat-header-cell *matHeaderCellDef class="col-supplier">
+            Supplier
+          </th>
 
-          <td mat-cell *matCellDef="let row" class="col-medium">
+          <td mat-cell *matCellDef="let row" class="col-supplier">
             <mat-form-field appearance="outline">
-              <mat-label>Supplier Name</mat-label>
-
+              <mat-label>Supplier</mat-label>
               <input matInput [formControl]="row.get('supplier')" />
 
               <mat-error *ngIf="row.get('supplier')?.hasError('required')">
@@ -194,18 +175,14 @@
           </td>
         </ng-container>
 
-        <!-- DATE -->
-
-        <!-- DATE -->
-
         <ng-container matColumnDef="date">
-          <th mat-header-cell *matHeaderCellDef class="col-medium">
+          <th mat-header-cell *matHeaderCellDef class="col-date">
             Purchase Date
           </th>
 
-          <td mat-cell *matCellDef="let row; let i = index" class="col-medium">
+          <td mat-cell *matCellDef="let row" class="col-date">
             <mat-form-field appearance="outline">
-              <mat-label>Select Date</mat-label>
+              <mat-label>Date</mat-label>
 
               <input
                 matInput
@@ -223,8 +200,6 @@
           </td>
         </ng-container>
 
-        <!-- ACTIONS -->
-
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="col-actions">Actions</th>
 
@@ -239,8 +214,6 @@
           </td>
         </ng-container>
 
-        <!-- ROWS -->
-
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
@@ -248,13 +221,11 @@
     </div>
   </form>
 
-  <!-- FOOTER -->
-
   <div class="footer-section">
     <div class="grand-total">
       <span>Total Purchase Amount</span>
 
-      <strong> ₹ {{ getGrandTotal() | number: "1.2-2" }} </strong>
+      <strong>₹ {{ getGrandTotal() | number: "1.2-2" }}</strong>
     </div>
 
     <button
@@ -270,7 +241,7 @@
         mode="indeterminate"
       ></mat-progress-spinner>
 
-      <span *ngIf="!loading"> Save Purchases </span>
+      <span *ngIf="!loading">Save Purchases</span>
     </button>
   </div>
 </div>

@@ -1,14 +1,7 @@
-<!-- dashboard.component.html -->
-
 <div class="dashboard">
-  <!-- =====================================================
-       HEADER
-  ====================================================== -->
-
   <div class="dashboard-header">
     <div>
       <h2>{{ greetingMessage }}</h2>
-
       <p>Inventory Analytics Overview</p>
     </div>
 
@@ -19,61 +12,37 @@
       (click)="refreshDashboard()"
     >
       <mat-icon>refresh</mat-icon>
-
       Refresh
     </button>
   </div>
 
-  <!-- =====================================================
-       SKELETON LOADING
-  ====================================================== -->
-
   <div *ngIf="loading" class="dashboard-body">
-    <!-- KPI SKELETON -->
-
     <div class="card-grid">
       <div class="skeleton-card" *ngFor="let item of [1, 2, 3, 4]">
         <div class="skeleton-circle"></div>
 
         <div class="skeleton-content">
           <div class="skeleton-line short"></div>
-
           <div class="skeleton-line medium"></div>
         </div>
       </div>
     </div>
 
-    <!-- CHART SKELETON -->
-
     <div class="analytics-grid">
       <div class="chart-skeleton" *ngFor="let item of [1, 2]">
         <div class="skeleton-line chart-title"></div>
-
         <div class="skeleton-chart"></div>
       </div>
     </div>
 
-    <!-- TREND -->
-
     <div class="chart-skeleton">
       <div class="skeleton-line chart-title"></div>
-
       <div class="skeleton-chart large"></div>
     </div>
   </div>
 
-  <!-- =====================================================
-       DASHBOARD BODY
-  ====================================================== -->
-
   <div *ngIf="!loading" class="dashboard-body">
-    <!-- =====================================================
-         KPI CARDS
-    ====================================================== -->
-
     <div class="card-grid">
-      <!-- INVENTORY VALUE -->
-
       <mat-card class="stat-card blue-card">
         <div class="stat-left">
           <div class="icon-box blue">
@@ -82,7 +51,6 @@
 
           <div>
             <p>Total Inventory Value</p>
-
             <h2>
               {{
                 stats.inventoryValue
@@ -93,8 +61,6 @@
         </div>
       </mat-card>
 
-      <!-- PURCHASES -->
-
       <mat-card class="stat-card action-card green-card">
         <div class="stat-left">
           <div class="icon-box green">
@@ -103,21 +69,15 @@
 
           <div>
             <p>Purchases</p>
-
-            <h2>
-              {{ stats.purchases }}
-            </h2>
+            <h2>{{ stats.purchases }}</h2>
           </div>
         </div>
 
         <button class="card-action green-action" (click)="goToAddPurchase()">
           <mat-icon>add</mat-icon>
-
           Add Purchase
         </button>
       </mat-card>
-
-      <!-- USAGE -->
 
       <mat-card class="stat-card action-card purple-card">
         <div class="stat-left">
@@ -127,21 +87,15 @@
 
           <div>
             <p>Usage Entries</p>
-
-            <h2>
-              {{ stats.usage }}
-            </h2>
+            <h2>{{ stats.usage }}</h2>
           </div>
         </div>
 
         <button class="card-action purple-action" (click)="goToAddUsage()">
           <mat-icon>add</mat-icon>
-
           Add Usage
         </button>
       </mat-card>
-
-      <!-- LOW STOCK COUNT -->
 
       <mat-card
         class="stat-card action-card low-stock-card orange-card"
@@ -154,28 +108,18 @@
 
           <div>
             <p>Low Stock Items</p>
-            <h2>
-              {{ lowStockItems.length }}
-            </h2>
+            <h2>{{ lowStockItems.length }}</h2>
           </div>
         </div>
 
-        <!-- ACTION -->
-
         <button class="card-action orange-action" (click)="goToLowStock()">
           <mat-icon>shopping_cart</mat-icon>
-
           Restock
         </button>
       </mat-card>
     </div>
 
-    <!-- =====================================================
-         CHART GRID
-    ====================================================== -->
-
     <div class="analytics-grid">
-      <!-- DEPARTMENT -->
       <mat-card class="chart-card">
         <div class="chart-header">
           <h3>Department Usage</h3>
@@ -186,7 +130,6 @@
         </div>
       </mat-card>
 
-      <!-- CATEGORY -->
       <mat-card class="chart-card">
         <div class="chart-header">
           <h3>Category Usage</h3>
@@ -197,10 +140,6 @@
         </div>
       </mat-card>
     </div>
-
-    <!-- =====================================================
-         WEEKLY TREND
-    ====================================================== -->
 
     <mat-card class="chart-card trend-card">
       <div class="chart-header">

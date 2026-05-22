@@ -1,13 +1,13 @@
-<mat-form-field appearance="outline">
+<mat-form-field appearance="outline" class="search-select-field">
   <mat-label>{{ label }}</mat-label>
 
   <mat-select
+    panelClass="search-select-panel"
     [formControl]="control"
+    (openedChange)="onOpenedChange($event)"
     (selectionChange)="onSelection($event.value)"
   >
-    <!-- SEARCH -->
-
-    <mat-option>
+    <mat-option class="search-option">
       <ngx-mat-select-search
         [formControl]="searchCtrl"
         placeholderLabel="Search..."
@@ -15,8 +15,6 @@
       >
       </ngx-mat-select-search>
     </mat-option>
-
-    <!-- OPTIONS -->
 
     <mat-option *ngFor="let item of filteredItems" [value]="item">
       {{ item[bindLabel] }}

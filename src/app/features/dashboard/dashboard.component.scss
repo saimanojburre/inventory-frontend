@@ -1,291 +1,194 @@
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
 .dashboard {
     display: flex;
     flex-direction: column;
-
     gap: 24px;
-
     min-height: 100%;
-
     padding: 4px;
+    color: var(--text-dark);
 }
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 .dashboard-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     gap: 16px;
 }
 
 .dashboard-header h2 {
     margin: 0;
-
     font-size: 28px;
     font-weight: 700;
-
     color: var(--text-dark);
-
     letter-spacing: -0.5px;
 }
 
 .dashboard-header p {
     margin: 6px 0 0;
-
     color: var(--text-light);
-
     font-size: 14px;
 }
 
-/* =========================================================
-   REFRESH BUTTON
-========================================================= */
-
 .refresh-btn {
     border-radius: 12px !important;
-
     font-weight: 600 !important;
 }
-
-/* =========================================================
-   BODY
-========================================================= */
 
 .dashboard-body {
     display: flex;
     flex-direction: column;
-
     gap: 24px;
-
     animation: fadeIn 0.3s ease;
 }
 
-/* =========================================================
-   KPI GRID
-========================================================= */
-
 .card-grid {
     display: grid;
-
     grid-template-columns: repeat(4, 1fr);
-
     gap: 20px;
 }
 
-/* =========================================================
-   KPI CARD
-========================================================= */
-
 .stat-card {
     position: relative;
-
     overflow: hidden;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
     min-height: 145px;
-
     padding: 20px !important;
-
     border: 1px solid var(--border-light);
-
     border-radius: 20px !important;
-
-    background: white;
-
+    background: var(--card-bg) !important;
+    color: var(--text-dark) !important;
     transition:
         transform 0.25s ease,
-        box-shadow 0.25s ease;
+        box-shadow 0.25s ease,
+        background-color 0.25s ease,
+        border-color 0.25s ease;
 }
-
-/* LIGHT GLOW */
 
 .stat-card::after {
     content: '';
-
     position: absolute;
-
     top: -35px;
     right: -35px;
-
     width: 125px;
     height: 125px;
-
     border-radius: 50%;
-
     pointer-events: none;
-
     opacity: 0.9;
 }
 
-/* =========================================================
-   CARD COLORS
-========================================================= */
-
 .stat-card.blue-card::after {
-    background: rgba(59, 130, 246, 0.08);
+    background: rgba(59, 130, 246, 0.1);
 }
 
 .stat-card.green-card::after {
-    background: rgba(16, 185, 129, 0.08);
+    background: rgba(16, 185, 129, 0.1);
 }
 
 .stat-card.purple-card::after {
-    background: rgba(139, 92, 246, 0.08);
+    background: rgba(139, 92, 246, 0.1);
 }
 
 .stat-card.orange-card::after {
-    background: rgba(249, 115, 22, 0.08);
+    background: rgba(249, 115, 22, 0.12);
 }
 
-/* =========================================================
-   HOVER
-========================================================= */
+:host-context(body.dark-theme) .stat-card.blue-card::after {
+    background: rgba(96, 165, 250, 0.16);
+}
+
+:host-context(body.dark-theme) .stat-card.green-card::after {
+    background: rgba(52, 211, 153, 0.16);
+}
+
+:host-context(body.dark-theme) .stat-card.purple-card::after {
+    background: rgba(167, 139, 250, 0.16);
+}
+
+:host-context(body.dark-theme) .stat-card.orange-card::after {
+    background: rgba(251, 146, 60, 0.16);
+}
 
 .stat-card:hover {
     transform: translateY(-4px);
-
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08),
-        0 22px 50px rgba(15, 23, 42, 0.08) !important;
+    box-shadow: var(--shadow-lg) !important;
 }
-
-/* =========================================================
-   CARD TOP
-========================================================= */
 
 .stat-left {
     display: flex;
     align-items: center;
-
     gap: 16px;
-
     z-index: 1;
 }
 
 .stat-card p {
     margin: 0 0 6px;
-
     font-size: 14px;
-
     color: var(--text-light);
 }
 
 .stat-card h2 {
     margin: 0;
-
     font-size: 26px;
     font-weight: 700;
-
     color: var(--text-dark);
 }
-
-/* =========================================================
-   ICON BOX
-========================================================= */
 
 .icon-box {
     width: 56px;
     height: 56px;
-
     border-radius: 18px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     color: white;
-
     flex-shrink: 0;
-
     z-index: 1;
 }
 
 .icon-box mat-icon {
     font-size: 26px;
-
     width: 26px;
     height: 26px;
 }
 
-/* =========================================================
-   ICON COLORS
-========================================================= */
-
 .blue {
-    background:
-        linear-gradient(135deg,
-            #3b82f6,
-            #6366f1);
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
 }
 
 .green {
-    background:
-        linear-gradient(135deg,
-            #10b981,
-            #34d399);
+    background: linear-gradient(135deg, #10b981, #34d399);
 }
 
 .purple {
-    background:
-        linear-gradient(135deg,
-            #8b5cf6,
-            #a78bfa);
+    background: linear-gradient(135deg, #8b5cf6, #a78bfa);
 }
 
 .orange {
-    background:
-        linear-gradient(135deg,
-            #f59e0b,
-            #fb923c);
+    background: linear-gradient(135deg, #f59e0b, #fb923c);
 }
-
-/* =========================================================
-   ACTION CARD
-========================================================= */
 
 .action-card {
     gap: 14px;
 }
 
-/* =========================================================
-   ACTION BUTTON
-========================================================= */
-
 .card-action {
     margin-top: auto;
-
     height: 40px;
-
     border: none;
     outline: none;
-
     border-radius: 12px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     gap: 8px;
-
     font-size: 14px;
     font-weight: 600;
-
     cursor: pointer;
-
     z-index: 1;
-
     transition:
         background 0.2s ease,
+        color 0.2s ease,
         transform 0.2s ease;
 }
 
@@ -295,82 +198,66 @@
 
 .card-action mat-icon {
     font-size: 18px;
-
     width: 18px;
     height: 18px;
 }
 
-/* =========================================================
-   GREEN ACTION
-========================================================= */
-
 .green-action {
-    background: rgba(16, 185, 129, 0.10);
-
+    background: rgba(16, 185, 129, 0.12);
     color: #059669;
 }
 
 .green-action:hover {
-    background: rgba(16, 185, 129, 0.18);
+    background: rgba(16, 185, 129, 0.2);
 }
 
-/* =========================================================
-   PURPLE ACTION
-========================================================= */
-
 .purple-action {
-    background: rgba(139, 92, 246, 0.10);
-
+    background: rgba(139, 92, 246, 0.12);
     color: #7c3aed;
 }
 
 .purple-action:hover {
-    background: rgba(139, 92, 246, 0.18);
+    background: rgba(139, 92, 246, 0.2);
 }
 
-/* =========================================================
-   ORANGE ACTION
-========================================================= */
-
 .orange-action {
-    background: rgba(249, 115, 22, 0.12);
-
+    background: rgba(249, 115, 22, 0.14);
     color: #ea580c;
 }
 
 .orange-action:hover {
-    background: rgba(249, 115, 22, 0.18);
+    background: rgba(249, 115, 22, 0.22);
 }
 
-/* =========================================================
-   ANALYTICS GRID
-========================================================= */
+:host-context(body.dark-theme) .green-action {
+    color: #6ee7b7;
+}
+
+:host-context(body.dark-theme) .purple-action {
+    color: #c4b5fd;
+}
+
+:host-context(body.dark-theme) .orange-action {
+    color: #fdba74;
+}
 
 .analytics-grid {
     display: grid;
-
     grid-template-columns: repeat(2, 1fr);
-
     gap: 20px;
 }
 
-/* =========================================================
-   CHART CARD
-========================================================= */
-
 .chart-card {
     padding: 22px !important;
-
     border: 1px solid var(--border-light);
-
     border-radius: 20px !important;
-
-    background: white;
+    background: var(--card-bg) !important;
+    color: var(--text-dark) !important;
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease;
 }
-
-/* =========================================================
-   CHART HEADER
-========================================================= */
 
 .chart-header {
     margin-bottom: 20px;
@@ -378,20 +265,13 @@
 
 .chart-header h3 {
     margin: 0;
-
     font-size: 18px;
     font-weight: 700;
-
     color: var(--text-dark);
 }
 
-/* =========================================================
-   CHART WRAPPER
-========================================================= */
-
 .chart-wrapper {
     position: relative;
-
     height: 320px;
 }
 
@@ -399,43 +279,24 @@
     height: 380px;
 }
 
-/* =========================================================
-   SKELETON
-========================================================= */
-
 .skeleton-card,
 .chart-skeleton {
     padding: 22px;
-
     border-radius: 20px;
-
     background: var(--card-bg);
-
     border: 1px solid var(--border-light);
 }
 
 .skeleton-card {
     display: flex;
     align-items: center;
-
     gap: 16px;
 }
 
 .skeleton-circle {
     width: 56px;
     height: 56px;
-
     border-radius: 18px;
-
-    background:
-        linear-gradient(90deg,
-            #e5e7eb 25%,
-            #f3f4f6 37%,
-            #e5e7eb 63%);
-
-    background-size: 400% 100%;
-
-    animation: shimmer 1.4s ease infinite;
 }
 
 .skeleton-content {
@@ -444,20 +305,31 @@
 
 .skeleton-line {
     height: 14px;
-
     border-radius: 8px;
-
     margin-bottom: 12px;
+}
 
+.skeleton-circle,
+.skeleton-line,
+.skeleton-chart {
     background:
         linear-gradient(90deg,
             #e5e7eb 25%,
             #f3f4f6 37%,
             #e5e7eb 63%);
-
     background-size: 400% 100%;
-
     animation: shimmer 1.4s ease infinite;
+}
+
+:host-context(body.dark-theme) .skeleton-circle,
+:host-context(body.dark-theme) .skeleton-line,
+:host-context(body.dark-theme) .skeleton-chart {
+    background:
+        linear-gradient(90deg,
+            #1e293b 25%,
+            #334155 37%,
+            #1e293b 63%);
+    background-size: 400% 100%;
 }
 
 .skeleton-line.short {
@@ -477,27 +349,12 @@
 .skeleton-chart {
     width: 100%;
     height: 300px;
-
     border-radius: 14px;
-
-    background:
-        linear-gradient(90deg,
-            #e5e7eb 25%,
-            #f3f4f6 37%,
-            #e5e7eb 63%);
-
-    background-size: 400% 100%;
-
-    animation: shimmer 1.4s ease infinite;
 }
 
 .skeleton-chart.large {
     height: 360px;
 }
-
-/* =========================================================
-   ANIMATIONS
-========================================================= */
 
 @keyframes fadeIn {
     from {
@@ -520,10 +377,6 @@
         background-position: -100% 0;
     }
 }
-
-/* =========================================================
-   RESPONSIVE
-========================================================= */
 
 @media (max-width: 1200px) {
 

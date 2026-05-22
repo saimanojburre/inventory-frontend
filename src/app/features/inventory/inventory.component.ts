@@ -1,16 +1,17 @@
-import { Component, ViewChild } from '@angular/core';
-import { InventoryService } from '../../core/services/inventory.service';
+import { Component, ViewChild, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
+
+import { InventoryService } from '../../core/services/inventory.service';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
-import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-inventory',
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.scss'],
 })
-export class InventoryComponent {
+export class InventoryComponent implements OnInit {
   displayedColumns: string[] = [
     'category',
     'itemName',
@@ -27,7 +28,10 @@ export class InventoryComponent {
   showingLowStock = false;
   selectedCategory = '';
   selectedStatus = '';
-  // FIX: setter instead of normal ViewChild
+
+  private allInventoryData: any[] = [];
+  private searchText = '';
+
   @ViewChild(MatPaginator)
   set matPaginator(mp: MatPaginator) {
     if (mp) {
@@ -42,15 +46,13 @@ export class InventoryComponent {
     private router: Router,
   ) {}
 
-  // ================= INIT =================
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.showingLowStock = params['lowStock'] === 'true';
       this.loadInventory();
     });
   }
 
-  // ================= LOAD =================
   loadInventory(): void {
     this.loading = true;
 
@@ -58,16 +60,13 @@ export class InventoryComponent {
 
     if (cached?.items) {
       this.setInventoryData(cached.items);
-
       this.loading = false;
-
       return;
     }
 
     this.inventoryService.getInventory().subscribe({
       next: (res: any[]) => {
         this.setInventoryData(res);
-
         this.loading = false;
       },
 
@@ -76,6 +75,7 @@ export class InventoryComponent {
       },
     });
   }
+
   private setInventoryData(data: any[]): void {
     const sortedData = [...data].sort((a, b) => {
       const categoryCompare = (a.category || '').localeCompare(
@@ -89,10 +89,8 @@ export class InventoryComponent {
       return (a.itemName || '').localeCompare(b.itemName || '');
     });
 
-    this.dataSource.data = sortedData;
-    if (this.showingLowStock) {
-      this.showLowStockOnly();
-    }
+    this.allInventoryData = sortedData;
+    this.applyAdvancedFilter();
 
     this.totalInventoryValue = sortedData.reduce(
       (sum: number, item: any) => sum + (item.total || 0),
@@ -115,48 +113,57 @@ export class InventoryComponent {
     return 'instock';
   }
 
-  showLowStockOnly(): void {
-    this.dataSource.data = this.dataSource.data.filter((item: any) => {
-      return item.quantity <= item.minStock;
-    });
+  applyFilter(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchText = input.value.trim().toLowerCase();
+    this.applyAdvancedFilter();
   }
 
-  // ================= SEARCH =================
-  applyFilter(event: any) {
-    const value = event.target.value.trim().toLowerCase();
-    this.dataSource.filter = value;
+  applyAdvancedFilter(): void {
+    let filtered = [...this.allInventoryData];
 
+    if (this.showingLowStock) {
+      filtered = filtered.filter((item: any) => item.quantity <= item.minStock);
+    }
+
+    if (this.selectedCategory) {
+      filtered = filtered.filter((item: any) => {
+        return (
+          item.category?.toLowerCase() === this.selectedCategory.toLowerCase()
+        );
+      });
+    }
+
+    if (this.selectedStatus) {
+      filtered = filtered.filter((item: any) => {
+        return this.getStockStatus(item) === this.selectedStatus;
+      });
+    }
+
+    if (this.searchText) {
+      filtered = filtered.filter((item: any) => {
+        return (
+          item.itemName?.toLowerCase().includes(this.searchText) ||
+          item.category?.toLowerCase().includes(this.searchText)
+        );
+      });
+    }
+
+    this.dataSource.data = filtered;
     this.dataSource.paginator?.firstPage();
   }
-  applyAdvancedFilter(): void {
-    this.dataSource.filterPredicate = (data: any, filter: string) => {
-      const parsed = JSON.parse(filter);
 
-      const categoryMatch =
-        !parsed.category ||
-        data.category?.toLowerCase() === parsed.category.toLowerCase();
-
-      const statusMatch =
-        !parsed.status || this.getStockStatus(data) === parsed.status;
-
-      return categoryMatch && statusMatch;
-    };
-
-    this.dataSource.filter = JSON.stringify({
-      category: this.selectedCategory,
-      status: this.selectedStatus,
-    });
-  }
   getCategories(): string[] {
-    return [...new Set(this.dataSource.data.map((i: any) => i.category))]
+    return [...new Set(this.allInventoryData.map((i: any) => i.category))]
       .filter(Boolean)
       .sort();
   }
+
   clearLowStockFilter(): void {
     this.router.navigate(['/app/inventory']);
   }
-  // ================= DELETE (future) =================
-  delete(id: number) {
-    // future logic
+
+  delete(id: number): void {
+    // Future delete logic.
   }
 }

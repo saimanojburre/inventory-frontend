@@ -1,4 +1,10 @@
-import { Component, Output, EventEmitter, HostListener } from '@angular/core';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from 'src/app/core/services/auth.service';
@@ -13,7 +19,7 @@ import { Notification } from 'src/app/core/models/notification.model';
   templateUrl: './topbar.component.html',
   styleUrls: ['./topbar.component.scss'],
 })
-export class TopbarComponent {
+export class TopbarComponent implements OnInit {
   @Output()
   toggle = new EventEmitter<void>();
 
@@ -66,9 +72,7 @@ export class TopbarComponent {
   ngOnInit(): void {
     this.username = this.authService.getUsername();
 
-    const savedTheme = localStorage.getItem('theme');
-
-    this.isDark = savedTheme === 'dark';
+    this.isDark = this.themeService.isDarkTheme();
 
     this.loadNotifications();
 
@@ -91,6 +95,7 @@ export class TopbarComponent {
     event.stopPropagation();
 
     this.showProfileMenu = !this.showProfileMenu;
+    this.showNotifications = false;
   }
 
   /* =====================================================
@@ -100,7 +105,7 @@ export class TopbarComponent {
   toggleTheme(): void {
     this.themeService.toggleTheme();
 
-    this.isDark = !this.isDark;
+    this.isDark = this.themeService.isDarkTheme();
   }
 
   /* =====================================================
@@ -111,6 +116,7 @@ export class TopbarComponent {
     event.stopPropagation();
 
     this.showNotifications = !this.showNotifications;
+    this.showProfileMenu = false;
   }
 
   loadNotifications(): void {

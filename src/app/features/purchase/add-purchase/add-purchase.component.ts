@@ -1,10 +1,10 @@
-// add-purchase.component.ts
-
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatTable } from '@angular/material/table';
 import { Router } from '@angular/router';
+
 import * as XLSX from 'xlsx';
+
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { InventoryService } from 'src/app/core/services/inventory.service';
 import { PurchaseService } from 'src/app/core/services/purchase.service';
@@ -47,118 +47,8 @@ export class AddPurchaseComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
-
     this.addRow();
-
     this.loadItems();
-  }
-
-  onFileUpload(event: any): void {
-    const file = event.target.files[0];
-
-    if (!file) return;
-
-    this.loading = true;
-
-    const reader = new FileReader();
-
-    reader.onload = (e: any) => {
-      try {
-        const binaryStr = e.target.result;
-
-        const workbook = XLSX.read(binaryStr, {
-          type: 'binary',
-        });
-
-        const sheetName = workbook.SheetNames[0];
-
-        const sheet = workbook.Sheets[sheetName];
-
-        const data = XLSX.utils.sheet_to_json(sheet);
-
-        /* =========================================
-         EMPTY FILE CHECK
-      ========================================= */
-
-        if (!data || data.length === 0) {
-          this.loading = false;
-
-          this.toast.error('Uploaded file is empty');
-
-          return;
-        }
-
-        /* =========================================
-         Refresh EXISTING ROWS
-      ========================================= */
-
-        this.dashboardCache.refreshPurchases();
-        this.dashboardCache.refreshInventory();
-
-        // CLEAR OLD ROWS
-        this.purchases.clear();
-
-        /* =========================================
-         MAP XLSX TO FORM ROWS
-      ========================================= */
-
-        data.forEach((row: any) => {
-          const matchedItem = this.items.find(
-            (i: any) =>
-              i.itemName?.toLowerCase().trim() ===
-              row['Item']?.toLowerCase().trim(),
-          );
-
-          const formRow = this.fb.group({
-            item: [matchedItem || null, Validators.required],
-
-            units: [
-              {
-                value: matchedItem?.units || '',
-                disabled: true,
-              },
-            ],
-
-            quantity: [
-              Number(row['Quantity'] ?? 0),
-              [Validators.required, Validators.min(0.1)],
-            ],
-
-            price: [
-              Number(row['Price'] ?? 0),
-              [Validators.required, Validators.min(0.1)],
-            ],
-
-            supplier: [row['Supplier'] || '', Validators.required],
-
-            date: [
-              row['Date'] ? new Date(row['Date']) : new Date(),
-              Validators.required,
-            ],
-          });
-
-          this.purchases.push(formRow);
-        });
-
-        setTimeout(() => {
-          this.table?.renderRows();
-        });
-
-        this.loading = false;
-
-        this.toast.success(
-          `${data.length} rows loaded successfully. Please verify before saving.`,
-        );
-      } catch (error) {
-        console.error(error);
-
-        this.loading = false;
-
-        this.toast.error('Invalid XLSX format');
-      }
-    };
-
-    reader.readAsBinaryString(file);
   }
 
   initializeForm(): void {
@@ -171,27 +61,26 @@ export class AddPurchaseComponent implements OnInit {
     return this.purchaseForm.get('purchases') as FormArray;
   }
 
-  createRow(): FormGroup {
+  createRow(data?: any): FormGroup {
     return this.fb.group({
-      item: [null, Validators.required],
-
-      units: [{ value: '', disabled: true }],
-
-      quantity: [0, [Validators.required, Validators.min(0)]],
-
-      price: [0, [Validators.required, Validators.min(0)]],
-
-      supplier: ['', Validators.required],
-
-      date: [new Date(), Validators.required],
+      item: [data?.item || null, Validators.required],
+      units: [{ value: data?.units || '', disabled: true }],
+      quantity: [
+        Number(data?.quantity ?? 0),
+        [Validators.required, Validators.min(0.1)],
+      ],
+      price: [
+        Number(data?.price ?? 0),
+        [Validators.required, Validators.min(0.1)],
+      ],
+      supplier: [data?.supplier || '', Validators.required],
+      date: [data?.date || new Date(), Validators.required],
     });
   }
 
-  addRow(): void {
-    this.purchases.push(this.createRow());
-    queueMicrotask(() => {
-      this.table?.renderRows();
-    });
+  addRow(data?: any): void {
+    this.purchases.push(this.createRow(data));
+    this.renderTable();
   }
 
   removeRow(index: number): void {
@@ -204,10 +93,72 @@ export class AddPurchaseComponent implements OnInit {
     }
 
     this.purchases.removeAt(index);
+    this.renderTable();
+  }
 
-    queueMicrotask(() => {
-      this.table?.renderRows();
-    });
+  onFileUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    if (!file) return;
+
+    this.loading = true;
+
+    const reader = new FileReader();
+
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      try {
+        const workbook = XLSX.read(e.target?.result, {
+          type: 'binary',
+        });
+
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const data = XLSX.utils.sheet_to_json(sheet);
+
+        if (!data.length) {
+          this.loading = false;
+          this.toast.error('Uploaded file is empty');
+          return;
+        }
+
+        this.dashboardCache.refreshPurchases();
+        this.dashboardCache.refreshInventory();
+
+        this.purchases.clear();
+
+        data.forEach((row: any) => {
+          const matchedItem = this.items.find((item: any) => {
+            return (
+              item.itemName?.toLowerCase().trim() ===
+              row['Item']?.toLowerCase().trim()
+            );
+          });
+
+          this.addRow({
+            item: matchedItem || null,
+            units: matchedItem?.units || '',
+            quantity: row['Quantity'],
+            price: row['Price'],
+            supplier: row['Supplier'],
+            date: row['Date'] ? new Date(row['Date']) : new Date(),
+          });
+        });
+
+        this.loading = false;
+
+        this.toast.success(
+          `${data.length} rows loaded successfully. Please verify before saving.`,
+        );
+      } catch (error) {
+        console.error(error);
+
+        this.loading = false;
+        this.toast.error('Invalid XLSX format');
+      }
+    };
+
+    reader.readAsBinaryString(file);
+    input.value = '';
   }
 
   loadItems(): void {
@@ -215,7 +166,6 @@ export class AddPurchaseComponent implements OnInit {
 
     if (cached?.items) {
       this.items = cached.items;
-
       return;
     }
 
@@ -243,7 +193,6 @@ export class AddPurchaseComponent implements OnInit {
   getGrandTotal(): number {
     return this.purchases.controls.reduce((sum: number, row: any) => {
       const quantity = Number(row.get('quantity')?.value) || 0;
-
       const price = Number(row.get('price')?.value) || 0;
 
       return sum + quantity * price;
@@ -253,9 +202,7 @@ export class AddPurchaseComponent implements OnInit {
   saveAll(): void {
     if (this.purchaseForm.invalid) {
       this.purchaseForm.markAllAsTouched();
-
       this.toast.error('Please fill all required fields correctly');
-
       return;
     }
 
@@ -274,15 +221,10 @@ export class AddPurchaseComponent implements OnInit {
         item: {
           id: row.item?.itemId,
         },
-
         quantity: Number(row.quantity),
-
         price: Number(row.price),
-
         supplier: row.supplier,
-
         createdAt: now,
-
         purchaseDate: new Date(
           purchaseDate.getTime() - purchaseDate.getTimezoneOffset() * 60000,
         )
@@ -298,15 +240,12 @@ export class AddPurchaseComponent implements OnInit {
         this.dashboardCache.refreshInventory();
         this.toast.success('Purchases saved successfully');
         this.purchases.clear();
-
         this.addRow();
-
         this.goBack();
       },
 
       error: () => {
         this.loading = false;
-
         this.toast.error('Failed to save purchases');
       },
     });
@@ -314,5 +253,11 @@ export class AddPurchaseComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/app/purchase']);
+  }
+
+  private renderTable(): void {
+    queueMicrotask(() => {
+      this.table?.renderRows();
+    });
   }
 }

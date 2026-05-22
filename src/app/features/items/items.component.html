@@ -9,15 +9,11 @@
   <!-- LEFT -->
   <div class="toolbar-left">
     <mat-form-field appearance="outline" class="search-field">
-      <mat-label> Search products </mat-label>
+      <mat-label>Search by product, category or unit</mat-label>
 
-      <input
-        matInput
-        [formControl]="searchControl"
-        placeholder="Search by product, category or unit"
-      />
+      <input matInput [formControl]="searchControl" />
 
-      <mat-icon matSuffix> search </mat-icon>
+      <mat-icon matSuffix>search</mat-icon>
     </mat-form-field>
   </div>
 

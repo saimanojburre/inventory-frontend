@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ThemeService } from './core/services/theme.service';
 
 @Component({
@@ -6,11 +6,11 @@ import { ThemeService } from './core/services/theme.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'airawat-store';
   constructor(private themeService: ThemeService) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.themeService.loadTheme();
   }
 }

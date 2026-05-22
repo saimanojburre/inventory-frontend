@@ -1,31 +1,24 @@
-import { Component, ViewChild } from '@angular/core';
-
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-
 import { MatSort } from '@angular/material/sort';
-
 import { MatPaginator } from '@angular/material/paginator';
-
 import { MatTableDataSource } from '@angular/material/table';
-
-import { AuthService } from 'src/app/core/services/auth.service';
-
-import { UsageService } from 'src/app/core/services/usage.service';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
 
 import * as XLSX from 'xlsx';
-
 import { saveAs } from 'file-saver';
 
+import { AuthService } from 'src/app/core/services/auth.service';
+import { UsageService } from 'src/app/core/services/usage.service';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { ToastService } from 'src/app/core/services/toast.service';
-import { Subject, debounceTime, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-usage',
   templateUrl: './usage.component.html',
   styleUrls: ['./usage.component.scss'],
 })
-export class UsageComponent {
+export class UsageComponent implements OnInit, OnDestroy {
   displayedColumns = this.authService.isOwner()
     ? [
         'item',
@@ -41,14 +34,12 @@ export class UsageComponent {
   dataSource = new MatTableDataSource<any>([]);
 
   filterForm!: FormGroup;
-  private destroy$ = new Subject<void>();
   loading = true;
   today = new Date();
+
   editingId: number | null = null;
   savingRowId: number | null = null;
-
   deletingRowId: number | null = null;
-
   backupRow: any = null;
 
   departments: string[] = [
@@ -66,9 +57,7 @@ export class UsageComponent {
     'Meals',
   ];
 
-  // =====================================================
-  // VIEW CHILD
-  // =====================================================
+  private destroy$ = new Subject<void>();
 
   @ViewChild(MatPaginator)
   set matPaginator(mp: MatPaginator) {
@@ -92,20 +81,11 @@ export class UsageComponent {
     private dashboardCache: DashboardCacheService,
   ) {}
 
-  // =====================================================
-  // INIT
-  // =====================================================
-
   ngOnInit(): void {
     this.createForm();
+    this.resetFilters(false);
     this.loadUsage();
-    const today = new Date();
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    this.filterForm.patchValue({
-      fromDate: firstDay,
-      toDate: today,
-    });
-    this.applyFilter();
+
     this.filterForm.valueChanges
       .pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => {
@@ -113,9 +93,10 @@ export class UsageComponent {
       });
   }
 
-  // =====================================================
-  // FORM
-  // =====================================================
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   createForm(): void {
     this.filterForm = this.fb.group({
@@ -125,8 +106,6 @@ export class UsageComponent {
     });
   }
 
-  // LOAD
-
   loadUsage(): void {
     this.loading = true;
 
@@ -134,65 +113,62 @@ export class UsageComponent {
 
     if (cached?.usage) {
       this.dataSource.data = cached.usage;
-
+      this.applyFilter();
       this.loading = false;
-
       return;
     }
+
     this.usageService.getUsage().subscribe({
       next: (res) => {
         this.dataSource.data = res;
-
+        this.applyFilter();
         this.loading = false;
       },
 
       error: () => {
         this.loading = false;
-
         this.toast.error('Failed to load usage records');
       },
     });
   }
 
-  // =====================================================
-  // FILTER
-  // =====================================================
-
   applyFilter(): void {
+    if (!this.filterForm) return;
+
     const { fromDate, toDate, search } = this.filterForm.value;
+    const normalizedSearch = String(search || '')
+      .trim()
+      .toLowerCase();
 
     this.dataSource.filterPredicate = (data: any) => {
       const usageDate = new Date(data.usedDateTime);
-
-      // FROM DATE
       const from = fromDate ? new Date(fromDate) : null;
-
-      // TO DATE
       const to = toDate ? new Date(toDate) : null;
 
-      // INCLUDE FULL DAY
       if (to) {
         to.setHours(23, 59, 59, 999);
       }
 
       const matchFrom = !from || usageDate >= from;
-
       const matchTo = !to || usageDate <= to;
-
       const matchSearch =
-        !search ||
-        data.item?.name?.toLowerCase().includes(search.toLowerCase()) ||
-        data.department?.toLowerCase().includes(search.toLowerCase());
+        !normalizedSearch ||
+        data.item?.name?.toLowerCase().includes(normalizedSearch) ||
+        data.department?.toLowerCase().includes(normalizedSearch);
 
       return matchFrom && matchTo && matchSearch;
     };
 
-    this.dataSource.filter = Math.random().toString();
+    this.dataSource.filter = JSON.stringify({
+      fromDate,
+      toDate,
+      search: normalizedSearch,
+    });
 
     this.dataSource.paginator?.firstPage();
   }
 
-  resetFilters(): void {
+  resetFilters(apply = true): void {
     const today = new Date();
 
     this.filterForm.patchValue({
@@ -201,12 +177,10 @@ export class UsageComponent {
       search: '',
     });
 
-    this.applyFilter();
+    if (apply) {
+      this.applyFilter();
+    }
   }
-
-  // =====================================================
-  // EXPORT
-  // =====================================================
 
   exportToExcel(): void {
     const exportData = this.dataSource.filteredData.map((r: any) => ({
@@ -224,7 +198,6 @@ export class UsageComponent {
       Sheets: {
         Usage: worksheet,
       },
-
       SheetNames: ['Usage'],
     };
 
@@ -240,50 +213,8 @@ export class UsageComponent {
     saveAs(blob, `Usage_Report_${Date.now()}.xlsx`);
   }
 
-  // =====================================================
-  // DELETE
-  // =====================================================
-
-  delete(row: any): void {
-    const confirmDelete = confirm(
-      'Are you sure you want to delete this usage record?',
-    );
-
-    if (!confirmDelete) {
-      return;
-    }
-
-    this.deletingRowId = row.id;
-
-    this.usageService.deleteUsage(row.id).subscribe({
-      next: () => {
-        this.toast.success('Usage deleted successfully');
-
-        this.dashboardCache.refreshUsage();
-        this.dashboardCache.refreshInventory();
-
-        this.dataSource.data = this.dataSource.data.filter(
-          (u: any) => u.id !== row.id,
-        );
-
-        this.deletingRowId = null;
-      },
-
-      error: () => {
-        this.deletingRowId = null;
-
-        this.toast.error('Failed to delete usage');
-      },
-    });
-  }
-
-  // =====================================================
-  // EDIT
-  // =====================================================
-
   edit(row: any): void {
     this.editingId = row.id;
-
     this.backupRow = { ...row };
   }
 
@@ -291,11 +222,12 @@ export class UsageComponent {
     Object.assign(row, this.backupRow);
 
     this.editingId = null;
-
     this.backupRow = null;
   }
 
   saveEdit(row: any): void {
+    if (this.savingRowId) return;
+
     this.savingRowId = row.id;
 
     const payload = {
@@ -312,12 +244,12 @@ export class UsageComponent {
 
         this.editingId = null;
         this.backupRow = null;
+        this.savingRowId = null;
 
         this.dashboardCache.refreshUsage();
         this.dashboardCache.refreshInventory();
 
         const updated = [...this.dataSource.data];
-
         const index = updated.findIndex((u: any) => u.id === row.id);
 
         if (index !== -1) {
@@ -325,14 +257,46 @@ export class UsageComponent {
         }
 
         this.dataSource.data = updated;
-
-        this.savingRowId = null;
+        this.applyFilter();
       },
 
       error: () => {
         this.savingRowId = null;
-
         this.toast.error('Failed to update usage');
+      },
+    });
+  }
+
+  delete(row: any): void {
+    const confirmDelete = confirm(
+      'Are you sure you want to delete this usage record?',
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    this.deletingRowId = row.id;
+
+    this.usageService.deleteUsage(row.id).subscribe({
+      next: () => {
+        this.toast.success('Usage deleted successfully');
+
+        this.deletingRowId = null;
+
+        this.dataSource.data = this.dataSource.data.filter(
+          (u: any) => u.id !== row.id,
+        );
+
+        this.applyFilter();
+
+        this.dashboardCache.refreshUsage();
+        this.dashboardCache.refreshInventory();
+      },
+
+      error: () => {
+        this.deletingRowId = null;
+        this.toast.error('Failed to delete usage');
       },
     });
   }

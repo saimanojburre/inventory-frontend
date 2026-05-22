@@ -21,7 +21,13 @@
   <!-- RIGHT -->
   <div class="topbar-right">
     <!-- THEME -->
-    <button mat-icon-button class="icon-btn" (click)="toggleTheme()">
+    <button
+      mat-icon-button
+      class="icon-btn theme-btn"
+      [matTooltip]="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
+      matTooltipPosition="below"
+      (click)="toggleTheme()"
+    >
       <mat-icon>
         {{ isDark ? "light_mode" : "dark_mode" }}
       </mat-icon>

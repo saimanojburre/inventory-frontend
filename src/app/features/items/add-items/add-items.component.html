@@ -1,33 +1,25 @@
 <app-page-header title="Add Products" subtitle="Create inventory products">
 </app-page-header>
+
 <app-page-loader
   *ngIf="loading"
   title="Saving Products"
   subtitle="Please wait while products are being saved..."
 >
 </app-page-loader>
-<!-- =====================================================
-     PAGE ENTER
-====================================================== -->
 
 <div class="page-enter">
-  <!-- =====================================================
-       ACTION HEADER
-  ====================================================== -->
-
   <div class="page-header">
-    <!-- BACK -->
     <button mat-stroked-button class="back-btn" (click)="goBack()">
       <mat-icon>arrow_back</mat-icon>
       Back
     </button>
 
-    <!-- RIGHT ACTIONS -->
     <div class="header-actions">
-      <!-- ADD ROW -->
       <button
         mat-raised-button
         class="add-row-btn"
+        color="primary"
         (click)="addRow()"
         [disabled]="loading"
       >
@@ -35,7 +27,6 @@
         Add Row
       </button>
 
-      <!-- UPLOAD -->
       <button
         mat-raised-button
         class="upload-btn"
@@ -47,7 +38,6 @@
       </button>
     </div>
 
-    <!-- FILE INPUT -->
     <input
       type="file"
       #fileInput
@@ -57,21 +47,9 @@
     />
   </div>
 
-  <!-- =====================================================
-       MAIN CONTAINER
-  ====================================================== -->
-
   <div class="purchase-container">
     <form [formGroup]="itemForm">
-      <!-- =====================================================
-           TABLE WRAPPER
-      ====================================================== -->
-
       <div class="table-wrapper">
-        <!-- =====================================================
-             EMPTY STATE
-        ====================================================== -->
-
         <div class="empty-state" *ngIf="itemsFormArray.length === 0">
           <mat-icon>inventory_2</mat-icon>
 
@@ -84,27 +62,20 @@
           </button>
         </div>
 
-        <!-- =====================================================
-             TABLE
-        ====================================================== -->
-
         <table
           *ngIf="itemsFormArray.length > 0"
           mat-table
           [dataSource]="itemsFormArray.controls"
           class="purchase-table"
         >
-          <!-- PRODUCT -->
           <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef class="col-item">Product</th>
 
             <td mat-cell *matCellDef="let row">
               <mat-form-field appearance="outline">
-                <input
-                  matInput
-                  placeholder="Enter product name"
-                  [formControl]="row.get('name')"
-                />
+                <mat-label>Product name</mat-label>
+
+                <input matInput [formControl]="row.get('name')" />
 
                 <mat-error *ngIf="row.get('name')?.hasError('required')">
                   Product name is required
@@ -113,7 +84,6 @@
             </td>
           </ng-container>
 
-          <!-- CATEGORY -->
           <ng-container matColumnDef="category">
             <th mat-header-cell *matHeaderCellDef class="col-medium">
               Category
@@ -121,10 +91,9 @@
 
             <td mat-cell *matCellDef="let row">
               <mat-form-field appearance="outline">
-                <mat-select
-                  placeholder="Select category"
-                  [formControl]="row.get('category')"
-                >
+                <mat-label>Category</mat-label>
+
+                <mat-select [formControl]="row.get('category')">
                   <mat-option *ngFor="let c of categories" [value]="c">
                     {{ c }}
                   </mat-option>
@@ -137,16 +106,14 @@
             </td>
           </ng-container>
 
-          <!-- UNIT -->
           <ng-container matColumnDef="unit">
             <th mat-header-cell *matHeaderCellDef class="col-small">Unit</th>
 
             <td mat-cell *matCellDef="let row">
               <mat-form-field appearance="outline">
-                <mat-select
-                  placeholder="Select unit"
-                  [formControl]="row.get('unit')"
-                >
+                <mat-label>Unit</mat-label>
+
+                <mat-select [formControl]="row.get('unit')">
                   <mat-option *ngFor="let u of units" [value]="u">
                     {{ u }}
                   </mat-option>
@@ -159,7 +126,6 @@
             </td>
           </ng-container>
 
-          <!-- MIN STOCK -->
           <ng-container matColumnDef="minStock">
             <th mat-header-cell *matHeaderCellDef class="col-small">
               Min Stock
@@ -167,10 +133,11 @@
 
             <td mat-cell *matCellDef="let row">
               <mat-form-field appearance="outline">
+                <mat-label>Min stock</mat-label>
+
                 <input
                   type="number"
                   matInput
-                  placeholder="Minimum stock"
                   [formControl]="row.get('minStock')"
                 />
 
@@ -181,7 +148,6 @@
             </td>
           </ng-container>
 
-          <!-- QUANTITY -->
           <ng-container matColumnDef="quantity">
             <th mat-header-cell *matHeaderCellDef class="col-small">
               Quantity
@@ -189,21 +155,27 @@
 
             <td mat-cell *matCellDef="let row">
               <mat-form-field appearance="outline">
+                <mat-label>Initial quantity</mat-label>
+
                 <input
                   type="number"
                   matInput
-                  placeholder="Initial quantity"
                   [formControl]="row.get('quantity')"
                 />
               </mat-form-field>
             </td>
           </ng-container>
 
-          <!-- ACTIONS -->
           <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef class="col-actions"></th>
+            <th mat-header-cell *matHeaderCellDef class="col-actions">
+              Actions
+            </th>
 
-            <td mat-cell *matCellDef="let row; let i = index">
+            <td
+              mat-cell
+              *matCellDef="let row; let i = index"
+              class="col-actions"
+            >
               <app-row-actions
                 [disabled]="loading"
                 [showRemove]="itemsFormArray.length > 1"
@@ -214,18 +186,12 @@
             </td>
           </ng-container>
 
-          <!-- ROWS -->
-
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
       </div>
     </form>
-
-    <!-- =====================================================
-         SAVE SECTION
-    ====================================================== -->
 
     <div class="save-section">
       <div class="save-info">

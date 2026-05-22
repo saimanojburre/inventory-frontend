@@ -1,3 +1,9 @@
-mat-form-field {
+mat-form-field,
+.search-select-field {
+    width: 100%;
+}
+
+:host {
+    display: block;
     width: 100%;
 }

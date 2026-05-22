@@ -3,18 +3,15 @@
   subtitle="Record stock usage and reduce inventory"
 >
 </app-page-header>
+
 <app-page-loader
   *ngIf="loading"
   title="Saving Usage"
   subtitle="Please wait while usage entries are being saved..."
 >
 </app-page-loader>
-<!-- =====================================================
-     BACK BUTTON
-====================================================== -->
 
 <div class="page-header">
-  <!-- BACK -->
   <button
     mat-stroked-button
     class="back-btn"
@@ -22,38 +19,27 @@
     [disabled]="loading"
   >
     <mat-icon>arrow_back</mat-icon>
-
     Back
   </button>
 
-  <!-- ACTIONS -->
   <div class="header-actions">
-    <!-- ADD ROW -->
     <button
       mat-raised-button
       class="add-row-btn"
+      color="primary"
       (click)="addRow()"
       [disabled]="loading"
     >
       <mat-icon>add</mat-icon>
-
       Add Row
     </button>
   </div>
 </div>
 
-<!-- =====================================================
-     MAIN CARD
-====================================================== -->
-
 <div class="usage-container">
   <form [formGroup]="usageForm">
     <div class="table-wrapper premium-table">
       <table mat-table [dataSource]="usages.controls" class="usage-table">
-        <!-- =====================================================
-             ITEM
-        ====================================================== -->
-
         <ng-container matColumnDef="item">
           <th mat-header-cell *matHeaderCellDef class="col-item">Item</th>
 
@@ -79,14 +65,10 @@
           </td>
         </ng-container>
 
-        <!-- =====================================================
-             UNIT
-        ====================================================== -->
-
         <ng-container matColumnDef="units">
-          <th mat-header-cell *matHeaderCellDef class="col-small">Unit</th>
+          <th mat-header-cell *matHeaderCellDef class="col-unit">Unit</th>
 
-          <td mat-cell *matCellDef="let row" class="col-small">
+          <td mat-cell *matCellDef="let row" class="col-unit">
             <mat-form-field appearance="outline">
               <mat-label>Unit</mat-label>
 
@@ -95,28 +77,22 @@
           </td>
         </ng-container>
 
-        <!-- =====================================================
-             AVAILABLE
-        ====================================================== -->
-
         <ng-container matColumnDef="available">
-          <th mat-header-cell *matHeaderCellDef class="col-small">Available</th>
+          <th mat-header-cell *matHeaderCellDef class="col-available">
+            Available
+          </th>
 
-          <td mat-cell *matCellDef="let row" class="col-small">
+          <td mat-cell *matCellDef="let row" class="col-available">
             <div class="available-badge">
               {{ row.get("available")?.value }}
             </div>
           </td>
         </ng-container>
 
-        <!-- =====================================================
-             QUANTITY
-        ====================================================== -->
-
         <ng-container matColumnDef="quantity">
-          <th mat-header-cell *matHeaderCellDef class="col-small">Qty</th>
+          <th mat-header-cell *matHeaderCellDef class="col-quantity">Qty</th>
 
-          <td mat-cell *matCellDef="let row" class="col-small">
+          <td mat-cell *matCellDef="let row" class="col-quantity">
             <mat-form-field appearance="outline">
               <mat-label>Quantity</mat-label>
 
@@ -142,18 +118,14 @@
           </td>
         </ng-container>
 
-        <!-- =====================================================
-             DEPARTMENT
-        ====================================================== -->
-
         <ng-container matColumnDef="department">
-          <th mat-header-cell *matHeaderCellDef class="col-medium">
+          <th mat-header-cell *matHeaderCellDef class="col-department">
             Department
           </th>
 
-          <td mat-cell *matCellDef="let row" class="col-medium">
+          <td mat-cell *matCellDef="let row" class="col-department">
             <mat-form-field appearance="outline">
-              <mat-label>Select Department</mat-label>
+              <mat-label>Department</mat-label>
 
               <mat-select [formControl]="row.get('department')">
                 <mat-option *ngFor="let d of departments" [value]="d">
@@ -168,14 +140,10 @@
           </td>
         </ng-container>
 
-        <!-- =====================================================
-             TAKEN BY
-        ====================================================== -->
-
         <ng-container matColumnDef="takenBy">
-          <th mat-header-cell *matHeaderCellDef class="col-medium">Taken By</th>
+          <th mat-header-cell *matHeaderCellDef class="col-person">Taken By</th>
 
-          <td mat-cell *matCellDef="let row" class="col-medium">
+          <td mat-cell *matCellDef="let row" class="col-person">
             <mat-form-field appearance="outline">
               <mat-label>Staff Name</mat-label>
 
@@ -188,14 +156,10 @@
           </td>
         </ng-container>
 
-        <!-- =====================================================
-             GIVEN BY
-        ====================================================== -->
-
         <ng-container matColumnDef="givenBy">
-          <th mat-header-cell *matHeaderCellDef class="col-medium">Given By</th>
+          <th mat-header-cell *matHeaderCellDef class="col-person">Given By</th>
 
-          <td mat-cell *matCellDef="let row" class="col-medium">
+          <td mat-cell *matCellDef="let row" class="col-person">
             <mat-form-field appearance="outline">
               <mat-label>Store Manager</mat-label>
 
@@ -207,10 +171,6 @@
             </mat-form-field>
           </td>
         </ng-container>
-
-        <!-- =====================================================
-             ACTIONS
-        ====================================================== -->
 
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef class="col-actions">Actions</th>
@@ -226,10 +186,6 @@
           </td>
         </ng-container>
 
-        <!-- =====================================================
-             ROWS
-        ====================================================== -->
-
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
         <tr
@@ -240,10 +196,6 @@
       </table>
     </div>
   </form>
-
-  <!-- =====================================================
-       FOOTER
-  ====================================================== -->
 
   <div class="footer-section">
     <div class="usage-summary">

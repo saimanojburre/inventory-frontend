@@ -1,24 +1,24 @@
 <div class="row-actions">
-  <!-- ADD -->
-
   <button
     mat-icon-button
-    color="primary"
+    class="action-btn add-action"
     type="button"
     [disabled]="disabled"
+    matTooltip="Add row"
+    matTooltipPosition="above"
     (click)="onAdd()"
   >
     <mat-icon>add_circle</mat-icon>
   </button>
 
-  <!-- REMOVE -->
-
   <button
     *ngIf="showRemove"
     mat-icon-button
-    color="warn"
+    class="action-btn remove-action"
     type="button"
     [disabled]="disabled"
+    matTooltip="Remove row"
+    matTooltipPosition="above"
     (click)="onRemove()"
   >
     <mat-icon>remove_circle</mat-icon>

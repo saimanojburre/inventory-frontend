@@ -4,21 +4,37 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ThemeService {
-  toggleTheme() {
-    const body = document.body;
+  private readonly storageKey = 'inventory-theme';
 
-    body.classList.toggle('dark-theme');
+  loadTheme(): void {
+    const savedTheme = localStorage.getItem(this.storageKey);
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)',
+    ).matches;
+    const shouldUseDarkTheme =
+      savedTheme === 'dark' || (!savedTheme && prefersDark);
 
-    const isDark = body.classList.contains('dark-theme');
-
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    document.body.classList.toggle('dark-theme', shouldUseDarkTheme);
+    this.updateThemeColor(shouldUseDarkTheme);
   }
 
-  loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
+  toggleTheme(): void {
+    const isDark = !document.body.classList.contains('dark-theme');
 
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-theme');
+    document.body.classList.toggle('dark-theme', isDark);
+    localStorage.setItem(this.storageKey, isDark ? 'dark' : 'light');
+    this.updateThemeColor(isDark);
+  }
+
+  isDarkTheme(): boolean {
+    return document.body.classList.contains('dark-theme');
+  }
+
+  private updateThemeColor(isDark: boolean): void {
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute('content', isDark ? '#0f172a' : '#4f46e5');
     }
   }
 }

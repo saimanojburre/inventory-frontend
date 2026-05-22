@@ -1,32 +1,86 @@
-.row-actions {
-    display: flex;
+:host {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    gap: 4px;
+    width: 100%;
 }
 
-.row-actions button {
+.row-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    width: 88px;
+    min-width: 88px;
+}
+
+.action-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+
+    padding: 0 !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 10px !important;
+
+    line-height: 1 !important;
+
     transition:
-        transform 0.2s ease,
-        background 0.2s ease;
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
-.row-actions button:hover:not(:disabled) {
-    transform: scale(1.08);
-
-    background: #f8fafc;
+.action-btn .mat-mdc-button-touch-target {
+    width: 36px !important;
+    height: 36px !important;
 }
 
-.row-actions button:disabled {
-    opacity: 0.6;
+.action-btn .mat-mdc-button-persistent-ripple,
+.action-btn .mat-mdc-button-ripple {
+    border-radius: 10px !important;
+}
 
+.action-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.add-action {
+    color: var(--primary) !important;
+}
+
+.add-action:hover:not(:disabled) {
+    background: var(--primary-soft) !important;
+}
+
+.remove-action {
+    color: var(--danger) !important;
+}
+
+.remove-action:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+:host-context(body.dark-theme) .remove-action:hover:not(:disabled) {
+    background: rgba(248, 113, 113, 0.16) !important;
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-.row-actions .mat-icon {
-    font-size: 22px;
-
-    width: 22px;
-    height: 22px;
+.action-btn .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
 }

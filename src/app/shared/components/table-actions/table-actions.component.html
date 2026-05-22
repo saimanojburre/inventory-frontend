@@ -1,10 +1,10 @@
 <div class="table-actions">
-  <!-- EDIT MODE -->
-
   <ng-container *ngIf="editing; else normalMode">
     <button
       mat-icon-button
-      color="primary"
+      class="action-btn save-action"
+      matTooltip="Save"
+      matTooltipPosition="above"
       (click)="save.emit()"
       [disabled]="saving"
     >
@@ -15,7 +15,9 @@
 
     <button
       mat-icon-button
-      color="warn"
+      class="action-btn cancel-action"
+      matTooltip="Cancel"
+      matTooltipPosition="above"
       (click)="cancel.emit()"
       [disabled]="saving"
     >
@@ -23,12 +25,12 @@
     </button>
   </ng-container>
 
-  <!-- NORMAL MODE -->
-
   <ng-template #normalMode>
     <button
       mat-icon-button
-      color="primary"
+      class="action-btn edit-action"
+      matTooltip="Edit"
+      matTooltipPosition="above"
       (click)="edit.emit()"
       [disabled]="disableEdit || deleting"
     >
@@ -37,7 +39,9 @@
 
     <button
       mat-icon-button
-      color="warn"
+      class="action-btn delete-action"
+      matTooltip="Delete"
+      matTooltipPosition="above"
       (click)="delete.emit()"
       [disabled]="disableDelete || deleting"
     >

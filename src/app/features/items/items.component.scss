@@ -5,7 +5,6 @@
 .toolbar {
     position: sticky;
     top: 0;
-
     z-index: 10;
 
     display: flex;
@@ -18,38 +17,19 @@
     padding-bottom: 12px;
 
     background: var(--app-bg);
+
+    transition: background-color 0.25s ease;
 }
 
-/* =========================================================
-   LEFT
-========================================================= */
-
-.toolbar-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* =========================================================
-   RIGHT
-========================================================= */
-
+.toolbar-left,
 .toolbar-right {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-/* =========================================================
-   SEARCH
-========================================================= */
-
 .search-field {
     width: 340px;
-
-    ::ng-deep .mat-mdc-text-field-wrapper {
-        border-radius: 14px;
-    }
 }
 
 /* =========================================================
@@ -59,16 +39,13 @@
 .add-btn,
 .export-btn {
     height: 48px;
-
     padding: 0 20px !important;
-
     border-radius: 14px !important;
 
     font-size: 14px;
     font-weight: 700;
 
-    box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.22);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.22);
 
     transition:
         transform 0.2s ease,
@@ -78,9 +55,7 @@
 .add-btn:hover,
 .export-btn:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 12px 24px rgba(79, 70, 229, 0.30);
+    box-shadow: 0 12px 24px rgba(79, 70, 229, 0.3);
 }
 
 .add-btn mat-icon,
@@ -94,45 +69,70 @@
 
 .items-view {
     background: var(--card-bg);
-
     border-radius: 22px;
-
     border: 1px solid var(--border-light);
-
     overflow: hidden;
+    box-shadow: var(--shadow-md);
 
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 18px 40px rgba(15, 23, 42, 0.06);
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
-
-/* =========================================================
-   TABLE WRAPPER
-========================================================= */
 
 .table-wrapper {
     overflow-y: auto;
-    overflow-x: hidden;
-
+    overflow-x: auto;
     max-height: 650px;
-
     scroll-behavior: smooth;
-
     -webkit-overflow-scrolling: touch;
 }
 
-/* =========================================================
-   TABLE
-========================================================= */
-
 table {
     width: 100%;
-
+    min-width: 1120px;
     table-layout: fixed;
+    background: var(--card-bg);
 }
 
 /* =========================================================
-   HEADER
+   COLUMN WIDTHS
+========================================================= */
+
+.mat-column-name {
+    width: 340px;
+    min-width: 340px;
+}
+
+.mat-column-category {
+    width: 230px;
+    min-width: 230px;
+}
+
+.mat-column-unit {
+    width: 130px;
+    min-width: 130px;
+}
+
+.mat-column-minStock {
+    width: 140px;
+    min-width: 140px;
+}
+
+.mat-column-active {
+    width: 140px;
+    min-width: 140px;
+}
+
+.mat-column-actions {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+    text-align: center;
+}
+
+/* =========================================================
+   HEADER / CELLS
 ========================================================= */
 
 .mat-mdc-header-row {
@@ -144,46 +144,62 @@ table {
     top: 0;
     z-index: 5;
 
-    background: var(--surface);
+    background: var(--surface) !important;
+    color: var(--text-medium) !important;
 
     padding: 14px 16px !important;
 
     font-size: 13px;
     font-weight: 700;
 
-    color: var(--text-medium);
+    border-bottom: 1px solid var(--border-light);
 
-    border-bottom:
-        1px solid var(--border-light);
-
-    box-shadow:
-        0 1px 0 rgba(148, 163, 184, 0.12);
+    box-shadow: 0 1px 0 rgba(148, 163, 184, 0.12);
 
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-
-/* =========================================================
-   CELLS
-========================================================= */
 
 td.mat-mdc-cell {
     padding: 12px 16px !important;
 
-    border-bottom:
-        1px solid #f1f5f9;
+    color: var(--text-dark) !important;
+    border-bottom: 1px solid var(--border-light) !important;
+}
 
+td.mat-mdc-cell:not(.mat-column-actions) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
-/* =========================================================
-   ROWS
-========================================================= */
+td.mat-column-actions,
+th.mat-column-actions {
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
+
+    overflow: visible !important;
+    white-space: nowrap !important;
+    text-align: center;
+
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+td.mat-column-actions app-table-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-width: 104px;
+}
 
 .mat-mdc-row {
+    background: var(--card-bg);
+
     transition:
         background 0.2s ease,
         transform 0.15s ease;
@@ -192,19 +208,16 @@ td.mat-mdc-cell {
 }
 
 .mat-mdc-row:hover {
-    background: #f8fafc;
-
-    box-shadow:
-        inset 3px 0 0 #6366f1;
+    background: var(--surface);
+    box-shadow: inset 3px 0 0 var(--primary);
 }
 
-/* =========================================================
-   EDIT MODE
-========================================================= */
-
 .editing-row {
-    background:
-        rgba(59, 130, 246, 0.06) !important;
+    background: rgba(59, 130, 246, 0.06) !important;
+}
+
+:host-context(body.dark-theme) .editing-row {
+    background: rgba(96, 165, 250, 0.12) !important;
 }
 
 /* =========================================================
@@ -219,7 +232,6 @@ td.mat-mdc-cell {
     min-width: 0;
 
     font-weight: 600;
-
     color: var(--text-dark);
 }
 
@@ -239,120 +251,106 @@ td.mat-mdc-cell {
     align-items: center;
     justify-content: center;
 
-    background:
-        linear-gradient(135deg,
-            #6366f1,
-            #4f46e5);
-
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
 
     font-size: 14px;
     font-weight: 700;
-
     text-transform: uppercase;
 
     flex-shrink: 0;
 }
 
 /* =========================================================
-   CATEGORY CHIP
+   BADGES / CHIPS
 ========================================================= */
 
-.category-chip {
+.category-chip,
+.unit-badge,
+.stock-chip,
+.status-badge {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
 
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.category-chip {
     padding: 6px 12px;
-
     border-radius: 999px;
 
-    background:
-        rgba(79, 70, 229, 0.10);
-
+    background: rgba(79, 70, 229, 0.1);
     color: var(--primary);
 
     font-size: 12px;
     font-weight: 600;
 }
 
-/* =========================================================
-   UNIT BADGE
-========================================================= */
-
 .unit-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
     min-width: 54px;
-
     padding: 6px 10px;
-
     border-radius: 10px;
 
-    background:
-        rgba(148, 163, 184, 0.12);
-
+    background: rgba(148, 163, 184, 0.12);
     color: #475569;
 
     font-size: 12px;
-    font-weight: 700;
 }
 
-/* =========================================================
-   STOCK CHIP
-========================================================= */
-
 .stock-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
     min-width: 48px;
-
     padding: 6px 10px;
-
     border-radius: 10px;
 
-    background:
-        rgba(16, 185, 129, 0.10);
-
+    background: rgba(16, 185, 129, 0.1);
     color: #059669;
 
     font-size: 13px;
-    font-weight: 700;
 }
 
-/* =========================================================
-   STATUS BADGE
-========================================================= */
-
 .status-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
     padding: 6px 12px;
-
     border-radius: 999px;
-
     font-size: 12px;
-    font-weight: 700;
 }
 
 .status-badge.active {
-    background:
-        rgba(16, 185, 129, 0.12);
-
+    background: rgba(16, 185, 129, 0.12);
     color: #047857;
 }
 
 .status-badge.inactive {
-    background:
-        rgba(239, 68, 68, 0.12);
-
+    background: rgba(239, 68, 68, 0.12);
     color: #b91c1c;
 }
+
+:host-context(body.dark-theme) .category-chip {
+    background: rgba(129, 140, 248, 0.16);
+    color: #c7d2fe;
+}
+
+:host-context(body.dark-theme) .unit-badge {
+    background: rgba(148, 163, 184, 0.16);
+    color: #cbd5e1;
+}
+
+:host-context(body.dark-theme) .stock-chip {
+    background: rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+}
+
+:host-context(body.dark-theme) .status-badge.active {
+    background: rgba(52, 211, 153, 0.16);
+    color: #6ee7b7;
+}
+
+:host-context(body.dark-theme) .status-badge.inactive {
+    background: rgba(248, 113, 113, 0.16);
+    color: #fca5a5;
+}
+
 /* =========================================================
    INLINE EDITING
 ========================================================= */
@@ -360,30 +358,36 @@ td.mat-mdc-cell {
 .inline-input,
 .inline-select {
     width: 100%;
-
+    min-width: 96px;
     height: 40px;
 
     padding: 8px 10px;
 
     border-radius: 10px;
+    border: 1px solid var(--border-light);
 
-    border: 1px solid #d1d5db;
-
-    background: white;
+    background: var(--card-bg);
+    color: var(--text-dark);
 
     font-size: 13px;
 
-    transition: all 0.2s ease;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.inline-input::placeholder {
+    color: var(--text-light);
+    opacity: 1;
 }
 
 .inline-input:focus,
 .inline-select:focus {
     outline: none;
-
-    border-color: #6366f1;
-
-    box-shadow:
-        0 0 0 3px rgba(99, 102, 241, 0.15);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
 /* =========================================================
@@ -391,8 +395,8 @@ td.mat-mdc-cell {
 ========================================================= */
 
 mat-paginator {
-    border-top:
-        1px solid var(--border-light);
+    border-top: 1px solid var(--border-light);
+    background: var(--card-bg);
 }
 
 /* =========================================================
@@ -407,6 +411,12 @@ mat-paginator {
     text-align: center;
 
     padding: 80px 20px;
+
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 22px;
+    color: var(--text-dark);
+    box-shadow: var(--shadow-md);
 }
 
 .empty-icon {
@@ -421,27 +431,28 @@ mat-paginator {
     align-items: center;
     justify-content: center;
 
-    background:
-        rgba(99, 102, 241, 0.10);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+:host-context(body.dark-theme) .empty-icon {
+    background: rgba(129, 140, 248, 0.16);
 }
 
 .empty-icon mat-icon {
     font-size: 42px;
-    color: #6366f1;
+    color: var(--primary);
 }
 
 .empty-state h3 {
     margin: 0 0 10px;
-
     font-size: 24px;
     font-weight: 700;
+    color: var(--text-dark);
 }
 
 .empty-state p {
     margin: 0 0 24px;
-
     color: var(--text-light);
-
     font-size: 14px;
 }
 
@@ -451,21 +462,16 @@ mat-paginator {
 
 .skeleton-row {
     display: grid;
-
-    grid-template-columns:
-        1.5fr 1fr 0.8fr 0.8fr 1fr 0.8fr;
-
+    grid-template-columns: 1.5fr 1fr 0.8fr 0.8fr 1fr 0.8fr;
     gap: 16px;
 
     padding: 18px 22px;
 
-    border-bottom:
-        1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .skeleton-line {
     height: 16px;
-
     border-radius: 8px;
 
     background:
@@ -475,8 +481,17 @@ mat-paginator {
             #e5e7eb 63%);
 
     background-size: 400% 100%;
-
     animation: shimmer 1.4s ease infinite;
+}
+
+:host-context(body.dark-theme) .skeleton-line {
+    background:
+        linear-gradient(90deg,
+            #1e293b 25%,
+            #334155 37%,
+            #1e293b 63%);
+
+    background-size: 400% 100%;
 }
 
 .skeleton-line.short {
@@ -496,11 +511,10 @@ mat-paginator {
 }
 
 /* =========================================================
-   SHIMMER
+   ANIMATIONS
 ========================================================= */
 
 @keyframes shimmer {
-
     0% {
         background-position: 100% 0;
     }
@@ -510,17 +524,7 @@ mat-paginator {
     }
 }
 
-
-
-::ng-deep .mat-mdc-progress-spinner {
-    --mdc-circular-progress-active-indicator-color: currentColor;
-}
-/* =========================================================
-   ROW ENTRY
-========================================================= */
-
 @keyframes fadeRow {
-
     from {
         opacity: 0;
         transform: translateY(4px);
@@ -532,12 +536,15 @@ mat-paginator {
     }
 }
 
+::ng-deep .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: currentColor;
+}
+
 /* =========================================================
-   MOBILE
+   RESPONSIVE
 ========================================================= */
 
 @media (max-width: 900px) {
-
     .toolbar {
         flex-direction: column;
         align-items: stretch;
@@ -555,12 +562,25 @@ mat-paginator {
     .search-field {
         width: 100%;
     }
+}
 
-    .table-wrapper {
-        overflow-x: auto;
+@media (max-width: 600px) {
+    .toolbar-right {
+        flex-direction: column;
+        align-items: stretch;
     }
 
-    table {
-        min-width: 900px;
+    .add-btn,
+    .export-btn {
+        width: 100%;
+    }
+
+    .items-view,
+    .empty-state {
+        border-radius: 16px;
+    }
+
+    .empty-state {
+        padding: 56px 16px;
     }
 }

@@ -1,18 +1,95 @@
-.table-actions {
-    display: flex;
+:host {
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
 
-    gap: 4px;
+    width: 100%;
 }
 
-button {
+.table-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    width: 88px;
+    min-width: 88px;
+}
+
+.action-btn {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+
+    padding: 0 !important;
+
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    border-radius: 10px !important;
+
+    line-height: 1 !important;
+
     transition:
-        transform 0.2s ease,
-        background 0.2s ease;
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
-button:hover:not(:disabled) {
-    transform: scale(1.06);
+.action-btn .mat-mdc-button-touch-target {
+    width: 36px !important;
+    height: 36px !important;
+}
 
-    background: rgba(148, 163, 184, 0.08);
+.action-btn .mat-mdc-button-persistent-ripple,
+.action-btn .mat-mdc-button-ripple {
+    border-radius: 10px !important;
+}
+
+.action-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.edit-action,
+.save-action {
+    color: var(--primary) !important;
+}
+
+.edit-action:hover:not(:disabled),
+.save-action:hover:not(:disabled) {
+    background: var(--primary-soft) !important;
+}
+
+.cancel-action,
+.delete-action {
+    color: var(--danger) !important;
+}
+
+.cancel-action:hover:not(:disabled),
+.delete-action:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.1) !important;
+}
+
+:host-context(body.dark-theme) .cancel-action:hover:not(:disabled),
+:host-context(body.dark-theme) .delete-action:hover:not(:disabled) {
+    background: rgba(248, 113, 113, 0.16) !important;
+}
+
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-btn .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+}
+
+.action-btn ::ng-deep .mat-mdc-progress-spinner {
+    --mdc-circular-progress-active-indicator-color: currentColor;
 }

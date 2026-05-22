@@ -3,17 +3,9 @@
   subtitle="Track and review stock usage"
 ></app-page-header>
 
-<!-- =====================================================
-     TOOLBAR
-====================================================== -->
-
 <div class="toolbar-card">
   <div class="toolbar" [formGroup]="filterForm">
-    <!-- LEFT -->
-
     <div class="toolbar-left">
-      <!-- FROM DATE -->
-
       <mat-form-field appearance="outline" class="toolbar-field">
         <mat-label>From Date</mat-label>
 
@@ -31,8 +23,6 @@
 
         <mat-datepicker #fromPicker></mat-datepicker>
       </mat-form-field>
-
-      <!-- TO DATE -->
 
       <mat-form-field appearance="outline" class="toolbar-field">
         <mat-label>To Date</mat-label>
@@ -53,59 +43,45 @@
         <mat-datepicker #toPicker></mat-datepicker>
       </mat-form-field>
 
-      <!-- SEARCH -->
-
       <mat-form-field appearance="outline" class="search-field toolbar-field">
-        <mat-label>Search Usage</mat-label>
+        <mat-label>Search item or department</mat-label>
 
-        <input
-          matInput
-          formControlName="search"
-          placeholder="Item or Department"
-        />
+        <input matInput formControlName="search" />
 
         <mat-icon matSuffix>search</mat-icon>
       </mat-form-field>
-      <!-- RESET -->
 
       <button mat-stroked-button class="reset-btn" (click)="resetFilters()">
         <mat-icon>restart_alt</mat-icon>
-
         Reset
       </button>
     </div>
-    <!-- RIGHT -->
+
     <div class="toolbar-right">
-      <!-- ADD BUTTON -->
       <button
         mat-raised-button
         color="primary"
         routerLink="/app/usage/add"
         class="add-btn"
-        *ngIf="!loading && dataSource.data.length > 0"
+        [disabled]="loading || dataSource.data.length === 0"
       >
         <mat-icon>add</mat-icon>
         Record Usage
       </button>
 
-      <!-- EXPORT -->
       <button
         mat-raised-button
         color="accent"
         class="export-btn"
         (click)="exportToExcel()"
+        [disabled]="loading || dataSource.data.length === 0"
       >
         <mat-icon>download</mat-icon>
-
         Export
       </button>
     </div>
   </div>
 </div>
-
-<!-- =====================================================
-     LOADING
-====================================================== -->
 
 <div *ngIf="loading" class="usage-card">
   <div class="skeleton-row" *ngFor="let i of [1, 2, 3, 4, 5, 6]">
@@ -114,28 +90,18 @@
 
       <div class="skeleton-item-info">
         <div class="skeleton-line medium"></div>
-
         <div class="skeleton-line short"></div>
       </div>
     </div>
 
     <div class="skeleton-line short"></div>
-
     <div class="skeleton-line medium"></div>
-
     <div class="skeleton-line medium"></div>
-
     <div class="skeleton-line medium"></div>
-
     <div class="skeleton-line short"></div>
-
     <div class="skeleton-line action"></div>
   </div>
 </div>
-
-<!-- =====================================================
-     EMPTY STATE
-====================================================== -->
 
 <div *ngIf="!loading && dataSource.data.length === 0" class="empty-state">
   <div class="empty-icon">
@@ -148,20 +114,13 @@
 
   <button mat-raised-button color="primary" routerLink="/app/usage/add">
     <mat-icon>add</mat-icon>
-
     Record Usage
   </button>
 </div>
 
-<!-- =====================================================
-     TABLE
-====================================================== -->
-
 <div *ngIf="!loading && dataSource.data.length > 0" class="usage-card">
   <div class="table-wrapper">
     <table mat-table [dataSource]="dataSource" matSort class="usage-table">
-      <!-- ITEM -->
-
       <ng-container matColumnDef="item">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Item</th>
 
@@ -177,8 +136,6 @@
           </div>
         </td>
       </ng-container>
-
-      <!-- QTY -->
 
       <ng-container matColumnDef="quantity">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Qty</th>
@@ -200,8 +157,6 @@
         </td>
       </ng-container>
 
-      <!-- DEPARTMENT -->
-
       <ng-container matColumnDef="department">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
 
@@ -222,14 +177,12 @@
         </td>
       </ng-container>
 
-      <!-- TAKEN BY -->
-
       <ng-container matColumnDef="takenBy">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Taken By</th>
 
         <td mat-cell *matCellDef="let r">
           <ng-container *ngIf="editingId === r.id; else takenView">
-            <input class="inline-input" [(ngModel)]="r.takenBy" />
+            <input class="inline-input person-input" [(ngModel)]="r.takenBy" />
           </ng-container>
 
           <ng-template #takenView>
@@ -238,14 +191,12 @@
         </td>
       </ng-container>
 
-      <!-- GIVEN BY -->
-
       <ng-container matColumnDef="givenBy">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Given By</th>
 
         <td mat-cell *matCellDef="let r">
           <ng-container *ngIf="editingId === r.id; else givenView">
-            <input class="inline-input" [(ngModel)]="r.givenBy" />
+            <input class="inline-input person-input" [(ngModel)]="r.givenBy" />
           </ng-container>
 
           <ng-template #givenView>
@@ -254,8 +205,6 @@
         </td>
       </ng-container>
 
-      <!-- DATE -->
-
       <ng-container matColumnDef="time">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
 
@@ -263,7 +212,7 @@
           <ng-container *ngIf="editingId === r.id; else dateView">
             <input
               type="datetime-local"
-              class="inline-input"
+              class="inline-input date-input"
               [(ngModel)]="r.usedDateTime"
             />
           </ng-container>
@@ -273,8 +222,6 @@
           </ng-template>
         </td>
       </ng-container>
-
-      <!-- ACTIONS -->
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
@@ -293,8 +240,6 @@
         </td>
       </ng-container>
 
-      <!-- ROWS -->
-
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
       <tr
@@ -304,8 +249,6 @@
       ></tr>
     </table>
   </div>
-
-  <!-- PAGINATOR -->
 
   <mat-paginator
     [pageSizeOptions]="[5, 10, 20, 50]"

@@ -1,22 +1,23 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
-import { PurchaseService } from 'src/app/core/services/purchase.service';
 import { MatPaginator } from '@angular/material/paginator';
-import { AuthService } from 'src/app/core/services/auth.service';
-import { debounceTime } from 'rxjs/operators';
+import { Subject, debounceTime, takeUntil } from 'rxjs';
+
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+
+import { PurchaseService } from 'src/app/core/services/purchase.service';
+import { AuthService } from 'src/app/core/services/auth.service';
 import { DashboardCacheService } from 'src/app/core/services/dashboard-cache.service';
 import { ToastService } from 'src/app/core/services/toast.service';
-import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-purchase',
   templateUrl: './purchase.component.html',
   styleUrls: ['./purchase.component.scss'],
 })
-export class PurchaseComponent {
+export class PurchaseComponent implements OnInit, OnDestroy {
   displayedColumns = this.authService.isOwner()
     ? ['item', 'quantity', 'price', 'total', 'supplier', 'date', 'actions']
     : ['item', 'quantity', 'price', 'total', 'supplier', 'date'];
@@ -25,12 +26,14 @@ export class PurchaseComponent {
   loading = true;
   filterForm!: FormGroup;
   today = new Date();
+
   editingId: number | null = null;
   backupRow: any = null;
   savingRowId: number | null = null;
   deletingRowId: number | null = null;
+
   private destroy$ = new Subject<void>();
-  //  FIX: setter-based paginator
+
   @ViewChild(MatPaginator)
   set matPaginator(mp: MatPaginator) {
     if (mp) {
@@ -46,37 +49,29 @@ export class PurchaseComponent {
     private dashboardCache: DashboardCacheService,
   ) {}
 
-  // ================= INIT =================
-
-  ngOnInit() {
+  ngOnInit(): void {
     this.createForm();
+    this.resetFilters(false);
     this.loadPurchases();
-    const today = new Date();
 
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-
-    this.filterForm.patchValue({
-      fromDate: firstDay,
-      toDate: today,
-    });
-    this.applyFilter();
     this.filterForm
       .get('search')
       ?.valueChanges.pipe(debounceTime(300), takeUntil(this.destroy$))
       .subscribe(() => this.applyFilter());
   }
 
-  // ================= FORM =================
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
-  createForm() {
+  createForm(): void {
     this.filterForm = this.fb.group({
       fromDate: [''],
       toDate: [''],
       search: [''],
     });
   }
-
-  // ================= LOAD =================
 
   loadPurchases(): void {
     this.loading = true;
@@ -85,29 +80,35 @@ export class PurchaseComponent {
 
     if (cached?.purchases) {
       this.dataSource.data = cached.purchases;
+      this.applyFilter();
       this.loading = false;
       return;
     }
 
-    this.purchaseService.getAll().subscribe((res) => {
-      this.dataSource.data = res;
+    this.purchaseService.getAll().subscribe({
+      next: (res) => {
+        this.dataSource.data = res;
+        this.applyFilter();
+        this.loading = false;
+      },
 
-      this.loading = false;
+      error: () => {
+        this.loading = false;
+      },
     });
   }
 
-  // ================= FILTER =================
+  applyFilter(): void {
+    if (!this.filterForm) return;
 
-  applyFilter() {
     const { fromDate, toDate, search } = this.filterForm.value;
+    const normalizedSearch = String(search || '')
+      .trim()
+      .toLowerCase();
 
     this.dataSource.filterPredicate = (data: any) => {
       const purchaseDate = new Date(data.purchaseDate);
-
-      // FROM DATE
       const from = fromDate ? new Date(fromDate) : null;
-
-      // TO DATE FIX
       const to = toDate ? new Date(toDate) : null;
 
       if (to) {
@@ -117,18 +118,23 @@ export class PurchaseComponent {
       const matchFrom = !from || purchaseDate >= from;
       const matchTo = !to || purchaseDate <= to;
       const matchSearch =
-        !search ||
-        data.itemName?.toLowerCase().includes(search.toLowerCase()) ||
-        data.supplier?.toLowerCase().includes(search.toLowerCase());
+        !normalizedSearch ||
+        data.itemName?.toLowerCase().includes(normalizedSearch) ||
+        data.supplier?.toLowerCase().includes(normalizedSearch);
+
       return matchFrom && matchTo && matchSearch;
     };
 
-    this.dataSource.filter = Math.random().toString();
+    this.dataSource.filter = JSON.stringify({
+      fromDate,
+      toDate,
+      search: normalizedSearch,
+    });
 
     this.dataSource.paginator?.firstPage();
   }
 
-  resetFilters(): void {
+  resetFilters(apply = true): void {
     const today = new Date();
 
     this.filterForm.patchValue({
@@ -137,18 +143,19 @@ export class PurchaseComponent {
       search: '',
     });
 
-    this.applyFilter();
+    if (apply) {
+      this.applyFilter();
+    }
   }
 
   exportToExcel(): void {
     const exportData = this.dataSource.filteredData.map((r: any) => ({
-      Item: r.item?.name,
+      Item: r.itemName,
       Quantity: r.quantity,
       Price: r.price,
-      Total: r.totalAmount,
-      Supplier: r.supplier?.name,
-      PurchasedBy: r.purchasedBy,
-      Date: new Date(r.createdAt).toLocaleString(),
+      Total: r.quantity * r.price,
+      Supplier: r.supplier,
+      Date: new Date(r.purchaseDate).toLocaleDateString(),
     }));
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
@@ -157,7 +164,6 @@ export class PurchaseComponent {
       Sheets: {
         Purchase: worksheet,
       },
-
       SheetNames: ['Purchase'],
     };
 
@@ -173,50 +179,18 @@ export class PurchaseComponent {
     saveAs(blob, `Purchase_Report_${Date.now()}.xlsx`);
   }
 
-  // ================= DELETE =================
-
-  delete(row: any) {
-    const confirmed = confirm(`Delete purchase for "${row.itemName}" ?`);
-
-    if (!confirmed) return;
-
-    this.deletingRowId = row.id;
-
-    this.purchaseService.delete(row.id).subscribe({
-      next: () => {
-        this.toast.success('Purchase deleted successfully');
-
-        this.deletingRowId = null;
-        this.dataSource.data = this.dataSource.data.filter(
-          (p: any) => p.id !== row.id,
-        );
-
-        this.dataSource.paginator?.firstPage();
-        this.dashboardCache.refreshPurchases();
-        this.dashboardCache.refreshInventory();
-      },
-
-      error: () => {
-        this.deletingRowId = null;
-        this.toast.error('Failed to delete purchase');
-      },
-    });
-  }
-
-  // ================= EDIT =================
-
-  edit(row: any) {
+  edit(row: any): void {
     this.editingId = row.id;
     this.backupRow = { ...row };
   }
 
-  cancelEdit(row: any) {
+  cancelEdit(row: any): void {
     Object.assign(row, this.backupRow);
     this.editingId = null;
     this.backupRow = null;
   }
 
-  saveEdit(row: any) {
+  saveEdit(row: any): void {
     if (this.savingRowId) return;
 
     this.savingRowId = row.id;
@@ -240,10 +214,14 @@ export class PurchaseComponent {
 
         const updatedData = [...this.dataSource.data];
         const index = updatedData.findIndex((p: any) => p.id === row.id);
+
         if (index !== -1) {
           updatedData[index] = { ...row };
         }
+
         this.dataSource.data = updatedData;
+        this.applyFilter();
+
         this.dashboardCache.refreshPurchases();
         this.dashboardCache.refreshInventory();
       },
@@ -251,6 +229,35 @@ export class PurchaseComponent {
       error: () => {
         this.savingRowId = null;
         this.toast.error('Failed to update purchase');
+      },
+    });
+  }
+
+  delete(row: any): void {
+    const confirmed = confirm(`Delete purchase for "${row.itemName}" ?`);
+
+    if (!confirmed) return;
+
+    this.deletingRowId = row.id;
+
+    this.purchaseService.delete(row.id).subscribe({
+      next: () => {
+        this.toast.success('Purchase deleted successfully');
+
+        this.deletingRowId = null;
+        this.dataSource.data = this.dataSource.data.filter(
+          (p: any) => p.id !== row.id,
+        );
+
+        this.applyFilter();
+
+        this.dashboardCache.refreshPurchases();
+        this.dashboardCache.refreshInventory();
+      },
+
+      error: () => {
+        this.deletingRowId = null;
+        this.toast.error('Failed to delete purchase');
       },
     });
   }

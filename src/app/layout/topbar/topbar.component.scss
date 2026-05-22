@@ -24,7 +24,8 @@
 
     transition:
         background-color 0.25s ease,
-        border-color 0.25s ease;
+        border-color 0.25s ease,
+        color 0.25s ease;
 }
 
 /* =========================================================
@@ -117,6 +118,14 @@
     color: var(--primary);
 
     transform: translateY(-1px);
+}
+
+.theme-btn {
+    background: var(--surface);
+}
+
+.theme-btn mat-icon {
+    color: var(--primary);
 }
 
 /* =========================================================
@@ -235,7 +244,7 @@
 }
 
 .clear-all-btn:hover {
-    color: #4338ca;
+    color: var(--primary-light);
 }
 
 /* EMPTY */
@@ -305,6 +314,13 @@
             transparent);
 }
 
+body.dark-theme .notification-item.unread {
+    background:
+        linear-gradient(90deg,
+            rgba(129, 140, 248, 0.14),
+            transparent);
+}
+
 /* ICON */
 
 .notification-icon {
@@ -323,6 +339,11 @@
         rgba(79, 70, 229, 0.08);
 
     color: var(--primary);
+}
+
+body.dark-theme .notification-icon {
+    background:
+        rgba(129, 140, 248, 0.14);
 }
 
 .notification-icon mat-icon {
@@ -503,6 +524,8 @@
     box-shadow: var(--shadow-lg);
 
     animation: dropdownEnter 0.18s ease;
+
+    z-index: 999;
 }
 
 /* DROPDOWN ITEM */

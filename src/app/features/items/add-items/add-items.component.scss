@@ -1,15 +1,9 @@
-/* =========================================================
-   PAGE ENTER
-========================================================= */
-
 .page-enter {
     position: relative;
-
     animation: pageFade 0.25s ease;
 }
 
 @keyframes pageFade {
-
     from {
         opacity: 0;
         transform: translateY(6px);
@@ -33,24 +27,17 @@
     gap: 16px;
 
     margin-bottom: 20px;
-
     padding-bottom: 12px;
 
-    border-bottom:
-        1px solid rgba(148, 163, 184, 0.12);
+    border-bottom: 1px solid var(--border-light);
 
     flex-wrap: wrap;
 }
-
-/* =========================================================
-   ACTION GROUP
-========================================================= */
 
 .header-actions {
     display: flex;
     align-items: center;
     gap: 12px;
-
     flex-wrap: wrap;
 }
 
@@ -60,99 +47,59 @@
 
 .page-header button {
     height: 52px;
-
     border-radius: 14px !important;
-
     font-weight: 600 !important;
 
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
-        background 0.2s ease;
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .page-header button:disabled,
 .save-btn:disabled {
     opacity: 0.7;
-
     cursor: not-allowed !important;
-
     transform: none !important;
-
     box-shadow: none !important;
 }
 
-/* =========================================================
-   BACK BUTTON
-========================================================= */
-
 .back-btn {
-    background: white;
-
-    border: 1px solid #e5e7eb !important;
-
-    color: #111827 !important;
-
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-light) !important;
+    color: var(--text-dark) !important;
     padding: 0 18px !important;
-
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .back-btn:hover {
     transform: translateY(-2px);
-
-    background: #f8fafc;
-
-    box-shadow:
-        0 10px 20px rgba(15, 23, 42, 0.08);
+    background: var(--surface) !important;
+    box-shadow: var(--shadow-md);
 }
-
-/* =========================================================
-   ADD BUTTON
-========================================================= */
 
 .add-row-btn {
     padding: 0 24px !important;
-
-    background: #4f46e5 !important;
-
-    color: white !important;
-
-    box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
 .add-row-btn:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 14px 28px rgba(79, 70, 229, 0.32);
+    box-shadow: 0 14px 28px rgba(79, 70, 229, 0.32);
 }
-
-/* =========================================================
-   UPLOAD BUTTON
-========================================================= */
 
 .upload-btn {
     padding: 0 22px !important;
-
-    background:
-        linear-gradient(135deg,
-            #10b981,
-            #059669) !important;
-
+    background: linear-gradient(135deg, #10b981, #059669) !important;
     color: white !important;
-
-    box-shadow:
-        0 8px 20px rgba(16, 185, 129, 0.25);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25);
 }
 
 .upload-btn:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 14px 28px rgba(16, 185, 129, 0.32);
+    box-shadow: 0 14px 28px rgba(16, 185, 129, 0.32);
 }
 
 /* =========================================================
@@ -161,28 +108,21 @@
 
 .purchase-container {
     position: relative;
-
     background: var(--card-bg);
-
     border-radius: 24px;
-
     border: 1px solid var(--border-light);
-
     overflow: hidden;
-
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 18px 40px rgba(15, 23, 42, 0.06);
+    box-shadow: var(--shadow-md);
 
     transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
         box-shadow 0.25s ease,
         transform 0.25s ease;
 }
 
 .purchase-container:hover {
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08),
-        0 22px 50px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--shadow-lg);
 }
 
 /* =========================================================
@@ -190,12 +130,9 @@
 ========================================================= */
 
 .table-wrapper {
-overflow: auto;
-
+    overflow: auto;
     max-height: 70vh;
-
     scroll-behavior: smooth;
-
     -webkit-overflow-scrolling: touch;
 }
 
@@ -214,33 +151,27 @@ overflow: auto;
     padding: 80px 24px;
 
     text-align: center;
+    color: var(--text-dark);
 }
 
 .empty-state mat-icon {
     width: 56px;
     height: 56px;
-
     font-size: 56px;
-
-    color: #94a3b8;
+    color: var(--text-light);
 }
 
 .empty-state h3 {
     margin: 0;
-
     font-size: 18px;
     font-weight: 700;
-
-    color: #0f172a;
+    color: var(--text-dark);
 }
 
 .empty-state p {
     max-width: 420px;
-
     margin: 0;
-
-    color: #64748b;
-
+    color: var(--text-light);
     line-height: 1.6;
 }
 
@@ -250,14 +181,49 @@ overflow: auto;
 
 .purchase-table {
     width: 100%;
-
+    min-width: 980px;
     table-layout: fixed;
-
-    background: white;
+    background: var(--card-bg) !important;
 }
 
 /* =========================================================
-   HEADER
+   COLUMN WIDTHS
+========================================================= */
+
+.mat-column-name {
+    width: 260px;
+    min-width: 260px;
+}
+
+.mat-column-category {
+    width: 190px;
+    min-width: 190px;
+}
+
+.mat-column-unit {
+    width: 120px;
+    min-width: 120px;
+}
+
+.mat-column-minStock {
+    width: 130px;
+    min-width: 130px;
+}
+
+.mat-column-quantity {
+    width: 140px;
+    min-width: 140px;
+}
+
+.mat-column-actions {
+    width: 140px;
+    min-width: 140px;
+    max-width: 140px;
+    text-align: center;
+}
+
+/* =========================================================
+   HEADER / CELLS
 ========================================================= */
 
 th.mat-mdc-header-cell {
@@ -265,38 +231,58 @@ th.mat-mdc-header-cell {
     top: 0;
     z-index: 5;
 
-    background: #f8fafc;
+    background: var(--surface) !important;
+    color: var(--text-medium) !important;
 
     font-size: 13px;
     font-weight: 700;
 
-    color: #475569;
-
     padding: 18px 16px !important;
 
-    border-bottom:
-        1px solid #e5e7eb;
+    border-bottom: 1px solid var(--border-light);
 
-    box-shadow:
-        0 1px 0 rgba(148, 163, 184, 0.12);
+    box-shadow: 0 1px 0 rgba(148, 163, 184, 0.12);
 }
-
-/* =========================================================
-   CELLS
-========================================================= */
 
 td.mat-mdc-cell {
     padding: 14px 16px !important;
-
-    border-bottom:
-        1px solid #f1f5f9;
+    color: var(--text-dark) !important;
+    border-bottom: 1px solid var(--border-light) !important;
 }
 
-/* =========================================================
-   ROWS
-========================================================= */
+td.mat-mdc-cell:not(.mat-column-actions),
+th.mat-mdc-header-cell:not(.mat-column-actions) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+td.mat-column-actions,
+th.mat-column-actions {
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
+
+    overflow: visible !important;
+    white-space: nowrap !important;
+    text-align: center;
+
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+td.mat-column-actions app-row-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-width: 104px;
+}
 
 .mat-mdc-row {
+    background: var(--card-bg);
+
     transition:
         background 0.2s ease,
         transform 0.2s ease;
@@ -305,37 +291,8 @@ td.mat-mdc-cell {
 }
 
 .mat-mdc-row:hover {
-    background: #f8fbff;
-
-    box-shadow:
-        inset 4px 0 0 #6366f1;
-}
-
-/* =========================================================
-   COLUMN WIDTHS
-========================================================= */
-
-.col-item {
-    width: 30%;
-}
-
-.col-medium {
-    width: 22%;
-}
-
-.col-small {
-    width: 16%;
-}
-
-.col-actions {
-    width: 80px;
-}
-
-td.mat-mdc-cell,
-th.mat-mdc-header-cell {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    background: var(--surface);
+    box-shadow: inset 4px 0 0 var(--primary);
 }
 
 /* =========================================================
@@ -344,8 +301,9 @@ th.mat-mdc-header-cell {
 
 mat-form-field {
     width: 100%;
-        min-width: 0;
+    min-width: 0;
 }
+
 /* =========================================================
    SAVE SECTION
 ========================================================= */
@@ -363,40 +321,37 @@ mat-form-field {
 
     padding: 20px 24px;
 
-    border-top:
-        1px solid var(--border-light);
+    border-top: 1px solid var(--border-light);
 
-    background:
-        rgba(255, 255, 255, 0.92);
+    background: color-mix(in srgb, var(--card-bg) 92%, transparent);
 
     backdrop-filter: blur(12px);
 
-    box-shadow:
-        0 -4px 20px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.04);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease;
 }
-/* =========================================================
-   SAVE INFO
-========================================================= */
+
+@supports not (background: color-mix(in srgb, white 90%, transparent)) {
+    .save-section {
+        background: var(--card-bg);
+    }
+}
 
 .save-info {
     display: flex;
     flex-direction: column;
-
     gap: 8px;
 }
 
 .save-info h3 {
     margin: 0;
-
     font-size: 16px;
     font-weight: 700;
-
-    color: #0f172a;
+    color: var(--text-dark);
 }
-
-/* =========================================================
-   ROW BADGE
-========================================================= */
 
 .row-count-badge {
     display: inline-flex;
@@ -409,9 +364,8 @@ mat-form-field {
 
     border-radius: 999px;
 
-    background: #eef2ff;
-
-    color: #4338ca;
+    background: var(--primary-soft);
+    color: var(--primary);
 
     font-size: 13px;
     font-weight: 700;
@@ -427,8 +381,7 @@ mat-form-field {
 
     border-radius: 50%;
 
-    background: #4f46e5;
-
+    background: var(--primary);
     color: white;
 
     font-size: 12px;
@@ -452,8 +405,7 @@ mat-form-field {
     font-size: 15px !important;
     font-weight: 700 !important;
 
-    box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
 
     transition:
         transform 0.2s ease,
@@ -462,9 +414,7 @@ mat-form-field {
 
 .save-btn:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 14px 28px rgba(79, 70, 229, 0.32);
+    box-shadow: 0 14px 28px rgba(79, 70, 229, 0.32);
 }
 
 /* =========================================================
@@ -472,7 +422,6 @@ mat-form-field {
 ========================================================= */
 
 @keyframes fadeRow {
-
     from {
         opacity: 0;
         transform: translateY(4px);
@@ -495,7 +444,6 @@ mat-form-field {
 
 .table-wrapper::-webkit-scrollbar-thumb {
     background: #d1d5db;
-
     border-radius: 999px;
 }
 
@@ -503,11 +451,19 @@ mat-form-field {
     background: #9ca3af;
 }
 
+:host-context(body.dark-theme) .table-wrapper::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+:host-context(body.dark-theme) .table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
 /* =========================================================
    MOBILE
 ========================================================= */
-@media (max-width: 900px) {
 
+@media (max-width: 900px) {
     .page-header {
         flex-direction: column;
         align-items: stretch;
@@ -515,7 +471,6 @@ mat-form-field {
 
     .header-actions {
         width: 100%;
-
         flex-direction: column;
         align-items: stretch;
     }
@@ -539,12 +494,24 @@ mat-form-field {
     .purchase-container {
         border-radius: 18px;
     }
+}
 
-    .table-wrapper {
-        overflow-x: auto;
+@media (max-width: 600px) {
+
+    .page-header button,
+    .save-btn {
+        height: 48px;
     }
 
-    .purchase-table {
-        min-width: 760px;
+    .purchase-container {
+        border-radius: 16px;
+    }
+
+    .empty-state {
+        padding: 56px 16px;
+    }
+
+    .save-section {
+        padding: 16px;
     }
 }

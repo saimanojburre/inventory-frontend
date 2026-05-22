@@ -1,161 +1,83 @@
-/* =========================================================
-   PAGE HEADER
-========================================================= */
-
 .page-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-
     gap: 16px;
-
     margin-bottom: 18px;
-
     flex-wrap: wrap;
 }
-
-/* =========================================================
-   HEADER ACTIONS
-========================================================= */
 
 .header-actions {
     display: flex;
     align-items: center;
-
     gap: 12px;
-
     flex-wrap: wrap;
 }
 
-/* =========================================================
-   COMMON BUTTON STYLE
-========================================================= */
-
 .page-header button {
     height: 52px;
-
     border-radius: 14px !important;
-
     font-weight: 600 !important;
-
     transition:
         transform 0.2s ease,
         box-shadow 0.2s ease,
         background 0.2s ease;
 }
 
-/* =========================================================
-   DISABLED BUTTONS
-========================================================= */
-
 .page-header button:disabled,
 .save-btn:disabled {
     opacity: 0.7;
-
     cursor: not-allowed !important;
-
     transform: none !important;
-
     box-shadow: none !important;
 }
 
-/* =========================================================
-   BACK BUTTON
-========================================================= */
-
 .back-btn {
-    background: white;
-
-    border: 1px solid #e5e7eb !important;
-
-    color: #111827 !important;
-
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-light) !important;
+    color: var(--text-dark) !important;
     padding: 0 18px !important;
-
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .back-btn:hover {
     transform: translateY(-2px);
-
-    background: #f8fafc;
-
-    box-shadow:
-        0 10px 20px rgba(15, 23, 42, 0.08);
+    background: var(--surface) !important;
+    box-shadow: var(--shadow-md);
 }
 
-.back-btn mat-icon {
+.back-btn mat-icon,
+.add-row-btn mat-icon,
+.upload-btn mat-icon {
     margin-right: 6px;
 }
 
-/* =========================================================
-   ADD ROW BUTTON
-========================================================= */
-
 .add-row-btn {
     padding: 0 24px !important;
-
-    background: #3f51b5 !important;
-
-    color: white !important;
-
     border: none;
-
     font-size: 14px;
     font-weight: 700;
-
-    box-shadow:
-        0 8px 20px rgba(63, 81, 181, 0.28),
-        0 12px 28px rgba(63, 81, 181, 0.18);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
 .add-row-btn:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 14px 28px rgba(63, 81, 181, 0.34),
-        0 18px 36px rgba(63, 81, 181, 0.22);
+    box-shadow: 0 14px 28px rgba(79, 70, 229, 0.32);
 }
-
-.add-row-btn mat-icon {
-    margin-right: 6px;
-}
-
-/* =========================================================
-   UPLOAD BUTTON
-========================================================= */
 
 .upload-btn {
     padding: 0 22px !important;
-
-    background:
-        linear-gradient(135deg,
-            #10b981,
-            #059669) !important;
-
+    background: linear-gradient(135deg, #10b981, #059669) !important;
     color: white !important;
-
     border: none;
-
     font-size: 14px;
     font-weight: 700;
-
-    box-shadow:
-        0 8px 20px rgba(16, 185, 129, 0.28),
-        0 12px 28px rgba(5, 150, 105, 0.18);
+    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.28);
 }
 
 .upload-btn:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 12px 24px rgba(16, 185, 129, 0.34),
-        0 18px 36px rgba(5, 150, 105, 0.22);
-}
-
-.upload-btn mat-icon {
-    margin-right: 6px;
+    box-shadow: 0 12px 24px rgba(16, 185, 129, 0.34);
 }
 
 /* =========================================================
@@ -164,52 +86,38 @@
 
 .purchase-container {
     position: relative;
-
-    background: #ffffff;
-
+    background: var(--card-bg);
     border-radius: 20px;
-
-    padding: 24px;
-
-    border: 1px solid #e2e8f0;
-
+    padding: 18px;
+    border: 1px solid var(--border-light);
     overflow: hidden;
-
+    box-shadow: var(--shadow-md);
     transition:
-        transform 0.25s ease,
+        background-color 0.25s ease,
+        border-color 0.25s ease,
         box-shadow 0.25s ease;
-
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 18px 40px rgba(15, 23, 42, 0.06);
 }
 
 .purchase-container:hover {
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08),
-        0 22px 50px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--shadow-lg);
 }
+
 /* =========================================================
    TABLE WRAPPER
 ========================================================= */
 
 .table-wrapper {
-    border: 1px solid #e2e8f0;
-
+    border: 1px solid var(--border-light);
     border-radius: 16px;
-
     overflow: hidden;
-
-    background: white;
+    background: var(--card-bg);
 }
 
 .premium-table {
-    max-height: 520px;
-
+    max-height: calc(100vh - 390px);
+    min-height: 280px;
     overflow: auto;
-
     -webkit-overflow-scrolling: touch;
-
     scroll-behavior: smooth;
 }
 
@@ -219,83 +127,93 @@
 
 .purchase-table {
     width: 100%;
-
+    min-width: 1120px;
     table-layout: fixed;
-
-    min-width: 1200px;
-
-    background: white;
+    background: var(--card-bg);
 }
-
-/* =========================================================
-   HEADER
-========================================================= */
 
 th.mat-mdc-header-cell {
     position: sticky;
     top: 0;
     z-index: 5;
-
-    background: #f8fafc;
-
-    color: #0f172a;
-
+    background: var(--surface) !important;
+    color: var(--text-medium) !important;
     font-size: 13px;
     font-weight: 700;
-
     letter-spacing: 0.02em;
-
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-light);
+    padding: 12px !important;
 }
 
-/* =========================================================
-   ROWS
-========================================================= */
-
 td.mat-mdc-cell {
-    padding: 10px;
-
-    border-bottom: 1px solid #f1f5f9;
+    padding: 8px 10px !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    color: var(--text-dark) !important;
+    overflow: visible;
 }
 
 .mat-mdc-row {
+    height: 58px;
     transition:
         background 0.2s ease,
         transform 0.2s ease;
 }
 
 .mat-mdc-row:hover {
-    background: #f8fbff;
+    background: var(--surface);
+}
+
+th.mat-mdc-header-cell {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* =========================================================
    COLUMN WIDTHS
 ========================================================= */
 
-.col-item {
-    width: 25%;
-    min-width: 250px;
+.col-item,
+.mat-column-item {
+    width: 29%;
+    min-width: 325px;
 }
 
-.col-small {
-    width: 10%;
-    min-width: 120px;
-}
-
-.col-medium {
-    width: 15%;
-    min-width: 180px;
-}
-
-.col-total {
-    width: 12%;
-    min-width: 140px;
-}
-
-.col-actions {
+.col-unit,
+.mat-column-units {
     width: 8%;
-    min-width: 120px;
+    min-width: 88px;
+}
 
+.col-number,
+.mat-column-quantity,
+.mat-column-price {
+    width: 9%;
+    min-width: 100px;
+}
+
+.col-total,
+.mat-column-total {
+    width: 9%;
+    min-width: 105px;
+}
+
+.col-supplier,
+.mat-column-supplier {
+    width: 14%;
+    min-width: 155px;
+}
+
+.col-date,
+.mat-column-date {
+    width: 15%;
+    min-width: 165px;
+}
+
+.col-actions,
+.mat-column-actions {
+    width: 7%;
+    min-width: 82px;
     text-align: center;
 }
 
@@ -305,18 +223,62 @@ td.mat-mdc-cell {
 
 mat-form-field {
     width: 100%;
+    min-width: 0;
 }
 
-/* REMOVE EXTRA MATERIAL SPACE */
-
-::ng-deep .mat-mdc-form-field-subscript-wrapper {
-    display: none;
+.purchase-table ::ng-deep .mat-mdc-form-field {
+    --mdc-outlined-text-field-container-height: 44px;
 }
 
-/* MATERIAL FIELD POLISH */
+.purchase-table ::ng-deep .mat-mdc-text-field-wrapper {
+    height: 44px !important;
+}
 
-::ng-deep .mat-mdc-text-field-wrapper {
+.purchase-table ::ng-deep .mat-mdc-form-field-infix {
+    min-height: 44px !important;
+    padding-top: 10px !important;
+    padding-bottom: 7px !important;
+}
+
+.purchase-table ::ng-deep .mat-mdc-floating-label {
+    top: 22px !important;
+}
+
+.purchase-table ::ng-deep .mdc-text-field--outlined.mdc-text-field--focused .mat-mdc-floating-label,
+.purchase-table ::ng-deep .mdc-text-field--outlined.mdc-text-field--notched-outline--notched .mat-mdc-floating-label,
+.purchase-table ::ng-deep .mdc-text-field--outlined .mdc-floating-label--float-above {
+    top: 27px !important;
+}
+
+/* =========================================================
+   SEARCH SELECT CLOSED FIELD FIX
+========================================================= */
+
+.purchase-table ::ng-deep app-search-select mat-form-field {
+    width: 100%;
+}
+
+.purchase-table ::ng-deep app-search-select .mat-mdc-text-field-wrapper {
+    background: var(--card-bg) !important;
     border-radius: 12px !important;
+}
+
+.purchase-table ::ng-deep app-search-select .mat-mdc-select-value,
+.purchase-table ::ng-deep app-search-select .mat-mdc-select-value-text,
+.purchase-table ::ng-deep app-search-select .mat-mdc-select-arrow {
+    color: var(--text-dark) !important;
+}
+
+.purchase-table ::ng-deep app-search-select .mat-mdc-select-placeholder,
+.purchase-table ::ng-deep app-search-select .mdc-floating-label {
+    color: var(--text-light) !important;
+}
+
+.error-text {
+    margin-top: 4px;
+    color: var(--danger);
+    font-size: 12px;
+    font-weight: 600;
 }
 
 /* =========================================================
@@ -325,88 +287,60 @@ mat-form-field {
 
 .total-cell {
     font-weight: 700;
-
-    color: #15803d;
-
-    font-size: 15px;
+    color: var(--success) !important;
+    font-size: 14px;
 }
+
 /* =========================================================
    FOOTER
 ========================================================= */
 
 .footer-section {
-    margin-top: 22px;
-
+    margin-top: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-
     gap: 16px;
-
     flex-wrap: wrap;
 }
 
-/* =========================================================
-   GRAND TOTAL
-========================================================= */
-
 .grand-total {
-    background: #f8fafc;
-
+    background: var(--surface);
+    border: 1px solid var(--border-light);
     border-radius: 14px;
-
-    padding: 18px 22px;
-
+    padding: 16px 20px;
     display: flex;
     flex-direction: column;
-
     gap: 4px;
-
     min-width: 260px;
 }
 
 .grand-total span {
-    color: #64748b;
-
+    color: var(--text-light);
     font-size: 14px;
 }
 
 .grand-total strong {
-    font-size: 30px;
-
-    color: #15803d;
+    font-size: 28px;
+    color: var(--success);
 }
-
-/* =========================================================
-   SAVE BUTTON
-========================================================= */
 
 .save-btn {
     min-width: 220px;
-
     height: 52px;
-
     border-radius: 14px !important;
-
     font-weight: 700 !important;
-
     font-size: 15px !important;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     gap: 10px;
-
-    box-shadow:
-        0 8px 20px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
 }
 
 .save-btn:hover {
     transform: translateY(-2px);
-
-    box-shadow:
-        0 14px 28px rgba(79, 70, 229, 0.32);
+    box-shadow: 0 14px 28px rgba(79, 70, 229, 0.32);
 }
 
 /* =========================================================
@@ -420,12 +354,19 @@ mat-form-field {
 
 .premium-table::-webkit-scrollbar-thumb {
     background: #cbd5e1;
-
     border-radius: 10px;
 }
 
 .premium-table::-webkit-scrollbar-track {
-    background: #f8fafc;
+    background: var(--surface);
+}
+
+:host-context(body.dark-theme) .premium-table::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+:host-context(body.dark-theme) .premium-table::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
 }
 
 /* =========================================================
@@ -433,7 +374,6 @@ mat-form-field {
 ========================================================= */
 
 @media (max-width: 992px) {
-
     .page-header {
         flex-direction: column;
         align-items: stretch;
@@ -441,7 +381,6 @@ mat-form-field {
 
     .header-actions {
         width: 100%;
-
         flex-direction: column;
         align-items: stretch;
     }
@@ -450,19 +389,20 @@ mat-form-field {
     .back-btn,
     .save-btn {
         width: 100%;
-
         min-height: 52px;
     }
 
     .purchase-container {
-        padding: 18px;
-
+        padding: 14px;
         border-radius: 18px;
+    }
+
+    .premium-table {
+        max-height: calc(100vh - 430px);
     }
 
     .footer-section {
         flex-direction: column;
-
         align-items: stretch;
     }
 
@@ -472,26 +412,21 @@ mat-form-field {
 
     td.mat-mdc-cell,
     th.mat-mdc-header-cell {
-        padding: 12px !important;
+        padding: 10px !important;
     }
 
-    .col-item {
-        min-width: 220px;
+    .col-item,
+    .mat-column-item {
+        min-width: 340px;
     }
 
-    .col-medium {
-        min-width: 160px;
+    .col-supplier,
+    .mat-column-supplier {
+        min-width: 145px;
     }
 
-    .col-small {
-        min-width: 120px;
-    }
-
-    .col-total {
-        min-width: 140px;
-    }
-
-    .col-actions {
-        min-width: 110px;
+    .col-date,
+    .mat-column-date {
+        min-width: 145px;
     }
 }

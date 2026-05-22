@@ -123,6 +123,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     NgxSkeletonLoaderModule,
     NgxMatSelectSearchModule,
     MatTooltipModule,
+    MatTooltipModule,
   ],
   providers: [
     {
