@@ -1,3 +1,8 @@
+:host {
+    display: block;
+    overflow-x: hidden;
+}
+
 /* =====================================================
    PAGE
 ===================================================== */
@@ -17,17 +22,24 @@
     width: 100%;
     max-width: 980px;
 
-    background: white;
+    background: var(--card-bg);
 
     border-radius: 24px;
 
     padding: 32px;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-light);
 
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 18px 40px rgba(15, 23, 42, 0.06);
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.profile-card:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 /* =====================================================
@@ -44,13 +56,15 @@
     padding-bottom: 28px;
     margin-bottom: 30px;
 
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .profile-user {
     display: flex;
     align-items: center;
     gap: 18px;
+
+    min-width: 0;
 }
 
 /* =====================================================
@@ -67,11 +81,7 @@
     align-items: center;
     justify-content: center;
 
-    background:
-        linear-gradient(135deg,
-            #6366f1,
-            #4f46e5);
-
+background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
 
     font-size: 32px;
@@ -87,13 +97,21 @@
    PROFILE INFO
 ===================================================== */
 
+.profile-info {
+    min-width: 0;
+}
+
 .profile-info h2 {
     margin: 0 0 8px;
 
     font-size: 28px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: var(--text-dark);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .profile-meta {
@@ -117,8 +135,8 @@
 
     border-radius: 999px;
 
-    background: #eef2ff;
-    color: #4338ca;
+    background: var(--primary-soft);
+    color: var(--primary);
 
     font-size: 12px;
     font-weight: 700;
@@ -127,7 +145,7 @@
 }
 
 .username {
-    color: #64748b;
+    color: var(--text-light);
 
     font-size: 14px;
     font-weight: 500;
@@ -144,8 +162,8 @@
 
     border-radius: 14px !important;
 
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 14px !important;
+    font-weight: 700 !important;
 
     box-shadow:
         0 10px 24px rgba(79, 70, 229, 0.28);
@@ -157,6 +175,9 @@
 
 .edit-btn:hover {
     transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(79, 70, 229, 0.34);
 }
 
 /* =====================================================
@@ -176,57 +197,7 @@
 
 mat-form-field {
     width: 100%;
-}
-
-/* =====================================================
-   ACTIONS
-===================================================== */
-
-.form-actions {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    margin-top: 32px;
-}
-
-/* =====================================================
-   SAVE BUTTON
-===================================================== */
-
-.save-btn {
-    min-width: 170px;
-    height: 50px;
-
-    border-radius: 14px !important;
-
-    font-weight: 600;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-
-    box-shadow:
-        0 10px 24px rgba(59, 130, 246, 0.25);
-}
-
-.save-btn:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* =====================================================
-   CANCEL BUTTON
-===================================================== */
-
-.cancel-btn {
-    min-width: 140px;
-    height: 50px;
-
-    border-radius: 14px !important;
-
-    font-weight: 600;
+    min-width: 0;
 }
 
 /* =====================================================
@@ -238,7 +209,7 @@ mat-form-field {
 }
 
 /* =====================================================
-   FLOATING PASSWORD VALIDATOR
+   PASSWORD POPOVER
 ===================================================== */
 
 .password-popover {
@@ -253,12 +224,11 @@ mat-form-field {
 
     border-radius: 14px;
 
-    background: white;
+    background: var(--card-bg);
 
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-light);
 
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--shadow-lg);
 
     z-index: 20;
 
@@ -268,7 +238,7 @@ mat-form-field {
 .password-popover div {
     font-size: 13px;
 
-    color: #64748b;
+    color: var(--text-light);
 
     margin-bottom: 8px;
 
@@ -280,25 +250,86 @@ mat-form-field {
 }
 
 .password-popover div.valid {
-    color: #16a34a;
+    color: var(--success);
 
     font-weight: 600;
 }
 
 /* =====================================================
-   ANIMATION
+   ACTIONS
 ===================================================== */
 
-@keyframes fadeSlide {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
+.form-actions {
+    display: flex;
+    align-items: center;
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    gap: 14px;
+
+    margin-top: 32px;
+}
+
+/* =====================================================
+   SAVE BUTTON
+===================================================== */
+
+.save-btn {
+    min-width: 170px;
+    height: 52px;
+
+    border-radius: 14px !important;
+
+    font-weight: 700 !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    box-shadow:
+        0 10px 24px rgba(79, 70, 229, 0.28);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(79, 70, 229, 0.34);
+}
+
+.save-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* =====================================================
+   CANCEL BUTTON
+===================================================== */
+
+.cancel-btn {
+    min-width: 140px;
+    height: 52px;
+
+    border-radius: 14px !important;
+
+    font-weight: 700 !important;
+
+    background: var(--card-bg) !important;
+    color: var(--text-medium) !important;
+
+    border-color: var(--border-light) !important;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.cancel-btn:hover {
+    background: var(--surface) !important;
 }
 
 /* =====================================================
@@ -307,6 +338,18 @@ mat-form-field {
 
 ::ng-deep .mat-mdc-form-field-subscript-wrapper {
     padding-top: 4px;
+}
+
+/* =====================================================
+   SPINNER
+===================================================== */
+
+.save-btn mat-spinner {
+    margin-right: 8px;
+}
+
+::ng-deep .save-btn .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: white !important;
 }
 
 /* =====================================================
@@ -325,7 +368,7 @@ mat-form-field {
     padding-bottom: 28px;
     margin-bottom: 30px;
 
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .skeleton-avatar {
@@ -334,7 +377,8 @@ mat-form-field {
 
     border-radius: 24px;
 
-    background: linear-gradient(90deg,
+    background:
+        linear-gradient(90deg,
             #e2e8f0 25%,
             #f1f5f9 50%,
             #e2e8f0 75%);
@@ -364,7 +408,8 @@ mat-form-field {
 .skeleton-line,
 .skeleton-input,
 .skeleton-btn {
-    background: linear-gradient(90deg,
+    background:
+        linear-gradient(90deg,
             #e2e8f0 25%,
             #f1f5f9 50%,
             #e2e8f0 75%);
@@ -374,6 +419,19 @@ mat-form-field {
     animation: shimmer 1.4s infinite;
 
     border-radius: 10px;
+}
+
+:host-context(body.dark-theme) .skeleton-avatar,
+:host-context(body.dark-theme) .skeleton-line,
+:host-context(body.dark-theme) .skeleton-input,
+:host-context(body.dark-theme) .skeleton-btn {
+    background:
+        linear-gradient(90deg,
+            #1e293b 25%,
+            #334155 50%,
+            #1e293b 75%);
+
+    background-size: 200% 100%;
 }
 
 .skeleton-line.large {
@@ -407,12 +465,16 @@ mat-form-field {
 
 .skeleton-btn {
     width: 170px;
-    height: 50px;
+    height: 52px;
 }
 
 .skeleton-btn.light {
     width: 140px;
 }
+
+/* =====================================================
+   ANIMATION
+===================================================== */
 
 @keyframes shimmer {
     0% {
@@ -421,6 +483,18 @@ mat-form-field {
 
     100% {
         background-position: -200% 0;
+    }
+}
+
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

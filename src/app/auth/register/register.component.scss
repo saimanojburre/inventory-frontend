@@ -7,7 +7,7 @@
 
     display: flex;
 
-    height: 100vh;
+    min-height: 100dvh;
 
     overflow: hidden;
 
@@ -19,6 +19,15 @@
     font-family:
         Inter,
         sans-serif;
+}
+
+/* DARK MODE */
+
+:host-context(body.dark-theme) .register-page {
+    background:
+        linear-gradient(to bottom right,
+            #0f172a,
+            #111827);
 }
 
 /* =========================================================
@@ -54,7 +63,7 @@
     align-items: flex-start;
     justify-content: center;
 
-    padding: 24px 28px;
+    padding: 28px;
 
     overflow-y: auto;
 
@@ -79,17 +88,6 @@
 .register-left::-webkit-scrollbar-track {
     background: transparent;
 }
-/* =========================================================
-   PLACEHOLDER
-========================================================= */
-
-::ng-deep .mat-mdc-input-element::placeholder {
-    font-size: 12px;
-
-    color: #94a3b8;
-
-    opacity: 1;
-}
 
 /* =========================================================
    WRAPPER
@@ -98,24 +96,48 @@
 .register-wrapper {
     width: 100%;
 
-    max-width: 340px;
+    max-width: 760px;
 
-    margin-left: -8px;
+    padding: 30px;
+
+    border-radius: 30px;
+
+    background: rgba(255, 255, 255, 0.72);
+
+    backdrop-filter: blur(22px);
+
+    border: 1px solid rgba(255, 255, 255, 0.6);
+
+    box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.08);
 
     animation:
         fadeUp 0.7s ease;
+}
+
+/* DARK MODE */
+
+:host-context(body.dark-theme) .register-wrapper {
+    background: rgba(15, 23, 42, 0.72);
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45);
 }
 
 @keyframes fadeUp {
 
     from {
         opacity: 0;
+
         transform:
             translateY(20px);
     }
 
     to {
         opacity: 1;
+
         transform:
             translateY(0);
     }
@@ -129,16 +151,16 @@
     display: flex;
     align-items: center;
 
-    gap: 10px;
+    gap: 12px;
 
-    margin-bottom: 18px;
+    margin-bottom: 22px;
 }
 
 .logo-box {
-    width: 42px;
-    height: 42px;
+    width: 48px;
+    height: 48px;
 
-    border-radius: 12px;
+    border-radius: 14px;
 
     display: flex;
     align-items: center;
@@ -156,16 +178,27 @@
 .logo-box mat-icon {
     color: white;
 
-    font-size: 22px;
+    font-size: 24px;
 }
 
 .brand-logo span {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 800;
 
-    letter-spacing: -0.7px;
-
     color: #0f172a;
+}
+
+/* DARK MODE TEXT */
+
+:host-context(body.dark-theme) .brand-logo span,
+:host-context(body.dark-theme) .heading-section h1,
+:host-context(body.dark-theme) .field-group label {
+    color: #f8fafc;
+}
+
+:host-context(body.dark-theme) .heading-section p,
+:host-context(body.dark-theme) .login-link {
+    color: #94a3b8;
 }
 
 /* =========================================================
@@ -173,17 +206,15 @@
 ========================================================= */
 
 .heading-section {
-    margin-bottom: 14px;
+    margin-bottom: 24px;
 }
-
-/* BADGE */
 
 .welcome-badge {
     width: fit-content;
 
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 
-    padding: 5px 10px;
+    padding: 7px 12px;
 
     border-radius: 999px;
 
@@ -195,18 +226,14 @@
 
     color: #6366f1;
 
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
-
-    letter-spacing: 0.2px;
 }
 
-/* TITLE */
-
 .heading-section h1 {
-    margin: 0 0 6px;
+    margin: 0 0 10px;
 
-    font-size: 30px;
+    font-size: 36px;
     font-weight: 800;
 
     line-height: 1;
@@ -214,33 +241,70 @@
     color: #0f172a;
 }
 
-/* TEXT */
-
 .heading-section p {
     margin: 0;
 
-    max-width: 300px;
+    max-width: 520px;
 
-    font-size: 10px;
-    line-height: 1.5;
+    font-size: 12px;
+    line-height: 1.7;
 
     color: #64748b;
 }
 
 /* =========================================================
-   FORM
+   FORM GRID
+========================================================= */
+
+form {
+    display: grid;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 14px 16px;
+
+    align-items: start;
+}
+
+/* FULL WIDTH ITEMS */
+
+.password-hint,
+.password-mismatch,
+.error-message,
+.success-box,
+.register-btn,
+.login-link {
+    grid-column: 1 / -1;
+}
+
+.password-column,
+.password-confirm-wrapper {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+/* =========================================================
+   FIELD GROUP
 ========================================================= */
 
 .field-group {
-    margin-bottom: 8px;
+    display: flex;
+
+    flex-direction: column;
+
+    margin-bottom: 2px;
+
+    min-width: 0;
 }
 
 .field-group label {
     display: block;
 
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
 
     color: #334155;
@@ -250,14 +314,31 @@
     width: 100%;
 }
 
+/* PASSWORD FIELDS */
+
+.password-field {
+    grid-column: auto;
+}
+
+/* =========================================================
+   PLACEHOLDER
+========================================================= */
+
+::ng-deep .mat-mdc-input-element::placeholder {
+    font-size: 12px;
+
+    color: #94a3b8;
+
+    opacity: 1;
+}
 /* =========================================================
    INPUTS
 ========================================================= */
 
 ::ng-deep .mat-mdc-text-field-wrapper {
-    height: 42px !important;
+    height: 48px !important;
 
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 
     background:
         rgba(255, 255, 255, 0.92) !important;
@@ -272,10 +353,10 @@
 }
 
 ::ng-deep .mat-mdc-form-field-infix {
-    min-height: 42px !important;
+    min-height: 48px !important;
 
-    padding-top: 10px !important;
-    padding-bottom: 10px !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
 }
 
 ::ng-deep .mat-mdc-text-field-wrapper:hover {
@@ -291,38 +372,107 @@
         0 10px 22px rgba(99, 102, 241, 0.12);
 }
 
-::ng-deep .mdc-notched-outline>* {
-    border-color: #dbe2ea !important;
+/* =========================================================
+   LIGHT MODE
+========================================================= */
+
+::ng-deep input.mat-mdc-input-element {
+    color: #0f172a !important;
 }
 
-::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline>* {
-    border-color: #6366f1 !important;
+::ng-deep .mat-mdc-input-element::placeholder {
+    color: #94a3b8 !important;
+
+    opacity: 1;
 }
+
+/* =========================================================
+   DARK MODE INPUTS
+========================================================= */
+
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-text-field-wrapper {
+    background:
+        rgba(17, 24, 39, 0.96) !important;
+
+    box-shadow:
+        0 4px 16px rgba(0, 0, 0, 0.45);
+
+    border-radius: 14px !important;
+}
+
+/* INPUT TEXT */
+
+:host-context(body.dark-theme) ::ng-deep input.mat-mdc-input-element {
+    color: #f8fafc !important;
+
+    caret-color: #818cf8 !important;
+}
+
+/* PLACEHOLDER */
+
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-input-element::placeholder {
+    color: #94a3b8 !important;
+
+    opacity: 1;
+}
+
+/* LABEL */
+
+:host-context(body.dark-theme) ::ng-deep .mdc-floating-label {
+    color: #cbd5e1 !important;
+}
+
+/* ICONS */
+
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-form-field-icon-prefix,
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-form-field-icon-suffix,
+:host-context(body.dark-theme) ::ng-deep .mat-icon {
+    color: #94a3b8 !important;
+}
+
+/* OUTLINE */
+
+:host-context(body.dark-theme) ::ng-deep .mdc-notched-outline>* {
+    border-color:
+        rgba(148, 163, 184, 0.22) !important;
+}
+
+/* HOVER */
+
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline>* {
+    border-color: #818cf8 !important;
+}
+
+/* FOCUS */
+
+:host-context(body.dark-theme) ::ng-deep .mat-focused .mdc-notched-outline>* {
+    border-color: #818cf8 !important;
+}
+
+/* REMOVE OVERLAY */
 
 ::ng-deep .mat-mdc-form-field-focus-overlay {
     opacity: 0 !important;
 }
 
 /* =========================================================
-   FORM ERRORS
+   ERRORS
 ========================================================= */
 
 ::ng-deep .mat-mdc-form-field-error {
     font-size: 10px !important;
 
     font-weight: 600;
-
-    margin-top: 1px;
 }
 
-/* =========================================================
-   INVALID FIELD
-========================================================= */
+.password-mismatch {
+    color: #dc2626;
 
-::ng-deep .mat-mdc-form-field.mat-form-field-invalid .mat-mdc-text-field-wrapper {
-    box-shadow:
-        0 0 0 4px rgba(239, 68, 68, 0.10),
-        0 10px 20px rgba(239, 68, 68, 0.08);
+    font-size: 11px;
+
+    font-weight: 600;
+
+    padding-left: 4px;
 }
 
 /* =========================================================
@@ -330,12 +480,9 @@
 ========================================================= */
 
 .password-hint {
-    margin-top: -2px;
-    margin-bottom: 8px;
+    padding: 10px 12px;
 
-    padding: 8px 10px;
-
-    border-radius: 10px;
+    border-radius: 12px;
 
     background:
         rgba(99, 102, 241, 0.05);
@@ -343,133 +490,63 @@
     border:
         1px solid rgba(99, 102, 241, 0.08);
 
-    font-size: 10px;
+    font-size: 11px;
+
+    width: 100%;
 }
 
 .password-hint div {
-    margin: 3px 0;
+    margin: 4px 0;
 
     color: #64748b;
-
-    transition: 0.2s ease;
 }
 
 .password-hint div.valid {
     color: #16a34a;
 
-    font-weight: 600;
+    font-weight: 700;
 }
-
-/* =========================================================
-   PASSWORD MISMATCH
-========================================================= */
-
-.password-mismatch {
-    margin-bottom: 8px;
-
-    color: #dc2626;
-
-    font-size: 10px;
-    font-weight: 600;
-}
-
-/* =========================================================
-   ERROR BOX
-========================================================= */
-
-.error-message {
+.password-confirm-wrapper {
     display: flex;
-    align-items: center;
 
-    gap: 8px;
+    flex-direction: column;
 
-    padding: 8px 10px;
-
-    margin-bottom: 8px;
-
-    border-radius: 10px;
-
-    background:
-        rgba(239, 68, 68, 0.08);
-
-    border:
-        1px solid rgba(239, 68, 68, 0.12);
-
-    color: #dc2626;
-
-    font-size: 11px;
-    font-weight: 600;
+    justify-content: flex-start;
 }
-
-.error-message mat-icon {
-    font-size: 16px;
-
-    width: 16px;
-    height: 16px;
-}
-
 /* =========================================================
-   SUCCESS BOX
+   ALERTS
 ========================================================= */
 
+.error-message,
 .success-box {
     display: flex;
     align-items: flex-start;
 
-    gap: 8px;
+    gap: 10px;
 
-    margin-top: 6px;
-    margin-bottom: 8px;
+    padding: 12px;
 
-    padding: 10px;
+    border-radius: 14px;
+}
 
-    border-radius: 10px;
+.error-message {
+    background:
+        rgba(239, 68, 68, 0.08);
 
+    border:
+        1px solid rgba(239, 68, 68, 0.14);
+
+    color: #dc2626;
+}
+
+.success-box {
     background:
         rgba(34, 197, 94, 0.08);
 
     border:
-        1px solid rgba(34, 197, 94, 0.2);
+        1px solid rgba(34, 197, 94, 0.16);
 
     color: #15803d;
-
-    animation:
-        successFade 0.3s ease;
-}
-
-.success-box mat-icon {
-    font-size: 18px;
-}
-
-.success-content h4 {
-    margin: 0;
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.success-content p {
-    margin: 3px 0 0;
-
-    font-size: 11px;
-    line-height: 1.4;
-
-    color: #3f3f46;
-}
-
-@keyframes successFade {
-
-    from {
-        opacity: 0;
-        transform:
-            translateY(8px);
-    }
-
-    to {
-        opacity: 1;
-        transform:
-            translateY(0);
-    }
 }
 
 /* =========================================================
@@ -479,11 +556,9 @@
 .register-btn {
     width: 100%;
 
-    height: 42px;
+    height: 50px;
 
-    margin-top: 10px;
-
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 
     background:
         linear-gradient(135deg,
@@ -492,10 +567,8 @@
 
     color: white !important;
 
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
-
-    letter-spacing: 0.2px;
 
     box-shadow:
         0 16px 34px rgba(99, 102, 241, 0.26);
@@ -512,49 +585,16 @@
         0 22px 42px rgba(99, 102, 241, 0.3);
 }
 
-.register-btn:disabled {
-    opacity: 0.7 !important;
-
-    cursor: not-allowed;
-
-    transform: none !important;
-
-    box-shadow: none !important;
-}
-
-.register-btn span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 6px;
-}
-
-/* =========================================================
-   SPINNER
-========================================================= */
-
-.register-btn .mat-mdc-progress-spinner {
-    --mdc-circular-progress-active-indicator-color: white;
-
-    margin: 0 auto;
-}
-
-.register-btn .mat-mdc-progress-spinner svg {
-    width: 22px !important;
-    height: 22px !important;
-}
-
 /* =========================================================
    LOGIN LINK
 ========================================================= */
 
 .login-link {
-    margin-top: 10px;
+    margin-top: 6px;
 
     text-align: center;
 
-    font-size: 11px;
+    font-size: 12px;
 
     color: #64748b;
 }
@@ -567,12 +607,6 @@
     color: #6366f1;
 
     font-weight: 700;
-
-    text-decoration: none;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
 }
 
 /* =========================================================
@@ -597,76 +631,7 @@
 }
 
 /* =========================================================
-   GRID
-========================================================= */
-
-.grid-overlay {
-    position: absolute;
-    inset: 0;
-
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.05) 1px,
-            transparent 1px),
-        linear-gradient(90deg,
-            rgba(255, 255, 255, 0.05) 1px,
-            transparent 1px);
-
-    background-size: 42px 42px;
-
-    opacity: 0.22;
-}
-
-/* =========================================================
-   LIGHT
-========================================================= */
-
-.light-overlay {
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        radial-gradient(circle at top right,
-            rgba(255, 255, 255, 0.14),
-            transparent 36%);
-}
-
-/* =========================================================
-   GLOWS
-========================================================= */
-
-.bg-glow {
-    position: absolute;
-
-    border-radius: 50%;
-
-    filter: blur(120px);
-}
-
-.glow-1 {
-    width: 420px;
-    height: 420px;
-
-    top: -120px;
-    right: -80px;
-
-    background:
-        rgba(255, 255, 255, 0.1);
-}
-
-.glow-2 {
-    width: 320px;
-    height: 320px;
-
-    bottom: -80px;
-    left: -80px;
-
-    background:
-        rgba(255, 255, 255, 0.08);
-}
-
-/* =========================================================
-   DASHBOARD CARD
+   PREVIEW CARD
 ========================================================= */
 
 .preview-card {
@@ -689,28 +654,11 @@
 
     box-shadow:
         0 40px 90px rgba(0, 0, 0, 0.28);
-
-    transform:
-        perspective(1400px) rotateY(-4deg);
-
-    transition:
-        transform 0.35s ease;
 }
-
-.preview-card:hover {
-    transform:
-        perspective(1400px) rotateY(0deg) translateY(-4px);
-}
-
-/* =========================================================
-   REAL DASHBOARD
-========================================================= */
 
 .real-dashboard {
     min-height: 620px;
 }
-
-/* IMAGE */
 
 .real-dashboard img {
     width: 100%;
@@ -718,12 +666,8 @@
 
     object-fit: cover;
 
-    display: block;
-
     filter:
-        blur(0.8px) brightness(0.76) saturate(1.05);
-
-    transform: scale(1.02);
+        blur(0.8px) brightness(0.76);
 }
 
 /* =========================================================
@@ -743,14 +687,9 @@
 
     background:
         linear-gradient(to top,
-            rgba(15, 23, 42, 0.52),
-            rgba(15, 23, 42, 0.05),
+            rgba(15, 23, 42, 0.58),
             transparent);
 }
-
-/* =========================================================
-   BADGE
-========================================================= */
 
 .preview-badge {
     width: fit-content;
@@ -764,20 +703,11 @@
     background:
         rgba(255, 255, 255, 0.12);
 
-    backdrop-filter: blur(10px);
-
-    border:
-        1px solid rgba(255, 255, 255, 0.14);
-
     color: white;
 
     font-size: 13px;
     font-weight: 700;
 }
-
-/* =========================================================
-   TITLE
-========================================================= */
 
 .preview-overlay h2 {
     margin: 0 0 12px;
@@ -785,16 +715,8 @@
     font-size: 38px;
     font-weight: 800;
 
-    line-height: 1.08;
-
-    letter-spacing: -1.2px;
-
     color: white;
 }
-
-/* =========================================================
-   DESCRIPTION
-========================================================= */
 
 .preview-overlay p {
     margin: 0;
@@ -811,17 +733,6 @@
    MOBILE
 ========================================================= */
 
-@media (max-width: 1200px) {
-
-    .heading-section h1 {
-        font-size: 30px;
-    }
-
-    .preview-card {
-        width: 95%;
-    }
-}
-
 @media (max-width: 992px) {
 
     .register-preview {
@@ -831,35 +742,63 @@
     .register-left {
         width: 100%;
 
-        padding: 24px;
+        padding: 20px;
     }
 
     .register-wrapper {
-        max-width: 420px;
+        max-width: 520px;
+    }
+}
 
-        margin-left: 0;
+@media (max-width: 768px) {
+
+    form {
+        grid-template-columns: 1fr;
+    }
+
+    .password-field {
+        grid-column: auto;
+    }
+
+    .register-wrapper {
+        padding: 24px;
     }
 
     .heading-section h1 {
-        font-size: 36px;
+        font-size: 32px;
     }
 }
 
 @media (max-width: 500px) {
 
     .register-left {
+        padding: 16px;
+    }
+
+    .register-wrapper {
         padding: 20px;
     }
 
     .heading-section h1 {
-        font-size: 30px;
-    }
-
-    .heading-section p {
-        font-size: 10px;
+        font-size: 28px;
     }
 
     .register-btn {
-        height: 44px;
+        height: 46px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    form {
+        grid-template-columns: 1fr;
+    }
+
+    .register-wrapper {
+        padding: 24px;
+    }
+
+    .heading-section h1 {
+        font-size: 32px;
     }
 }

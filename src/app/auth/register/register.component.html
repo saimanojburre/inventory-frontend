@@ -120,90 +120,94 @@
         </div>
 
         <!-- PASSWORD -->
-        <div class="field-group">
-          <label>Password</label>
+        <div class="password-column">
+          <div class="field-group password-field">
+            <label>Password</label>
 
-          <mat-form-field appearance="outline" class="input-field">
-            <input
-              matInput
-              [type]="hidePassword ? 'password' : 'text'"
-              formControlName="password"
-              placeholder="Create password"
-            />
+            <mat-form-field appearance="outline" class="input-field">
+              <input
+                matInput
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="Create password"
+              />
 
-            <mat-icon matPrefix>lock</mat-icon>
+              <mat-icon matPrefix>lock</mat-icon>
 
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="hidePassword = !hidePassword"
-            >
-              <mat-icon>
-                {{ hidePassword ? "visibility_off" : "visibility" }}
-              </mat-icon>
-            </button>
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hidePassword = !hidePassword"
+              >
+                <mat-icon>
+                  {{ hidePassword ? "visibility_off" : "visibility" }}
+                </mat-icon>
+              </button>
 
-            <mat-error *ngIf="showError('password', 'required')">
-              Password is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <!-- PASSWORD HINT -->
-        <div
-          class="password-hint"
-          *ngIf="f.password.touched || f.password.dirty"
-        >
-          <div [class.valid]="(f.password.value || '').length >= 6">
-            ✓ Minimum 6 characters
+              <mat-error *ngIf="showError('password', 'required')">
+                Password is required
+              </mat-error>
+            </mat-form-field>
           </div>
 
-          <div [class.valid]="(f.password.value || '').match('.*[A-Z].*')">
-            ✓ One uppercase letter
-          </div>
+          <!-- PASSWORD HINT -->
+          <div
+            class="password-hint"
+            *ngIf="f.password.touched || f.password.dirty"
+          >
+            <div [class.valid]="(f.password.value || '').length >= 6">
+              ✓ Minimum 6 characters
+            </div>
 
-          <div [class.valid]="(f.password.value || '').match('.*[0-9].*')">
-            ✓ One number
+            <div [class.valid]="(f.password.value || '').match('.*[A-Z].*')">
+              ✓ One uppercase letter
+            </div>
+
+            <div [class.valid]="(f.password.value || '').match('.*[0-9].*')">
+              ✓ One number
+            </div>
           </div>
         </div>
 
         <!-- CONFIRM PASSWORD -->
-        <div class="field-group">
-          <label>Confirm Password</label>
+        <div class="password-confirm-wrapper">
+          <div class="field-group password-field">
+            <label>Confirm Password</label>
 
-          <mat-form-field appearance="outline" class="input-field">
-            <input
-              matInput
-              [type]="hideConfirmPassword ? 'password' : 'text'"
-              formControlName="confirmPassword"
-              placeholder="Confirm password"
-            />
+            <mat-form-field appearance="outline" class="input-field">
+              <input
+                matInput
+                [type]="hideConfirmPassword ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                placeholder="Confirm password"
+              />
 
-            <mat-icon matPrefix>verified_user</mat-icon>
+              <mat-icon matPrefix>verified_user</mat-icon>
 
-            <button
-              mat-icon-button
-              matSuffix
-              type="button"
-              (click)="hideConfirmPassword = !hideConfirmPassword"
-            >
-              <mat-icon>
-                {{ hideConfirmPassword ? "visibility_off" : "visibility" }}
-              </mat-icon>
-            </button>
-          </mat-form-field>
-        </div>
+              <button
+                mat-icon-button
+                matSuffix
+                type="button"
+                (click)="hideConfirmPassword = !hideConfirmPassword"
+              >
+                <mat-icon>
+                  {{ hideConfirmPassword ? "visibility_off" : "visibility" }}
+                </mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
 
-        <!-- PASSWORD MISMATCH -->
-        <div
-          class="password-mismatch"
-          *ngIf="
-            f.confirmPassword.touched &&
-            registerForm.hasError('passwordMismatch')
-          "
-        >
-          Passwords do not match
+          <!-- PASSWORD MISMATCH -->
+          <div
+            class="password-mismatch"
+            *ngIf="
+              f.confirmPassword.touched &&
+              registerForm.hasError('passwordMismatch')
+            "
+          >
+            Passwords do not match
+          </div>
         </div>
 
         <!-- ERROR -->
@@ -236,7 +240,7 @@
 
           <span *ngIf="!loading">
             Register
-            <mat-icon>arrow_forward</mat-icon>
+            <!-- <mat-icon>arrow_forward</mat-icon> -->
           </span>
         </button>
 
@@ -252,21 +256,16 @@
 
   <!-- RIGHT SECTION -->
   <div class="register-preview">
-    <!-- GRID -->
     <div class="grid-overlay"></div>
 
-    <!-- LIGHT -->
     <div class="light-overlay"></div>
 
-    <!-- GLOWS -->
     <div class="bg-glow glow-1"></div>
     <div class="bg-glow glow-2"></div>
 
-    <!-- DASHBOARD -->
     <div class="preview-card real-dashboard">
       <img src="assets/dashboard.png" alt="Inventory Dashboard" />
 
-      <!-- OVERLAY -->
       <div class="preview-overlay">
         <div class="preview-badge">Smart Enterprise Inventory</div>
 

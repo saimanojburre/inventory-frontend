@@ -1,3 +1,8 @@
+:host {
+    display: block;
+    overflow-x: hidden;
+}
+
 /* =====================================================
    PAGE
 ===================================================== */
@@ -15,61 +20,13 @@
     grid-template-columns: 2fr 1fr;
 
     gap: 24px;
+
+    align-items: stretch;
 }
 
-/* =====================================================
-   SECTION HEADER
-===================================================== */
-
-.section-header {
+.user-left,
+.user-right {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    margin-bottom: 20px;
-}
-
-.section-header h2 {
-    margin: 0 0 6px;
-
-    font-size: 26px;
-    font-weight: 700;
-
-    color: #0f172a;
-}
-
-.section-header p {
-    margin: 0;
-
-    color: #64748b;
-    font-size: 14px;
-}
-
-.header-badge {
-    width: 70px;
-    height: 70px;
-
-    border-radius: 20px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        linear-gradient(135deg,
-            #6366f1,
-            #4f46e5);
-
-    box-shadow:
-        0 12px 28px rgba(79, 70, 229, 0.28);
-}
-
-.header-badge mat-icon {
-    color: white;
-
-    font-size: 34px;
-    width: 34px;
-    height: 34px;
 }
 
 /* =====================================================
@@ -77,17 +34,26 @@
 ===================================================== */
 
 .form-card {
-    background: white;
+    width: 100%;
+
+    background: var(--card-bg);
 
     border-radius: 24px;
 
     padding: 28px;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-light);
 
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 18px 40px rgba(15, 23, 42, 0.06);
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.form-card:hover {
+    box-shadow: var(--shadow-lg);
 }
 
 /* =====================================================
@@ -103,36 +69,62 @@
 
 mat-form-field {
     width: 100%;
+    min-width: 0;
 }
-
 
 /* =====================================================
-   MATCH BOTH CARD HEIGHTS
+   PASSWORD SECTION
 ===================================================== */
 
-.user-layout {
-    display: grid;
-
-    grid-template-columns: 2fr 1fr;
-
-    gap: 24px;
-
-    align-items: stretch;
+.password-section {
+    position: relative;
 }
 
-.user-left,
-.user-right {
-    display: flex;
-}
+/* =====================================================
+   PASSWORD POPOVER
+===================================================== */
 
-.form-card,
-.info-card {
+.password-popover {
+    position: absolute;
+
+    top: 60px;
+    left: 0;
+
     width: 100%;
+
+    padding: 12px 14px;
+
+    border-radius: 14px;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border-light);
+
+    box-shadow: var(--shadow-lg);
+
+    z-index: 20;
+
+    animation: fadeSlide 0.2s ease;
 }
 
-/* make right card full height */
-.info-card {
-    height: 100%;
+.password-popover div {
+    font-size: 13px;
+
+    color: var(--text-light);
+
+    margin-bottom: 8px;
+
+    transition: 0.2s ease;
+}
+
+.password-popover div:last-child {
+    margin-bottom: 0;
+}
+
+.password-popover div.valid {
+    color: var(--success);
+
+    font-weight: 600;
 }
 
 /* =====================================================
@@ -148,10 +140,14 @@ mat-form-field {
 
     background:
         linear-gradient(135deg,
-            #f8fafc,
-            #f1f5f9);
+            var(--surface),
+            rgba(148, 163, 184, 0.08));
 
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border-light);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease;
 }
 
 .active-content {
@@ -168,14 +164,15 @@ mat-form-field {
     font-size: 15px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: var(--text-dark);
 }
 
 .active-content p {
     margin: 0;
 
     font-size: 13px;
-    color: #64748b;
+
+    color: var(--text-light);
 }
 
 /* =====================================================
@@ -197,15 +194,37 @@ mat-form-field {
 
     border-radius: 14px !important;
 
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.25s ease;
 }
 
 .save-btn {
-    min-width: 170px;
+    min-width: 180px;
 
     box-shadow:
         0 10px 24px rgba(79, 70, 229, 0.28);
+}
+
+.save-btn:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 28px rgba(79, 70, 229, 0.35);
+}
+
+.cancel-btn {
+    border-color: var(--border-light) !important;
+    color: var(--text-medium) !important;
+    background: var(--card-bg) !important;
+}
+
+.cancel-btn:hover {
+    background: var(--surface) !important;
 }
 
 /* =====================================================
@@ -213,25 +232,39 @@ mat-form-field {
 ===================================================== */
 
 .info-card {
-    background: white;
+    width: 100%;
+    height: 100%;
+
+    background: var(--card-bg);
 
     border-radius: 24px;
 
-    padding: 28px;
+    padding: 20px;
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-light);
 
     position: sticky;
     top: 20px;
 
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 18px 40px rgba(15, 23, 42, 0.06);
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
+.info-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* =====================================================
+   INFO ICON
+===================================================== */
+
 .info-icon {
-    width: 72px;
-    height: 72px;
+    width: 62px;
+    height: 62px;
 
     border-radius: 20px;
 
@@ -243,8 +276,8 @@ mat-form-field {
 
     background:
         linear-gradient(135deg,
-            #eef2ff,
-            #e0e7ff);
+            var(--primary-soft),
+            rgba(99, 102, 241, 0.08));
 }
 
 .info-icon mat-icon {
@@ -252,8 +285,12 @@ mat-form-field {
     width: 36px;
     height: 36px;
 
-    color: #4f46e5;
+    color: var(--primary);
 }
+
+/* =====================================================
+   INFO CONTENT
+===================================================== */
 
 .info-card h3 {
     margin: 0 0 10px;
@@ -261,71 +298,116 @@ mat-form-field {
     font-size: 22px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: var(--text-dark);
 }
 
 .info-card p {
-    color: #64748b;
-
+    color: var(--text-light);
+font-size: 12px;
     line-height: 1.6;
 
     margin-bottom: 24px;
 }
 
 /* =====================================================
-   PASSWORD SECTION
+   ROLE LIST
 ===================================================== */
 
-.password-section {
-    position: relative;
+.role-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+.role-item {
+    padding: 12px;
+
+    border-radius: 16px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+
+    border: 1px solid transparent;
+
+    transition:
+        transform 0.2s ease,
+        background-color 0.25s ease;
+}
+
+.role-item:hover {
+    transform: translateY(-1px);
+}
+
+.role-item span {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.role-item small {
+    font-size: 10px;
+
+    line-height: 1.5;
 }
 
 /* =====================================================
-   FLOATING PASSWORD VALIDATOR
+   ROLE COLORS
 ===================================================== */
 
-.password-popover {
-    position: absolute;
-
-    top: 60px;
-    left: 0;
-
-    width: 100%;
-
-    padding: 12px 14px;
-
-    border-radius: 14px;
-
-    background: white;
-
-    border: 1px solid #e2e8f0;
-
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08);
-
-    z-index: 20;
-
-    animation: fadeSlide 0.2s ease;
+.role-item.owner {
+    background: rgba(124, 58, 237, 0.12);
+    color: #7c3aed;
 }
 
-.password-popover div {
-    font-size: 13px;
-
-    color: #64748b;
-
-    margin-bottom: 8px;
-
-    transition: 0.2s ease;
+.role-item.manager {
+    background: rgba(37, 99, 235, 0.12);
+    color: #2563eb;
 }
 
-.password-popover div:last-child {
-    margin-bottom: 0;
+.role-item.user {
+    background: rgba(148, 163, 184, 0.12);
+    color: var(--text-medium);
 }
 
-.password-popover div.valid {
-    color: #16a34a;
+:host-context(body.dark-theme) .role-item.owner {
+    background: rgba(167, 139, 250, 0.16);
+    color: #c4b5fd;
+}
 
-    font-weight: 600;
+:host-context(body.dark-theme) .role-item.manager {
+    background: rgba(96, 165, 250, 0.16);
+    color: #93c5fd;
+}
+
+:host-context(body.dark-theme) .role-item.user {
+    background: rgba(148, 163, 184, 0.12);
+    color: #cbd5e1;
+}
+
+/* =====================================================
+   MATERIAL OVERRIDES
+===================================================== */
+
+::ng-deep .mat-mdc-slide-toggle .mdc-switch--selected .mdc-switch__track {
+    background-color: var(--primary) !important;
+}
+
+::ng-deep .mat-mdc-slide-toggle .mdc-switch--selected .mdc-switch__handle::after {
+    background-color: white !important;
+}
+
+/* =====================================================
+   SPINNER
+===================================================== */
+
+.save-btn mat-spinner {
+    margin-right: 8px;
+}
+
+::ng-deep .save-btn .mdc-circular-progress__indeterminate-circle-graphic {
+    stroke: white !important;
 }
 
 /* =====================================================
@@ -342,52 +424,6 @@ mat-form-field {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* =====================================================
-   ROLE LIST
-===================================================== */
-
-.role-list {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.role-item {
-    padding: 16px;
-
-    border-radius: 16px;
-
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-
-    border: 1px solid transparent;
-}
-
-.role-item span {
-    font-weight: 700;
-    font-size: 14px;
-}
-
-.role-item small {
-    font-size: 12px;
-}
-
-.role-item.owner {
-    background: #f5f3ff;
-    color: #7c3aed;
-}
-
-.role-item.manager {
-    background: #eff6ff;
-    color: #2563eb;
-}
-
-.role-item.user {
-    background: #f8fafc;
-    color: #475569;
 }
 
 /* =====================================================
@@ -425,15 +461,21 @@ mat-form-field {
         width: 100%;
     }
 
-    .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-
-        gap: 16px;
-    }
-
     .form-card,
     .info-card {
         padding: 20px;
+        border-radius: 20px;
+    }
+
+    .info-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 18px;
+    }
+
+    .info-icon mat-icon {
+        font-size: 30px;
+        width: 30px;
+        height: 30px;
     }
 }

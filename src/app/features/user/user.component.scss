@@ -1,19 +1,27 @@
+:host {
+    display: block;
+    overflow-x: hidden;
+}
+
 /* =====================================================
    TOOLBAR CARD
 ===================================================== */
 
 .toolbar-card {
-    background: white;
+    background: var(--card-bg);
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-light);
     border-radius: 18px;
 
     padding: 18px 20px;
     margin-bottom: 24px;
 
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 10px 24px rgba(15, 23, 42, 0.06);
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 /* =====================================================
@@ -29,36 +37,39 @@
     flex-wrap: wrap;
 }
 
-.toolbar-left {
-    display: flex;
-    align-items: center;
-}
-
+.toolbar-left,
 .toolbar-right {
     display: flex;
     align-items: center;
+    gap: 12px;
+}
+
+.toolbar-right {
+    margin-left: auto;
 }
 
 /* =====================================================
-   FIELDS
+   SEARCH FIELD
 ===================================================== */
 
 .search-field {
     width: 320px;
+    min-width: 0;
 }
 
 /* =====================================================
-   BUTTON
+   BUTTONS
 ===================================================== */
 
 .add-btn {
     height: 52px;
+
     padding: 0 22px !important;
 
     border-radius: 14px !important;
 
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 14px !important;
+    font-weight: 700 !important;
 
     box-shadow:
         0 8px 20px rgba(79, 70, 229, 0.28);
@@ -75,34 +86,93 @@
         0 12px 24px rgba(79, 70, 229, 0.35);
 }
 
+.add-btn mat-icon {
+    margin-right: 6px;
+}
+
 /* =====================================================
    USERS CARD
 ===================================================== */
 
 .users-card {
-    background: white;
+    background: var(--card-bg);
 
     border-radius: 20px;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--border-light);
 
     overflow: hidden;
 
-    box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04),
-        0 18px 40px rgba(15, 23, 42, 0.06);
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+.users-card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+/* =====================================================
+   TABLE WRAPPER
+===================================================== */
+
+.table-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    max-width: 100%;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 /* =====================================================
    TABLE
 ===================================================== */
 
-.table-wrapper {
-    overflow-x: auto;
-}
-
 .users-table {
     width: 100%;
-    min-width: 1100px;
+    min-width: 0;
+
+    table-layout: fixed;
+
+    background: var(--card-bg);
+}
+
+/* =====================================================
+   COLUMN WIDTHS
+===================================================== */
+
+.mat-column-username {
+    width: 28%;
+    min-width: 220px;
+}
+
+.mat-column-name {
+    width: 16%;
+    min-width: 130px;
+}
+
+.mat-column-phone {
+    width: 16%;
+    min-width: 130px;
+}
+
+.mat-column-role {
+    width: 14%;
+    min-width: 120px;
+}
+
+.mat-column-active {
+    width: 12%;
+    min-width: 110px;
+}
+
+.mat-column-actions {
+    width: 14%;
+    min-width: 120px;
+    text-align: center;
 }
 
 /* =====================================================
@@ -110,8 +180,8 @@
 ===================================================== */
 
 .mat-mdc-header-row {
-    background: #f8fafc;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-light);
 }
 
 .mat-mdc-header-cell {
@@ -119,13 +189,19 @@
     top: 0;
     z-index: 5;
 
-    background: #f8fafc;
+    background: var(--surface) !important;
 
     font-size: 13px;
     font-weight: 700;
-    color: #475569;
+    color: var(--text-medium) !important;
 
-    padding: 16px;
+    padding: 14px !important;
+
+    border-bottom: 1px solid var(--border-light);
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* =====================================================
@@ -133,8 +209,17 @@
 ===================================================== */
 
 td.mat-mdc-cell {
-    padding: 16px;
-    border-bottom: 1px solid #f1f5f9;
+    padding: 14px !important;
+
+    border-bottom: 1px solid var(--border-light) !important;
+
+    color: var(--text-dark) !important;
+
+    vertical-align: middle;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* =====================================================
@@ -142,17 +227,23 @@ td.mat-mdc-cell {
 ===================================================== */
 
 .mat-mdc-row {
+    background: var(--card-bg);
+
     transition:
         background 0.2s ease,
         transform 0.2s ease;
 }
 
 .mat-mdc-row:hover {
-    background: #f8fbff;
+    background: var(--surface-hover);
 }
 
 .editing-row {
-    background: #eff6ff !important;
+    background: rgba(79, 70, 229, 0.06) !important;
+}
+
+:host-context(body.dark-theme) .editing-row {
+    background: rgba(129, 140, 248, 0.12) !important;
 }
 
 /* =====================================================
@@ -163,6 +254,8 @@ td.mat-mdc-cell {
     display: flex;
     align-items: center;
     gap: 12px;
+
+    min-width: 0;
 }
 
 .user-avatar {
@@ -175,30 +268,38 @@ td.mat-mdc-cell {
     align-items: center;
     justify-content: center;
 
-    background:
-        linear-gradient(135deg,
-            #6366f1,
-            #4f46e5);
-
+background: linear-gradient(135deg, #6366f1, #4f46e5);
     color: white;
 
     font-size: 14px;
     font-weight: 700;
+
+    flex-shrink: 0;
 }
 
 .user-details {
     display: flex;
     flex-direction: column;
+
+    min-width: 0;
 }
 
 .username {
     font-weight: 600;
-    color: #0f172a;
+    color: var(--text-dark);
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .user-details small {
-    color: #64748b;
+    color: var(--text-light);
     font-size: 12px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* =====================================================
@@ -221,18 +322,33 @@ td.mat-mdc-cell {
 }
 
 .role-badge.owner {
-    background: #ede9fe;
+    background: rgba(124, 58, 237, 0.14);
     color: #7c3aed;
 }
 
 .role-badge.manager {
-    background: #dbeafe;
+    background: rgba(37, 99, 235, 0.14);
     color: #2563eb;
 }
 
 .role-badge.user {
-    background: #f1f5f9;
-    color: #475569;
+    background: rgba(148, 163, 184, 0.14);
+    color: var(--text-medium);
+}
+
+:host-context(body.dark-theme) .role-badge.owner {
+    background: rgba(167, 139, 250, 0.16);
+    color: #c4b5fd;
+}
+
+:host-context(body.dark-theme) .role-badge.manager {
+    background: rgba(96, 165, 250, 0.16);
+    color: #93c5fd;
+}
+
+:host-context(body.dark-theme) .role-badge.user {
+    background: rgba(148, 163, 184, 0.14);
+    color: #cbd5e1;
 }
 
 /* =====================================================
@@ -244,7 +360,7 @@ td.mat-mdc-cell {
     align-items: center;
     justify-content: center;
 
-    min-width: 80px;
+    min-width: 84px;
 
     padding: 8px 14px;
 
@@ -255,13 +371,13 @@ td.mat-mdc-cell {
 }
 
 .status-badge.active {
-    background: #dcfce7;
-    color: #16a34a;
+    background: rgba(16, 185, 129, 0.14);
+    color: var(--success);
 }
 
 .status-badge.inactive {
-    background: #fee2e2;
-    color: #ef4444;
+    background: rgba(239, 68, 68, 0.14);
+    color: var(--danger);
 }
 
 /* =====================================================
@@ -270,19 +386,25 @@ td.mat-mdc-cell {
 
 .inline-input,
 .inline-select {
-    height: 38px;
+    height: 40px;
 
     padding: 6px 10px;
 
-    border: 1px solid #d1d5db;
+    border: 1px solid var(--border-light);
     border-radius: 10px;
 
-    background: white;
+    background: var(--card-bg);
+    color: var(--text-dark);
 
     font-size: 13px;
+
     outline: none;
 
-    transition: all 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.25s ease,
+        color 0.25s ease;
 }
 
 .inline-input {
@@ -295,10 +417,27 @@ td.mat-mdc-cell {
 
 .inline-input:focus,
 .inline-select:focus {
-    border-color: #6366f1;
+    border-color: var(--primary);
 
     box-shadow:
         0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+:host-context(body.dark-theme) .inline-input:focus,
+:host-context(body.dark-theme) .inline-select:focus {
+    box-shadow:
+        0 0 0 4px rgba(129, 140, 248, 0.14);
+}
+
+/* =====================================================
+   ACTION COLUMN
+===================================================== */
+
+td.mat-column-actions,
+th.mat-column-actions {
+    overflow: visible !important;
+    white-space: nowrap !important;
+    text-align: center;
 }
 
 /* =====================================================
@@ -317,7 +456,7 @@ td.mat-mdc-cell {
 
     padding: 20px 24px;
 
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light);
 }
 
 .skeleton-user {
@@ -367,6 +506,17 @@ td.mat-mdc-cell {
     animation: shimmer 1.4s infinite;
 }
 
+:host-context(body.dark-theme) .skeleton-avatar,
+:host-context(body.dark-theme) .skeleton-line {
+    background:
+        linear-gradient(90deg,
+            #1e293b 25%,
+            #334155 50%,
+            #1e293b 75%);
+
+    background-size: 200% 100%;
+}
+
 .skeleton-line.medium {
     width: 80%;
 }
@@ -396,6 +546,17 @@ td.mat-mdc-cell {
 .empty-state {
     padding: 80px 20px;
     text-align: center;
+
+    background: var(--card-bg);
+
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease;
 }
 
 .empty-icon {
@@ -412,8 +573,8 @@ td.mat-mdc-cell {
 
     background:
         linear-gradient(135deg,
-            #eef2ff,
-            #e0e7ff);
+            var(--primary-soft),
+            rgba(99, 102, 241, 0.08));
 }
 
 .empty-icon mat-icon {
@@ -421,7 +582,7 @@ td.mat-mdc-cell {
     width: 42px;
     height: 42px;
 
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 .empty-state h3 {
@@ -430,13 +591,13 @@ td.mat-mdc-cell {
     font-size: 22px;
     font-weight: 700;
 
-    color: #0f172a;
+    color: var(--text-dark);
 }
 
 .empty-state p {
     margin-bottom: 24px;
 
-    color: #64748b;
+    color: var(--text-light);
     font-size: 14px;
 }
 
@@ -445,8 +606,8 @@ td.mat-mdc-cell {
 ===================================================== */
 
 mat-paginator {
-    border-top: 1px solid #f1f5f9;
-    background: white;
+    border-top: 1px solid var(--border-light);
+    background: var(--card-bg);
 }
 
 /* =====================================================
@@ -460,6 +621,7 @@ mat-paginator {
         align-items: stretch;
     }
 
+    .toolbar-left,
     .toolbar-right {
         width: 100%;
     }
@@ -469,12 +631,23 @@ mat-paginator {
         width: 100%;
     }
 
-    .users-card {
+    .users-card,
+    .toolbar-card,
+    .empty-state {
         border-radius: 16px;
     }
 
     td.mat-mdc-cell,
     th.mat-mdc-header-cell {
-        padding: 12px;
+        padding: 12px !important;
+    }
+
+    .mat-column-username,
+    .mat-column-name,
+    .mat-column-phone,
+    .mat-column-role,
+    .mat-column-active,
+    .mat-column-actions {
+        min-width: 0;
     }
 }

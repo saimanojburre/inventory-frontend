@@ -111,14 +111,17 @@
     border-radius: 16px;
     overflow: hidden;
     background: var(--card-bg);
+    width: 100%;
 }
 
 .premium-table {
     max-height: calc(100vh - 390px);
     min-height: 280px;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    max-width: 100%;
 }
 
 /* =========================================================
@@ -127,10 +130,14 @@
 
 .purchase-table {
     width: 100%;
-    min-width: 1120px;
+    min-width: 0;
     table-layout: fixed;
     background: var(--card-bg);
 }
+
+/* =========================================================
+   HEADER / CELLS
+========================================================= */
 
 th.mat-mdc-header-cell {
     position: sticky;
@@ -143,13 +150,19 @@ th.mat-mdc-header-cell {
     letter-spacing: 0.02em;
     border-bottom: 1px solid var(--border-light);
     padding: 12px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 td.mat-mdc-cell {
     padding: 8px 10px !important;
     border-bottom: 1px solid var(--border-light) !important;
     color: var(--text-dark) !important;
-    overflow: visible;
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .mat-mdc-row {
@@ -163,58 +176,63 @@ td.mat-mdc-cell {
     background: var(--surface);
 }
 
-th.mat-mdc-header-cell {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
 /* =========================================================
    COLUMN WIDTHS
 ========================================================= */
 
 .col-item,
 .mat-column-item {
-    width: 29%;
-    min-width: 325px;
+    width: 25%;
+    min-width: 220px;
 }
 
 .col-unit,
 .mat-column-units {
     width: 8%;
-    min-width: 88px;
+    min-width: 80px;
 }
 
 .col-number,
 .mat-column-quantity,
 .mat-column-price {
     width: 9%;
-    min-width: 100px;
+    min-width: 90px;
 }
 
 .col-total,
 .mat-column-total {
-    width: 9%;
-    min-width: 105px;
+    width: 10%;
+    min-width: 100px;
 }
 
 .col-supplier,
 .mat-column-supplier {
     width: 14%;
-    min-width: 155px;
+    min-width: 120px;
 }
 
 .col-date,
 .mat-column-date {
-    width: 15%;
-    min-width: 165px;
+    width: 14%;
+    min-width: 130px;
 }
 
 .col-actions,
 .mat-column-actions {
-    width: 7%;
-    min-width: 82px;
+    width: 8%;
+    min-width: 90px;
     text-align: center;
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+td.mat-column-actions,
+th.mat-column-actions {
+    text-align: center;
+    overflow: visible !important;
+    white-space: nowrap !important;
 }
 
 /* =========================================================
@@ -251,7 +269,7 @@ mat-form-field {
 }
 
 /* =========================================================
-   SEARCH SELECT CLOSED FIELD FIX
+   SEARCH SELECT
 ========================================================= */
 
 .purchase-table ::ng-deep app-search-select mat-form-field {
@@ -274,13 +292,6 @@ mat-form-field {
     color: var(--text-light) !important;
 }
 
-.error-text {
-    margin-top: 4px;
-    color: var(--danger);
-    font-size: 12px;
-    font-weight: 600;
-}
-
 /* =========================================================
    TOTAL CELL
 ========================================================= */
@@ -289,6 +300,17 @@ mat-form-field {
     font-weight: 700;
     color: var(--success) !important;
     font-size: 14px;
+}
+
+/* =========================================================
+   VALIDATION
+========================================================= */
+
+.error-text {
+    margin-top: 4px;
+    color: var(--danger);
+    font-size: 12px;
+    font-weight: 600;
 }
 
 /* =========================================================
@@ -325,6 +347,10 @@ mat-form-field {
     color: var(--success);
 }
 
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
 .save-btn {
     min-width: 220px;
     height: 52px;
@@ -336,6 +362,9 @@ mat-form-field {
     justify-content: center;
     gap: 10px;
     box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .save-btn:hover {
@@ -349,7 +378,6 @@ mat-form-field {
 
 .premium-table::-webkit-scrollbar {
     width: 10px;
-    height: 10px;
 }
 
 .premium-table::-webkit-scrollbar-thumb {
@@ -367,6 +395,19 @@ mat-form-field {
 
 :host-context(body.dark-theme) .premium-table::-webkit-scrollbar-thumb:hover {
     background: #64748b;
+}
+
+/* =========================================================
+   GLOBAL OVERFLOW FIX
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+:host {
+    display: block;
+    overflow-x: hidden;
 }
 
 /* =========================================================
@@ -416,17 +457,11 @@ mat-form-field {
     }
 
     .col-item,
-    .mat-column-item {
-        min-width: 340px;
-    }
-
+    .mat-column-item,
     .col-supplier,
-    .mat-column-supplier {
-        min-width: 145px;
-    }
-
+    .mat-column-supplier,
     .col-date,
     .mat-column-date {
-        min-width: 145px;
+        min-width: 0;
     }
 }

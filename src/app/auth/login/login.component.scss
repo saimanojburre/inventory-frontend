@@ -7,18 +7,26 @@
 
     display: flex;
 
-    min-height: 100vh;
+    min-height: 100dvh;
 
     overflow: hidden;
 
-    background:
-        linear-gradient(to bottom right,
-            #f8fafc,
-            #eef2ff);
+    background: var(--app-bg);
 
     font-family:
         Inter,
         sans-serif;
+}
+
+/* =========================================================
+   DARK MODE BACKGROUND
+========================================================= */
+
+:host-context(body.dark-theme) .login-page {
+    background:
+        linear-gradient(to bottom right,
+            #0f172a,
+            #111827);
 }
 
 /* =========================================================
@@ -46,7 +54,7 @@
 ========================================================= */
 
 .login-section {
-    width:45%;
+    width: 45%;
 
     display: flex;
     align-items: center;
@@ -55,28 +63,58 @@
     padding: 34px 42px;
 }
 
-/* WRAPPER */
+/* =========================================================
+   WRAPPER
+========================================================= */
 
 .login-wrapper {
     width: 100%;
-    max-width: 360px;
+    max-width: 420px;
 
     margin-left: -10px;
 
+    padding: 32px;
+
+    border-radius: 28px;
+
+    background: rgba(255, 255, 255, 0.68);
+
+    backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255, 255, 255, 0.6);
+
+    box-shadow:
+        0 20px 50px rgba(15, 23, 42, 0.08);
+
     animation:
         fadeUp 0.7s ease;
+}
+
+/* =========================================================
+   DARK MODE WRAPPER
+========================================================= */
+
+:host-context(body.dark-theme) .login-wrapper {
+    background: rgba(15, 23, 42, 0.72);
+
+    border: 1px solid rgba(255, 255, 255, 0.05);
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes fadeUp {
 
     from {
         opacity: 0;
+
         transform:
             translateY(20px);
     }
 
     to {
         opacity: 1;
+
         transform:
             translateY(0);
     }
@@ -130,14 +168,28 @@
 }
 
 /* =========================================================
+   DARK MODE TEXT
+========================================================= */
+
+:host-context(body.dark-theme) .brand-logo span,
+:host-context(body.dark-theme) .heading-section h1,
+:host-context(body.dark-theme) .field-group label {
+    color: #f8fafc;
+}
+
+:host-context(body.dark-theme) .heading-section p,
+:host-context(body.dark-theme) .signup-section,
+:host-context(body.dark-theme) .version-text {
+    color: #94a3b8;
+}
+
+/* =========================================================
    HEADING
 ========================================================= */
 
 .heading-section {
     margin-bottom: 28px;
 }
-
-/* BADGE */
 
 .welcome-badge {
     width: fit-content;
@@ -162,8 +214,6 @@
     letter-spacing: 0.2px;
 }
 
-/* TITLE */
-
 .heading-section h1 {
     margin: 0 0 10px;
 
@@ -174,8 +224,6 @@
 
     color: #0f172a;
 }
-
-/* TEXT */
 
 .heading-section p {
     margin: 0;
@@ -220,16 +268,14 @@
 
     border-radius: 14px !important;
 
-    background:
-        rgba(255, 255, 255, 0.92) !important;
+    background: rgba(255, 255, 255, 0.92) !important;
 
     backdrop-filter: blur(10px);
 
     box-shadow:
         0 4px 12px rgba(15, 23, 42, 0.05);
 
-    transition:
-        all 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 ::ng-deep .mat-mdc-text-field-wrapper:hover {
@@ -245,6 +291,26 @@
         0 10px 22px rgba(99, 102, 241, 0.12);
 }
 
+/* =========================================================
+   INPUT ALIGNMENT
+========================================================= */
+
+::ng-deep .mat-mdc-form-field-infix {
+    min-height: 52px !important;
+
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+}
+
+::ng-deep .mat-mdc-form-field-icon-prefix,
+::ng-deep .mat-mdc-form-field-icon-suffix {
+    align-self: center;
+}
+
+/* =========================================================
+   DEFAULT OUTLINE
+========================================================= */
+
 ::ng-deep .mdc-notched-outline>* {
     border-color: #dbe2ea !important;
 }
@@ -258,50 +324,69 @@
 }
 
 /* =========================================================
-   ERROR BOX
+   DARK MODE INPUTS
 ========================================================= */
 
-.error-message {
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 12px 14px;
-
-    margin-bottom: 14px;
-
-    border-radius: 14px;
-
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-text-field-wrapper {
     background:
-        rgba(239, 68, 68, 0.08);
+        linear-gradient(135deg,
+            rgba(15, 23, 42, 0.96),
+            rgba(30, 41, 59, 0.96)) !important;
 
-    border:
-        1px solid rgba(239, 68, 68, 0.12);
+    backdrop-filter: blur(14px);
 
-    color: #dc2626;
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.35);
 
-    font-size: 13px;
-    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.error-message mat-icon {
-    font-size: 18px;
+/* INPUT TEXT */
 
-    width: 18px;
-    height: 18px;
+:host-context(body.dark-theme) ::ng-deep input.mat-mdc-input-element {
+    color: #f8fafc !important;
+
+    caret-color: #818cf8 !important;
 }
 
-/* =========================================================
-   FORM ERRORS
-========================================================= */
+/* PLACEHOLDER */
 
-::ng-deep .mat-mdc-form-field-error {
-    font-size: 12px !important;
+:host-context(body.dark-theme) ::ng-deep input.mat-mdc-input-element::placeholder {
+    color: #94a3b8 !important;
 
-    font-weight: 600;
+    opacity: 1;
+}
 
-    margin-top: 4px;
+/* LABEL */
+
+:host-context(body.dark-theme) ::ng-deep .mdc-floating-label {
+    color: #cbd5e1 !important;
+}
+
+/* ICONS */
+
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-form-field-icon-prefix,
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-form-field-icon-suffix,
+:host-context(body.dark-theme) ::ng-deep .mat-icon {
+    color: #94a3b8 !important;
+}
+
+/* OUTLINE */
+
+:host-context(body.dark-theme) ::ng-deep .mdc-notched-outline>* {
+    border-color: rgba(148, 163, 184, 0.22) !important;
+}
+
+/* HOVER */
+
+:host-context(body.dark-theme) ::ng-deep .mat-mdc-form-field:hover .mdc-notched-outline>* {
+    border-color: rgba(129, 140, 248, 0.55) !important;
+}
+
+/* FOCUS */
+
+:host-context(body.dark-theme) ::ng-deep .mat-focused .mdc-notched-outline>* {
+    border-color: #818cf8 !important;
 }
 
 /* =========================================================
@@ -313,7 +398,6 @@
         0 0 0 4px rgba(239, 68, 68, 0.10),
         0 10px 20px rgba(239, 68, 68, 0.08);
 }
-
 /* =========================================================
    OPTIONS
 ========================================================= */
@@ -335,7 +419,7 @@
 }
 
 /* =========================================================
-   BUTTON
+   LOGIN BUTTON
 ========================================================= */
 
 .login-btn {
@@ -368,7 +452,7 @@
 
 .login-btn:hover {
     transform:
-        translateY(-2px);
+        translateY(-2px) scale(1.01);
 
     box-shadow:
         0 22px 42px rgba(99, 102, 241, 0.3);
@@ -391,6 +475,7 @@
 
     gap: 6px;
 }
+
 /* =========================================================
    LOGIN SPINNER
 ========================================================= */
@@ -405,6 +490,7 @@
     width: 22px !important;
     height: 22px !important;
 }
+
 /* =========================================================
    SIGNUP
 ========================================================= */
@@ -426,8 +512,6 @@
 
     font-weight: 700;
 }
-
-/* VERSION */
 
 .version-text {
     margin-top: 18px;
@@ -574,8 +658,6 @@
     min-height: 620px;
 }
 
-/* IMAGE */
-
 .real-dashboard img {
     width: 100%;
     height: 100%;
@@ -612,8 +694,6 @@
             transparent);
 }
 
-/* BADGE */
-
 .overlay-badge {
     width: fit-content;
 
@@ -637,8 +717,6 @@
     font-weight: 700;
 }
 
-/* TITLE */
-
 .dashboard-overlay h2 {
     margin: 0 0 12px;
 
@@ -651,8 +729,6 @@
 
     color: white;
 }
-
-/* DESCRIPTION */
 
 .dashboard-overlay p {
     margin: 0;
@@ -706,11 +782,14 @@
 @media (max-width: 500px) {
 
     .login-section {
-        padding: 22px;
+        padding:
+            26px 20px 40px;
     }
 
     .heading-section h1 {
-        font-size: 34px;
+        font-size: 36px;
+
+        line-height: 1.05;
     }
 
     .heading-section p {
@@ -719,5 +798,17 @@
 
     .login-btn {
         height: 48px;
+    }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+        height: 50px !important;
+    }
+
+    .field-group {
+        margin-bottom: 16px;
+    }
+
+    .brand-logo {
+        margin-bottom: 28px;
     }
 }

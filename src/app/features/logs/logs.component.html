@@ -9,15 +9,12 @@
 ===================================================== -->
 
 <div class="filters-card" *ngIf="!loading">
-  <mat-form-field appearance="outline">
-    <mat-label>Search</mat-label>
+  <mat-form-field appearance="outline" class="search-field toolbar-field">
+    <mat-label>Search Logs</mat-label>
 
-    <input
-      matInput
-      [(ngModel)]="search"
-      (input)="applyFilters()"
-      placeholder="Search logs"
-    />
+    <input matInput [(ngModel)]="search" (input)="applyFilters()" />
+
+    <mat-icon matSuffix>search</mat-icon>
   </mat-form-field>
 
   <mat-form-field appearance="outline">

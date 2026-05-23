@@ -4,6 +4,7 @@
 
 :host {
     display: block;
+    overflow-x: hidden;
 }
 
 /* =====================================================
@@ -19,19 +20,20 @@
 
     margin-bottom: 22px;
 
-    background: rgba(255, 255, 255, 0.9);
-
-    backdrop-filter: blur(12px);
+    background: var(--card-bg);
 
     border-radius: 22px;
 
     padding: 18px;
 
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--border-light);
 
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.06),
-        0 2px 10px rgba(15, 23, 42, 0.03);
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .filters-card mat-form-field {
@@ -45,19 +47,35 @@
 ===================================================== */
 
 .logs-table-card {
-    background: rgba(255, 255, 255, 0.92);
-
-    backdrop-filter: blur(14px);
+    background: var(--card-bg);
 
     border-radius: 24px;
 
     overflow: hidden;
 
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--border-light);
 
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08),
-        0 2px 10px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--shadow-md);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* =====================================================
+   TABLE WRAPPER
+===================================================== */
+
+.table-wrapper {
+    width: 100%;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: thin;
 }
 
 /* =====================================================
@@ -67,7 +85,11 @@
 table {
     width: 100%;
 
+    min-width: 1150px;
+
     border-collapse: collapse;
+
+    background: var(--card-bg);
 }
 
 thead {
@@ -77,13 +99,13 @@ thead {
 
     z-index: 10;
 
-    background: #f8fafc;
+    background: var(--surface);
 }
 
 th {
     text-align: center;
 
-    padding: 16px 22px;
+    padding: 16px 20px;
 
     font-size: 12px;
 
@@ -93,33 +115,45 @@ th {
 
     text-transform: uppercase;
 
-    color: #64748b;
+    color: var(--text-medium);
 
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--border-light);
+
+    background: var(--surface);
+
+    white-space: nowrap;
 }
 
 td {
     padding: 14px 18px;
 
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-light);
 
     text-align: center;
 
     font-size: 14px;
 
-    color: #334155;
+    color: var(--text-dark);
 
     vertical-align: middle;
+
+    background: var(--card-bg);
+
+    white-space: nowrap;
 }
 
 tbody tr {
-    transition: all 0.2s ease;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
 }
 
 tbody tr:hover {
-    background: #f8fafc;
+    background: var(--surface-hover);
+}
 
-    transform: scale(1.001);
+tbody tr:hover td {
+    background: var(--surface-hover);
 }
 
 /* =====================================================
@@ -139,13 +173,13 @@ tbody tr:hover {
 .user-name {
     font-weight: 700;
 
-    color: #0f172a;
+    color: var(--text-dark);
 }
 
 .role-name {
     font-size: 11px;
 
-    color: #94a3b8;
+    color: var(--text-light);
 
     font-weight: 600;
 
@@ -176,12 +210,14 @@ tbody tr:hover {
     font-weight: 800;
 
     letter-spacing: 0.4px;
+
+    white-space: nowrap;
 }
 
 .module-badge {
-    background: #eef2ff;
+    background: rgba(79, 70, 229, 0.12);
 
-    color: #4f46e5;
+    color: var(--primary);
 }
 
 .action-badge mat-icon {
@@ -197,15 +233,23 @@ tbody tr:hover {
 ===================================================== */
 
 .success {
-    background: #dcfce7;
+    background: rgba(16, 185, 129, 0.14);
 
     color: #15803d;
 }
 
 .failed {
-    background: #fee2e2;
+    background: rgba(239, 68, 68, 0.14);
 
     color: #dc2626;
+}
+
+:host-context(body.dark-theme) .success {
+    color: #6ee7b7;
+}
+
+:host-context(body.dark-theme) .failed {
+    color: #fca5a5;
 }
 
 /* =====================================================
@@ -213,27 +257,43 @@ tbody tr:hover {
 ===================================================== */
 
 .create {
-    background: #dcfce7;
+    background: rgba(16, 185, 129, 0.14);
 
     color: #15803d;
 }
 
 .update {
-    background: #fef3c7;
+    background: rgba(245, 158, 11, 0.16);
 
     color: #b45309;
 }
 
 .delete {
-    background: #fee2e2;
+    background: rgba(239, 68, 68, 0.14);
 
     color: #dc2626;
 }
 
 .login {
-    background: #dbeafe;
+    background: rgba(59, 130, 246, 0.14);
 
     color: #2563eb;
+}
+
+:host-context(body.dark-theme) .create {
+    color: #6ee7b7;
+}
+
+:host-context(body.dark-theme) .update {
+    color: #fcd34d;
+}
+
+:host-context(body.dark-theme) .delete {
+    color: #fca5a5;
+}
+
+:host-context(body.dark-theme) .login {
+    color: #93c5fd;
 }
 
 /* =====================================================
@@ -243,9 +303,13 @@ tbody tr:hover {
 .description {
     min-width: 320px;
 
-    color: #475569;
+    color: var(--text-medium);
 
     font-weight: 500;
+
+    white-space: normal;
+
+    line-height: 1.5;
 }
 
 /* =====================================================
@@ -263,7 +327,7 @@ tbody tr:hover {
 }
 
 .time-cell small {
-    color: #94a3b8;
+    color: var(--text-light);
 
     font-size: 11px;
 
@@ -275,9 +339,9 @@ tbody tr:hover {
 ===================================================== */
 
 mat-paginator {
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid var(--border-light);
 
-    background: white;
+    background: var(--card-bg);
 }
 
 /* =====================================================
@@ -289,7 +353,7 @@ mat-paginator {
 
     padding: 90px 20px;
 
-    color: #64748b;
+    color: var(--text-light);
 }
 
 .empty-state mat-icon {
@@ -301,33 +365,104 @@ mat-paginator {
 
     margin-bottom: 12px;
 
-    color: #cbd5e1;
+    color: var(--text-light);
+
+    opacity: 0.5;
 }
 
 .empty-state h3 {
     margin-bottom: 8px;
 
-    color: #334155;
+    color: var(--text-dark);
+}
+
+.empty-state p {
+    color: var(--text-light);
 }
 
 /* =====================================================
-   MOBILE
+   MOBILE / TABLET
 ===================================================== */
 
-@media (max-width: 900px) {
-    .logs-table-card {
+@media (max-width: 1024px) {
+
+    .table-wrapper {
         overflow-x: auto;
+    }
+
+    table {
+        min-width: 1050px;
+    }
+}
+
+@media (max-width: 900px) {
+
+    .filters-card {
+        flex-direction: column;
+    }
+
+    .filters-card mat-form-field {
+        width: 100%;
+    }
+
+    .logs-table-card {
+        overflow: hidden;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+
+        border-radius: 18px;
     }
 
     table {
         min-width: 950px;
     }
 
-    .filters-card {
-        flex-direction: column;
+    th,
+    td {
+        padding: 12px 14px;
+
+        font-size: 12px;
+    }
+
+    .module-badge,
+    .status-badge,
+    .action-badge {
+        padding: 7px 12px;
+
+        font-size: 10px;
+    }
+
+    .description {
+        min-width: 260px;
     }
 }
 
+@media (max-width: 600px) {
+
+    table {
+        min-width: 900px;
+    }
+
+    th,
+    td {
+        padding: 10px 12px;
+
+        font-size: 11px;
+    }
+
+    .description {
+        min-width: 220px;
+    }
+
+    .action-badge mat-icon {
+        font-size: 14px;
+
+        width: 14px;
+        height: 14px;
+    }
+}
 
 /* =====================================================
    SKELETON
@@ -357,7 +492,7 @@ mat-paginator {
 }
 
 .skeleton-table {
-    background: white;
+    background: var(--card-bg);
 
     border-radius: 24px;
 
@@ -365,9 +500,9 @@ mat-paginator {
 
     padding: 10px 0;
 
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.08),
-        0 2px 10px rgba(15, 23, 42, 0.04);
+    border: 1px solid var(--border-light);
+
+    box-shadow: var(--shadow-md);
 }
 
 .skeleton-header {
@@ -413,6 +548,17 @@ mat-paginator {
     background-size: 400% 100%;
 
     animation: shimmer 1.4s ease infinite;
+}
+
+:host-context(body.dark-theme) .skeleton-filter,
+:host-context(body.dark-theme) .skeleton-header,
+:host-context(body.dark-theme) .skeleton-cell {
+    background: linear-gradient(90deg,
+            #1e293b 25%,
+            #334155 37%,
+            #1e293b 63%);
+
+    background-size: 400% 100%;
 }
 
 .skeleton-cell.short {
